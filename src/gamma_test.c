@@ -44,10 +44,9 @@ int main() {
     //assert(g == NULL);
 
     g = gamma_new(3, 2, 2, 3);
-    printf("%llu\n", g->busyFields[1]);
-    printf("%llu\n", g->busyFields[2]);
-
     assert(g != NULL);
+
+    g->board[1][0] = 5;
 
     printf("%s", gamma_board(g));
 
