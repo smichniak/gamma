@@ -43,14 +43,19 @@ int main() {
    // g = gamma_new(0, 0, 0, 0);
     //assert(g == NULL);
 
-    g = gamma_new(3, 2, 2, 3);
+    g = gamma_new(3, 2, 10, 3);
     assert(g != NULL);
 
     g->board[1][0] = 5;
+    g->board[1][1] = 1;
+    g->board[2][1] = 2;
 
-    printf("%s", gamma_board(g));
+    char* boardString = gamma_board(g);
+    printf("%s", boardString);
+    free(boardString);
 
     gamma_delete(g);
+
     return 0;
 
    /* assert(gamma_move(g, 1, 0, 0));

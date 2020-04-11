@@ -23,7 +23,7 @@ typedef struct gamma {
     uint32_t height;
     uint32_t players;
     uint32_t areas;
-
+    bool* goldenMoves;
     uint32_t** board;
     uint64_t* busyFields;
 
