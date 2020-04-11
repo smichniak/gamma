@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 
+const uint32_t MAX_INT32 = 4294967295;
 
 gamma_t* gamma_new(uint32_t width, uint32_t height,
                    uint32_t players, uint32_t areas) {
-    if (width < 1 || height < 1 || players < 1) {
+    if (width < 1 || height < 1 || players < 1 || areas < 1) {
         return NULL;
     }
     gamma_t* newGammaPtr;
@@ -20,25 +21,35 @@ gamma_t* gamma_new(uint32_t width, uint32_t height,
     newGammaPtr->height = height;
     newGammaPtr->players = players;
     newGammaPtr->areas = areas;
+    newGammaPtr->freeFields = width * height;
 
     uint64_t* busyFields;
     busyFields = (uint64_t*) calloc((players + 1), sizeof(uint64_t));
 
+    uint64_t* freeAdjacentFields;
+    freeAdjacentFields = (uint64_t*) calloc((players + 1), sizeof(uint64_t));
+
+    uint32_t* playerAreas;
+    playerAreas = (uint32_t*) calloc((players + 1), sizeof(uint32_t));
+
     bool* goldenMoves;
     goldenMoves = (bool*) calloc((players + 1), sizeof(bool));
-    
-    uint32_t** board;
-    board = (uint32_t**) calloc(width * (height + 1), sizeof(uint32_t*));
 
-    if (board == NULL || goldenMoves == NULL || busyFields == NULL) {
+    findUnionNode_t*** board;
+    board = (findUnionNode_t***) calloc(width * (height + 1), sizeof(findUnionNode_t*));
+
+    if (busyFields == NULL || freeAdjacentFields == NULL || playerAreas == NULL || goldenMoves == NULL ||
+        board == NULL) {
         return NULL;
     }
     newGammaPtr->busyFields = busyFields;
+    newGammaPtr->freeAdjacentFields = freeAdjacentFields;
+    newGammaPtr->playerAreas = playerAreas;
     newGammaPtr->goldenMoves = goldenMoves;
 
-    uint32_t* columnPtr;
+    findUnionNode_t** columnPtr;
     // columnPtr is now pointing to the first element in of 2D array
-    columnPtr = (uint32_t*) (board + width);
+    columnPtr = (findUnionNode_t**) (board + width);
 
     // for loop to point column pointer to appropriate location in 2D array
     for (uint32_t i = 0; i < width; ++i) {
@@ -46,29 +57,70 @@ gamma_t* gamma_new(uint32_t width, uint32_t height,
     }
     newGammaPtr->board = board;
     return newGammaPtr;
-
-
 }
 
 void gamma_delete(gamma_t* g) {
     if (g != NULL) {
         free(g->busyFields);
+        free(g->freeAdjacentFields);
+        free(g->playerAreas);
         free(g->goldenMoves);
         free(g->board);
         free(g);
     }
 }
 
+findUnionNode_t** getAdjacent(gamma_t* g, uint32_t x, uint32_t y) {
+    findUnionNode_t** adjacent;
+    adjacent = (findUnionNode_t**) calloc(sizeof(findUnionNode_t*), 4);
+    if (adjacent == NULL) {
+        return NULL;
+    }
+    int index = 0;
+
+    for (int dx = -1; dx <= 1; dx += 2) {
+        for (int dy = -1; dy <= 1; dy += 2) {
+            if (x + dx < g->width && y + dy < g->height) {
+                adjacent[index] = g->board[x][y];
+            }
+
+        }
+    }
+    return adjacent;
+    
+}
+
 
 bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
-    return true;
-}
+    if (g == NULL || player < 1 || player > g->players || x >= g->width || y >= g->height || g->board[x][y] != NULL) {
+        return false;
+    }
 
+    int freeAdjacent = 4;
+    bool samePLayerAdjacent = false;
+    findUnionNode_t** adjacent = getAdjacent(g, x , y);
+    if (adjacent == NULL) {
+        return false;
+    }
+
+    int index = 0;
+    while (adjacent[index] != NULL) {
+
+        index++;
+    }
+
+    
+
+
+
+}
 
 bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
-    return true;
+    if (g == NULL || player < 1 || player > g->players || x >= g->width || y >= g->height || g->goldenMoves[player] ||
+        g->board[x][y] == NULL) {
+        return false;
+    }
 }
-
 
 uint64_t gamma_busy_fields(gamma_t* g, uint32_t player) {
     if (g == NULL || player < 1 || player > g->players) {
@@ -78,16 +130,27 @@ uint64_t gamma_busy_fields(gamma_t* g, uint32_t player) {
     }
 }
 
-
 uint64_t gamma_free_fields(gamma_t* g, uint32_t player) {
-    return 2;
+    if (g == NULL || player < 1 || player > g->players) {
+        return 0;
+    }
+    if (g->playerAreas[player] == g->areas) {
+        return g->freeAdjacentFields[player];
+    }
+    return g->freeFields;
 }
-
 
 bool gamma_golden_possible(gamma_t* g, uint32_t player) {
-    return true;
+    if (g == NULL || player < 1 || player > g->players || g->goldenMoves[player]) {
+        return false;
+    }
+    for (uint32_t otherPlayer = 1; otherPlayer <= g->players; ++otherPlayer) {
+        if (g->busyFields[otherPlayer] > 0 && player != otherPlayer) {
+            return true;
+        }
+    }
+    return false;
 }
-
 
 size_t boardStringSize(gamma_t* g) {
     size_t boardSize = 0;
@@ -163,10 +226,18 @@ char* gamma_board(gamma_t* g) {
     for (uint32_t row = g->height - 1; row >= 0 && row <= g->height; row--) {
         for (uint32_t column = 0; column < g->width; ++column) {
 
-            uint32_t player = g->board[column][row];
+            uint32_t player;
+
+            findUnionNode_t* fieldPtr = g->board[column][row];
+            if (fieldPtr == NULL) {
+                player = 0;
+            } else {
+                player = fieldPtr->player;
+            }
             stringIndex = addToBoard(player, stringIndex, boardString);
 
             if (stringIndex == 0) {
+                free(boardString);
                 return NULL;
             }
         }

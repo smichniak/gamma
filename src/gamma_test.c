@@ -12,6 +12,7 @@
 #endif
 
 #include "gamma.h"
+#include "findUnion.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,15 +41,23 @@ static const char board[] =
 int main() {
     gamma_t* g;
 
-   // g = gamma_new(0, 0, 0, 0);
+    // g = gamma_new(0, 0, 0, 0);
     //assert(g == NULL);
 
     g = gamma_new(3, 2, 10, 3);
     assert(g != NULL);
 
-    g->board[1][0] = 5;
-    g->board[1][1] = 1;
-    g->board[2][1] = 2;
+    findUnionNode_t elem = make_set(5);
+    findUnionNode_t* elemPtr = &elem;
+    findUnionNode_t elem2 = make_set(1);
+    findUnionNode_t* elemPtr2 = &elem2;
+    findUnionNode_t elem3 = make_set(2);
+    findUnionNode_t* elemPtr3 = &elem3;
+    merge(elemPtr, elemPtr2);
+
+    g->board[1][0] = elemPtr;
+    g->board[1][1] = elemPtr2;
+    g->board[2][1] = elemPtr3;
 
     char* boardString = gamma_board(g);
     printf("%s", boardString);
@@ -56,54 +65,72 @@ int main() {
 
     gamma_delete(g);
 
+
+
+
+    printf("%d\n", connected(elemPtr, elemPtr2));
+    printf("%d\n", connected(elemPtr, elemPtr3));
+    printf("%d\n\n", connected(elemPtr2, elemPtr3));
+
+    printf("%d\n", g->board[1][0] == NULL);
+    printf("%d\n", g->board[1][1] == NULL);
+    printf("%d\n", g->board[2][1] == NULL);
+    printf("%d\n", g->board[2][0] == NULL);
+    printf("%d\n\n", g->board[0][0] == NULL);
+
+
+    uint32_t xd = 0;
+    printf("%d\n", xd-1 == 4294967295);
+
+
     return 0;
 
-   /* assert(gamma_move(g, 1, 0, 0));
-    assert(gamma_busy_fields(g, 1) == 1);
-    assert(gamma_busy_fields(g, 2) == 0);
-    assert(gamma_free_fields(g, 1) == 99);
-    assert(gamma_free_fields(g, 2) == 99);
-    assert(!gamma_golden_possible(g, 1));
-    assert(gamma_move(g, 2, 3, 1));
-    assert(gamma_busy_fields(g, 1) == 1);
-    assert(gamma_busy_fields(g, 2) == 1);
-    assert(gamma_free_fields(g, 1) == 98);
-    assert(gamma_free_fields(g, 2) == 98);
-    assert(gamma_move(g, 1, 0, 2));
-    assert(gamma_move(g, 1, 0, 9));
-    assert(!gamma_move(g, 1, 5, 5));
-    assert(gamma_free_fields(g, 1) == 6);
-    assert(gamma_move(g, 1, 0, 1));
-    assert(gamma_free_fields(g, 1) == 95);
-    assert(gamma_move(g, 1, 5, 5));
-    assert(!gamma_move(g, 1, 6, 6));
-    assert(gamma_busy_fields(g, 1) == 5);
-    assert(gamma_free_fields(g, 1) == 10);
-    assert(gamma_move(g, 2, 2, 1));
-    assert(gamma_move(g, 2, 1, 1));
-    assert(gamma_free_fields(g, 1) == 9);
-    assert(gamma_free_fields(g, 2) == 92);
-    assert(!gamma_move(g, 2, 0, 1));
-    assert(gamma_golden_possible(g, 2));
-    assert(!gamma_golden_move(g, 2, 0, 1));
-    assert(gamma_golden_move(g, 2, 5, 5));
-    assert(!gamma_golden_possible(g, 2));
-    assert(gamma_move(g, 2, 6, 6));
-    assert(gamma_busy_fields(g, 1) == 4);
-    assert(gamma_free_fields(g, 1) == 91);
-    assert(gamma_busy_fields(g, 2) == 5);
-    assert(gamma_free_fields(g, 2) == 13);
-    assert(gamma_golden_move(g, 1, 3, 1));
-    assert(gamma_busy_fields(g, 1) == 5);
-    assert(gamma_free_fields(g, 1) == 8);
-    assert(gamma_busy_fields(g, 2) == 4);
-    assert(gamma_free_fields(g, 2) == 10);
+    /* assert(gamma_move(g, 1, 0, 0));
+     assert(gamma_busy_fields(g, 1) == 1);
+     assert(gamma_busy_fields(g, 2) == 0);
+     assert(gamma_free_fields(g, 1) == 99);
+     assert(gamma_free_fields(g, 2) == 99);
+     assert(!gamma_golden_possible(g, 1));
+     assert(gamma_move(g, 2, 3, 1));
+     assert(gamma_busy_fields(g, 1) == 1);
+     assert(gamma_busy_fields(g, 2) == 1);
+     assert(gamma_free_fields(g, 1) == 98);
+     assert(gamma_free_fields(g, 2) == 98);
+     assert(gamma_move(g, 1, 0, 2));
+     assert(gamma_move(g, 1, 0, 9));
+     assert(!gamma_move(g, 1, 5, 5));
+     assert(gamma_free_fields(g, 1) == 6);
+     assert(gamma_move(g, 1, 0, 1));
+     assert(gamma_free_fields(g, 1) == 95);
+     assert(gamma_move(g, 1, 5, 5));
+     assert(!gamma_move(g, 1, 6, 6));
+     assert(gamma_busy_fields(g, 1) == 5);
+     assert(gamma_free_fields(g, 1) == 10);
+     assert(gamma_move(g, 2, 2, 1));
+     assert(gamma_move(g, 2, 1, 1));
+     assert(gamma_free_fields(g, 1) == 9);
+     assert(gamma_free_fields(g, 2) == 92);
+     assert(!gamma_move(g, 2, 0, 1));
+     assert(gamma_golden_possible(g, 2));
+     assert(!gamma_golden_move(g, 2, 0, 1));
+     assert(gamma_golden_move(g, 2, 5, 5));
+     assert(!gamma_golden_possible(g, 2));
+     assert(gamma_move(g, 2, 6, 6));
+     assert(gamma_busy_fields(g, 1) == 4);
+     assert(gamma_free_fields(g, 1) == 91);
+     assert(gamma_busy_fields(g, 2) == 5);
+     assert(gamma_free_fields(g, 2) == 13);
+     assert(gamma_golden_move(g, 1, 3, 1));
+     assert(gamma_busy_fields(g, 1) == 5);
+     assert(gamma_free_fields(g, 1) == 8);
+     assert(gamma_busy_fields(g, 2) == 4);
+     assert(gamma_free_fields(g, 2) == 10);
 
-    char* p = gamma_board(g);
-    assert(p);
-    assert(strcmp(p, board) == 0);
-    printf(p);
-    free(p);
-*/
+     char* p = gamma_board(g);
+     assert(p);
+     assert(strcmp(p, board) == 0);
+     printf(p);
+     free(p);
+ */
 
 }

@@ -17,8 +17,8 @@ Tuple createTuple(uint32_t x, uint32_t y) {
     return newTuple;
 }
 
-Stack createStack() {
-    Stack newStack;
+Stack_t createStack() {
+    Stack_t newStack;
     Tuple* stackArray = NULL;
     stackArray = (Tuple*) malloc(sizeof(Tuple) * INITIAL_STACK_SIZE);
     if (stackArray == NULL) {
@@ -31,11 +31,11 @@ Stack createStack() {
     return newStack;
 }
 
-bool isEmpty(Stack* stackPtr) {
+bool isEmpty(Stack_t* stackPtr) {
     return stackPtr->lastIndex == 0;
 }
 
-void putLast(Stack* stackPtr, Tuple element) {
+void putLast(Stack_t* stackPtr, Tuple element) {
     if (stackPtr->lastIndex + 1 == stackPtr->size) {
         stackPtr->stackArray = realloc(stackPtr->stackArray, 2 * stackPtr->size * sizeof(Tuple));
         if (stackPtr->stackArray == NULL) {
@@ -46,7 +46,7 @@ void putLast(Stack* stackPtr, Tuple element) {
     stackPtr->stackArray[stackPtr->lastIndex] = element;
 }
 
-Tuple removeLast(Stack* stackPtr) {
+Tuple removeLast(Stack_t* stackPtr) {
     Tuple last = stackPtr->stackArray[stackPtr->lastIndex];
     stackPtr->lastIndex--;
     if (stackPtr->lastIndex <= stackPtr->size / 4 && stackPtr->size / 2 >= INITIAL_STACK_SIZE) {
@@ -58,7 +58,7 @@ Tuple removeLast(Stack* stackPtr) {
     return last;
 }
 
-void removeStack(Stack* stackPtr) {
+void removeStack(Stack_t* stackPtr) {
     free(stackPtr->stackArray);
 }
 

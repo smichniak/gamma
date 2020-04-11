@@ -5,22 +5,22 @@
 #include <stdbool.h>
 
 typedef struct {
-    int x;
-    int y;
+    uint32_t x;
+    uint32_t y;
 } Tuple;
 
-typedef struct stack Stack;
+typedef struct stack Stack_t;
 
 Tuple createTuple(uint32_t x, uint32_t y);
 
-Stack createStack();
+Stack_t createStack_t();
 
-bool isEmpty(Stack* stackPtr);
+bool isEmpty(Stack_t* stackPtr);
 
-void putLast(Stack* stackPtr, Tuple element);
+void putLast(Stack_t* stackPtr, Tuple element);
 
-Tuple removeLast(Stack* stackPtr);
+Tuple removeLast(Stack_t* stackPtr);
 
-void removeStack(Stack* stackPtr);
+void removeStack_t(Stack_t* stackPtr);
 
 #endif //GAMMA_STACK_H
