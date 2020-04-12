@@ -21,7 +21,9 @@ Stack_t createStack() {
     Stack_t newStack;
     Tuple* stackArray = NULL;
     stackArray = (Tuple*) malloc(sizeof(Tuple) * INITIAL_STACK_SIZE);
-    if (stackArray == NULL) {
+    if (!stackArray) {
+        //TODO
+        //Handle this without exit
         exit(1);
     }
 
@@ -38,7 +40,9 @@ bool isEmpty(Stack_t* stackPtr) {
 void putLast(Stack_t* stackPtr, Tuple element) {
     if (stackPtr->lastIndex + 1 == stackPtr->size) {
         stackPtr->stackArray = realloc(stackPtr->stackArray, 2 * stackPtr->size * sizeof(Tuple));
-        if (stackPtr->stackArray == NULL) {
+        if (!stackPtr->stackArray) {
+            //TODO
+            //Handle this without exit
             exit(1);
         }
     }
@@ -51,7 +55,9 @@ Tuple removeLast(Stack_t* stackPtr) {
     stackPtr->lastIndex--;
     if (stackPtr->lastIndex <= stackPtr->size / 4 && stackPtr->size / 2 >= INITIAL_STACK_SIZE) {
         stackPtr->stackArray = realloc(stackPtr->stackArray, stackPtr->size * sizeof(Tuple) / 2);
-        if (stackPtr->stackArray == NULL) {
+        if (!stackPtr->stackArray) {
+            //TODO
+            //Handle this without exit
             exit(1);
         }
     }

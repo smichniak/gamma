@@ -12,7 +12,7 @@ typedef struct findUnionNode {
     struct findUnionNode* parent;
 } findUnionNode_t;
 
-findUnionNode_t make_set();
+findUnionNode_t* make_set(uint32_t player);
 
 void merge(findUnionNode_t* a, findUnionNode_t* b);
 

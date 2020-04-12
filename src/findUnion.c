@@ -1,12 +1,15 @@
 #include "findUnion.h"
 #include <stdlib.h>
 
-findUnionNode_t make_set(uint32_t player) {
-    findUnionNode_t node;
-    node.player = player;
-    node.parent = NULL;
-    node.depth = 1;
-    return node;
+findUnionNode_t* make_set(uint32_t player) {
+    findUnionNode_t* nodePtr = (findUnionNode_t*) malloc(sizeof(findUnionNode_t*));
+    if (!nodePtr) {
+        return NULL;
+    }
+    nodePtr->player = player;
+    nodePtr->parent = NULL;
+    nodePtr->depth = 1;
+    return nodePtr;
 }
 
 findUnionNode_t* find(findUnionNode_t* element) {

@@ -14,7 +14,7 @@ gamma_t* gamma_new(uint32_t width, uint32_t height,
     gamma_t* newGammaPtr;
     newGammaPtr = (gamma_t*) malloc(sizeof(gamma_t));
 
-    if (newGammaPtr == NULL) {
+    if (!newGammaPtr) {
         return NULL;
     }
     newGammaPtr->width = width;
@@ -61,6 +61,8 @@ gamma_t* gamma_new(uint32_t width, uint32_t height,
 
 void gamma_delete(gamma_t* g) {
     if (g != NULL) {
+        //TODO
+        //Free findUnionNodes
         free(g->busyFields);
         free(g->freeAdjacentFields);
         free(g->playerAreas);
@@ -70,9 +72,10 @@ void gamma_delete(gamma_t* g) {
     }
 }
 
-findUnionNode_t** getAdjacent(gamma_t* g, uint32_t x, uint32_t y) {
-    findUnionNode_t** adjacent;
-    adjacent = (findUnionNode_t**) calloc(sizeof(findUnionNode_t*), 4);
+Tuple* getAdjacent(gamma_t* g, uint32_t x, uint32_t y) {
+    Tuple* adjacent;
+    adjacent = (Tuple*) calloc(sizeof(Tuple), 4);
+
     if (adjacent == NULL) {
         return NULL;
     }
@@ -80,37 +83,83 @@ findUnionNode_t** getAdjacent(gamma_t* g, uint32_t x, uint32_t y) {
 
     for (int dx = -1; dx <= 1; dx += 2) {
         for (int dy = -1; dy <= 1; dy += 2) {
+            //TODO
+            //Possible error, x + dx possibly < 0
             if (x + dx < g->width && y + dy < g->height) {
-                adjacent[index] = g->board[x][y];
+                adjacent[index] = createTuple(x + dx, y + dy);
+            } else {
+                //Field out of bound
+                adjacent[index] = createTuple(MAX_INT32, MAX_INT32);
             }
-
+            index++;
         }
     }
+
     return adjacent;
-    
+}
+
+bool samePlayerAdjacent(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
+    bool samePlayerAdjacent = false;
+    for (int dx = -1; dx <= 1; dx += 2) {
+        for (int dy = -1; dy <= 1; dy += 2) {
+            //TODO
+            //Possible error, x + dx possibly < 0
+            samePlayerAdjacent = samePlayerAdjacent ||
+                                 (x + dx < g->width && y + dy < g->height && g->board[x + dx][y + dy] != NULL &&
+                                  g->board[x + dx][y + dy]->player == player);
+        }
+    }
+    return samePlayerAdjacent;
 }
 
 
 bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
-    if (g == NULL || player < 1 || player > g->players || x >= g->width || y >= g->height || g->board[x][y] != NULL) {
+    if (g == NULL || player < 1 || player > g->players || x >= g->width || y >= g->height || g->board[x][y] != NULL ||
+        (g->playerAreas[player] == g->areas && !samePlayerAdjacent(g, player, x, y))) {
         return false;
     }
 
-    int freeAdjacent = 4;
-    bool samePLayerAdjacent = false;
-    findUnionNode_t** adjacent = getAdjacent(g, x , y);
+    int freeAdjacent = 0;
+    bool samePLayerAd = false;
+    Tuple* adjacent = getAdjacent(g, x, y);
     if (adjacent == NULL) {
         return false;
     }
 
-    int index = 0;
-    while (adjacent[index] != NULL) {
-
-        index++;
+    findUnionNode_t* field = make_set(player);
+    if (field == NULL) {
+        return false;
     }
 
-    
+    for (int i = 0; i < 4; ++i) {
+        uint32_t x2 = adjacent[i].x;
+        uint32_t y2 = adjacent[i].y;
+        if (x2 != MAX_INT32) {
+            if (g->board[x2][y2] == NULL) {
+                freeAdjacent++;
+                if (samePlayerAdjacent(g, player, x2, y2)) {
+                    freeAdjacent--;
+                }
+            } else if (g->board[x2][y2]->player == player) {
+                merge(field, g->board[x2][y2]);
+                samePLayerAd = true;
+            }
 
+        }
+    }
+    free(adjacent);
+
+    if (!samePLayerAd){
+        g->playerAreas[player]++;
+    }
+
+    g->busyFields[player]++;
+    g->freeAdjacentFields += freeAdjacent;
+    g->board[x][y] = field;
+    g->freeFields--;
+
+
+    return true;
 
 
 }
