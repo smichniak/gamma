@@ -4,14 +4,19 @@
 #include "stack.h"
 #include "stdbool.h"
 
+typedef struct findUnionNode findUnionNode_t;
+
 typedef struct findUnionNode {
     uint64_t player;
     //TODO
     //Think about this type size
-    uint8_t depth;
-    struct findUnionNode* parent;
+    uint64_t depth;
+    findUnionNode_t* parent;
 } findUnionNode_t;
 
+
+//TODO
+//Change name to my style
 findUnionNode_t* make_set(uint32_t player);
 
 void merge(findUnionNode_t* a, findUnionNode_t* b);

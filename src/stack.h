@@ -9,18 +9,20 @@ typedef struct {
     uint32_t y;
 } Tuple;
 
-typedef struct stack Stack_t;
+typedef struct stackNode StackNode_t;
 
 Tuple createTuple(uint32_t x, uint32_t y);
 
-Stack_t createStack_t();
+StackNode_t* createStack(uint32_t x, uint32_t y);
 
-bool isEmpty(Stack_t* stackPtr);
+bool isEmpty(StackNode_t* stackPtr);
 
-void putLast(Stack_t* stackPtr, Tuple element);
+StackNode_t* putLast(StackNode_t* stackPtr, uint32_t x, uint32_t y);
 
-Tuple removeLast(Stack_t* stackPtr);
+StackNode_t* removeLast(StackNode_t* stackPtr);
 
-void removeStack_t(Stack_t* stackPtr);
+Tuple getLast(StackNode_t* stackPtr);
+
+void removeStack(StackNode_t* stackPtr);
 
 #endif //GAMMA_STACK_H

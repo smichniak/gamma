@@ -23,10 +23,10 @@ set(CMAKE_C_FLAGS "-std=c11 -Wall -Wextra")
 set(SOURCE_FILES
     src/gamma.c
     src/gamma.h
-    src/gamma_test.c src/gamma.c src/stack.c src/stack.h src/findUnion.c src/findUnion.h)
+    src/gamma_test.c src/gamma.c src/findUnion.c src/findUnion.h src/stack.c src/stack.h)
 
 # Wskazujemy plik wykonywalny.
-add_executable(gamma ${SOURCE_FILES} src/gamma.c src/stack.c src/stack.h)
+add_executable(gamma ${SOURCE_FILES})
 
 # Dodajemy obsługę Doxygena: sprawdzamy, czy jest zainstalowany i jeśli tak to:
 find_package(Doxygen)

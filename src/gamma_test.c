@@ -38,6 +38,7 @@ static const char board[] =
  * @return Zero, gdy wszystkie testy przebiegły poprawnie,
  * a w przeciwnym przypadku kod zakończenia programu jest kodem błędu.
  */
+
 int main() {
     // gamma_t* g;
 
@@ -65,9 +66,6 @@ int main() {
 
       gamma_delete(g);
 
-
-
-
       printf("%d\n", connected(elemPtr, elemPtr2));
       printf("%d\n", connected(elemPtr, elemPtr3));
       printf("%d\n\n", connected(elemPtr2, elemPtr3));
@@ -83,7 +81,7 @@ int main() {
       int xd2 = -1;
       printf("%d\n", xd + xd2 < 0);*/
 
-    gamma_t* g;
+   gamma_t* g;
 
     g = gamma_new(0, 0, 0, 0);
     assert(g == NULL);
@@ -91,26 +89,20 @@ int main() {
     g = gamma_new(10, 10, 2, 3);
     assert(g != NULL);
 
-
     assert(gamma_move(g, 1, 0, 0));
-    printf("%s\n", gamma_board(g));
     assert(gamma_busy_fields(g, 1) == 1);
     assert(gamma_busy_fields(g, 2) == 0);
     assert(gamma_free_fields(g, 1) == 99);
     assert(gamma_free_fields(g, 2) == 99);
     assert(!gamma_golden_possible(g, 1));
     assert(gamma_move(g, 2, 3, 1));
-    printf("%s\n", gamma_board(g));
     assert(gamma_busy_fields(g, 1) == 1);
     assert(gamma_busy_fields(g, 2) == 1);
     assert(gamma_free_fields(g, 1) == 98);
     assert(gamma_free_fields(g, 2) == 98);
     assert(gamma_move(g, 1, 0, 2));
-    printf("%s\n", gamma_board(g));
     assert(gamma_move(g, 1, 0, 9));
-    printf("%s\n", gamma_board(g));
     assert(!gamma_move(g, 1, 5, 5));
-    printf("%s\n", gamma_board(g));
     assert(gamma_free_fields(g, 1) == 6);
     assert(gamma_move(g, 1, 0, 1));
     assert(gamma_free_fields(g, 1) == 95);
@@ -124,6 +116,7 @@ int main() {
     assert(gamma_free_fields(g, 2) == 92);
     assert(!gamma_move(g, 2, 0, 1));
     assert(gamma_golden_possible(g, 2));
+    printf("%s", gamma_board(g));
     assert(!gamma_golden_move(g, 2, 0, 1));
     assert(gamma_golden_move(g, 2, 5, 5));
     assert(!gamma_golden_possible(g, 2));
@@ -141,9 +134,41 @@ int main() {
     char* p = gamma_board(g);
     assert(p);
     assert(strcmp(p, board) == 0);
-    printf(p);
+    printf("%s", p);
     free(p);
+
+    gamma_delete(g);
     return 0;
+
+    /*   gamma_t* g;
+
+   g = gamma_new(6, 6, 3, 5);
+     gamma_move(g, 1, 0, 0);
+     gamma_move(g, 1, 0, 1);
+     gamma_move(g, 1, 0, 2);
+     gamma_move(g, 1, 0, 3);
+     gamma_move(g, 1, 0, 4);
+     gamma_move(g, 1, 2, 0);
+     gamma_move(g, 1, 2, 1);
+     gamma_move(g, 1, 2, 2);
+     gamma_move(g, 1, 2, 3);
+     gamma_move(g, 1, 1, 1);
+     printf("%s\n", gamma_board(g)); */
+
+
+   /* StackNode_t* stackPtr = createStack(1, 3);
+    stackPtr = putLast(stackPtr, 2, 4);
+    stackPtr = putLast(stackPtr, 3, 5);
+    stackPtr = putLast(stackPtr, 4, 6);
+
+    printf("%d\n", getLast(stackPtr).x);
+    stackPtr = removeLast(stackPtr);
+    printf("%d\n", getLast(stackPtr).x);
+    stackPtr = putLast(stackPtr, 5, 6);
+    printf("%d\n", getLast(stackPtr).x);
+
+    removeStack(stackPtr); */
+
 
 
 }

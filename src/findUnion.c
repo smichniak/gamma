@@ -2,23 +2,24 @@
 #include <stdlib.h>
 
 findUnionNode_t* make_set(uint32_t player) {
-    findUnionNode_t* nodePtr = (findUnionNode_t*) malloc(sizeof(findUnionNode_t*));
+    findUnionNode_t* nodePtr = malloc(sizeof(findUnionNode_t));
     if (!nodePtr) {
         return NULL;
     }
     nodePtr->player = player;
-    nodePtr->parent = NULL;
+    nodePtr->parent = nodePtr;
     nodePtr->depth = 1;
     return nodePtr;
 }
 
 findUnionNode_t* find(findUnionNode_t* element) {
-    if (!element) return NULL;
-    findUnionNode_t* original_element = element;
-    while (element->parent != NULL)
+    //TODO
+    //necessary?
+    // if (!element) return NULL;
+    while (element->parent != element) {
+        element->parent = element->parent->parent;
         element = element->parent;
-    if (element != original_element->parent && element != original_element)
-        original_element->parent = element; //path compression
+    }
     return element;
 }
 
@@ -37,5 +38,5 @@ void merge(findUnionNode_t* a, findUnionNode_t* b) {
 }
 
 bool connected(findUnionNode_t* a, findUnionNode_t* b) {
-    return find(a) == find(b);
+    return a && b && find(a) == find(b);
 }
