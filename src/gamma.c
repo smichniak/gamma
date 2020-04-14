@@ -119,6 +119,7 @@ int playerAdjacent(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         samePlayerAdjacent += x2 != MAX_INT32 && x2 < g->width && y2 < g->height &&
                               g->board[x2][y2] && g->board[x2][y2]->player == player;
     }
+    free(adjacent);
     return samePlayerAdjacent;
 }
 
@@ -196,7 +197,10 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y) {
         return true;
     }
     uint32_t player = g->board[x][y]->player;
-    findUnionNode_t* startPtr = make_set(g->board[x][y]->player);
+ /*   findUnionNode_t* startPtr = make_set(g->board[x][y]->player);
+    free(g->board[x][y]);
+    g->board[x][y]=startPtr; */
+
     StackNode_t* stackPtr = createStack(x, y);
 
     while (!isEmpty(stackPtr)) {
@@ -218,7 +222,7 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y) {
         }
 
         g->board[currentX][currentY] = field;
-        merge(startPtr, field);
+        merge(g->board[x][y], field);
 
         for (int i = 0; i < 4; ++i) {
             uint32_t x2 = adjacent[i].x;
@@ -233,6 +237,7 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y) {
                 stackPtr = newLast;
             }
         }
+        free(adjacent);
 
     }
     return true;
@@ -259,7 +264,8 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     }
 //For memory errors
     //  findUnionNode_t* temp = g->board[x][y];
-    g->board[x][y] = NULL;
+    free(g->board[x][y]);
+    g->board[x][y] = calloc(sizeof(findUnionNode_t), 1);
     g->freeFields++;
     g->busyFields[busyPlayer]--;
 
@@ -319,8 +325,10 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
             }
         }
     }
+
     g->playerAreas[busyPlayer] += newAreas;
     if (g->playerAreas[busyPlayer] > g->areas) {
+        free(adjacent);
         gamma_move(g, busyPlayer, x, y);
         return false;
     } else {
@@ -329,8 +337,9 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         int freeAdjacentFields = freeAdjacent(g, busyPlayer, adjacent);
         int samePlayerAdjacent = playerAdjacent(g, x, y, busyPlayer);
         g->freeAdjacentFields[busyPlayer] -= freeAdjacentFields - (samePlayerAdjacent > 0);
-
         g->goldenMoves[player] = true;
+
+        free(adjacent);
         gamma_move(g, player, x, y);
         return true;
     }
