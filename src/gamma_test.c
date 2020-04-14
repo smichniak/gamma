@@ -12,14 +12,16 @@
 #endif
 
 #include "gamma.h"
+#include "findUnion.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+
 /**
- * Tak ma wyglądać plansza po wykonaniu wszystkich testów.
- */
+* Tak ma wyglądać plansza po wykonaniu wszystkich testów.
+*/
 static const char board[] =
         "1.........\n"
         "..........\n"
@@ -38,27 +40,15 @@ static const char board[] =
  * a w przeciwnym przypadku kod zakończenia programu jest kodem błędu.
  */
 int main() {
-    gamma_t* g;
+    gamma_t *g;
 
-   // g = gamma_new(0, 0, 0, 0);
-    //assert(g == NULL);
+    g = gamma_new(0, 0, 0, 0);
+    assert(g == NULL);
 
-    g = gamma_new(3, 2, 10, 3);
+    g = gamma_new(10, 10, 2, 3);
     assert(g != NULL);
 
-    g->board[1][0] = 5;
-    g->board[1][1] = 1;
-    g->board[2][1] = 2;
-
-    char* boardString = gamma_board(g);
-    printf("%s", boardString);
-    free(boardString);
-
-    gamma_delete(g);
-
-    return 0;
-
-   /* assert(gamma_move(g, 1, 0, 0));
+    assert(gamma_move(g, 1, 0, 0));
     assert(gamma_busy_fields(g, 1) == 1);
     assert(gamma_busy_fields(g, 2) == 0);
     assert(gamma_free_fields(g, 1) == 99);
@@ -99,11 +89,13 @@ int main() {
     assert(gamma_busy_fields(g, 2) == 4);
     assert(gamma_free_fields(g, 2) == 10);
 
-    char* p = gamma_board(g);
+    char *p = gamma_board(g);
     assert(p);
     assert(strcmp(p, board) == 0);
-    printf(p);
+    printf("%s", p);
     free(p);
-*/
 
+    gamma_delete(g);
+    return 0;
 }
+
