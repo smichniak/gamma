@@ -457,7 +457,7 @@ char* gamma_board(gamma_t* g) {
     }
     size_t stringIndex = 0;
 
-    for (uint32_t row = g->height - 1; row >= 0 && row <= g->height; row--) {
+    for (uint32_t row = g->height - 1; row <= g->height; row--) {
         for (uint32_t column = 0; column < g->width; ++column) {
 
             uint32_t player;
