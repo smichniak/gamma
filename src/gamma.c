@@ -251,7 +251,7 @@ bool fixArea(gamma_t* g, uint32_t x, uint32_t y) {
 
 bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     if (!g || player < 1 || player > g->players || x >= g->width || y >= g->height || g->goldenMoves[player] ||
-        !g->board[x][y] || (g->playerAreas[player] == g->areas && !playerAdjacent(g, player, x, y))) {
+        !g->board[x][y] || g->board[x][y]->player == player || (g->playerAreas[player] == g->areas && !playerAdjacent(g, player, x, y))) {
         return false;
     }
 
@@ -262,11 +262,8 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     if (!adjacent) {
         return false;
     }
-//For memory errors
 
-    //  g->board[x][y] = calloc(1, sizeof(findUnionNode_t));
     g->board[x][y]->player = 0;
-    //g->board[x][y] = NULL;
 
     g->freeFields++;
     g->busyFields[busyPlayer]--;
