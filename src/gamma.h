@@ -9,7 +9,6 @@
 #ifndef GAMMA_H
 #define GAMMA_H
 
-#include <stdint.h>
 #include "findUnion.h"
 
 /**

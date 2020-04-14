@@ -147,6 +147,8 @@ bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
 
     bool samePlayerAdjacent = false;
 
+    uint32_t alreadyCounted[4] = {0, 0, 0, 0};
+
     Tuple* adjacent = getAdjacent(g, x, y);
     if (!adjacent) {
         return false;
@@ -170,8 +172,11 @@ bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
                     newArea--;
                     samePlayerAdjacent = true;
                 }
-            } else {
+            } else if (alreadyCounted[0] != g->board[x2][y2]->player && alreadyCounted[1] != g->board[x2][y2]->player &&
+                       alreadyCounted[2] != g->board[x2][y2]->player && alreadyCounted[3] != g->board[x2][y2]->player) {
+
                 g->freeAdjacentFields[g->board[x2][y2]->player]--;
+                alreadyCounted[i] = g->board[x2][y2]->player;
             }
         }
     }
@@ -186,7 +191,7 @@ bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     return true;
 }
 
-bool dfs(gamma_t* g, uint32_t x, uint32_t y, bool freeArea) {
+bool dfs(gamma_t* g, uint32_t x, uint32_t y) {
     if (!g->board[x][y]) {
         return true;
     }
@@ -203,18 +208,18 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, bool freeArea) {
         if (!adjacent) {
             return false;
         }
-        if (freeArea) {
-            free(startPtr);
-            free(g->board[currentX][currentY]);
-            g->board[currentX][currentY] = NULL;
-        } else {
-            findUnionNode_t* field = make_set(player);
-            if (!field) {
-                return false;
-            }
-            g->board[currentX][currentY] = field;
-            merge(startPtr, field);
+
+
+        free(g->board[currentX][currentY]);
+
+        findUnionNode_t* field = make_set(player);
+        if (!field) {
+            return false;
         }
+
+        g->board[currentX][currentY] = field;
+        merge(startPtr, field);
+
         for (int i = 0; i < 4; ++i) {
             uint32_t x2 = adjacent[i].x;
             uint32_t y2 = adjacent[i].y;
@@ -234,10 +239,8 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, bool freeArea) {
 }
 
 bool fixArea(gamma_t* g, uint32_t x, uint32_t y) {
-    if (!dfs(g, x, y, true)) {
-        return false;
-    }
-    return dfs(g, x, y, false);
+    dfs(g, x, y);
+    return true;
 }
 
 
@@ -249,6 +252,7 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
 
     uint32_t busyPlayer = g->board[x][y]->player;
     Tuple* adjacent = getAdjacent(g, x, y);
+    int newAreas = playerAdjacent(g, busyPlayer, x, y) - 1;
 
     if (!adjacent) {
         return false;
@@ -266,11 +270,15 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
             //TODO
             //Check for memory errors
             fixArea(g, x2, y2);
+
         }
     }
-    int newAreas = playerAdjacent(g, busyPlayer, x, y);
+
 
     uint32_t alreadyCounted[4] = {0, 0, 0, 0};
+
+    //TODO
+    //Count new areas for adajacent players, not the old one
 
     for (int i = 0; i < 4; ++i) {
         uint32_t xi = adjacent[i].x;
@@ -289,7 +297,8 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
 
                 uint32_t xj = adjacent[j].x;
                 uint32_t yj = adjacent[j].y;
-                if (xj != MAX_INT32 && g->board[xj][yj] && connected(g->board[xi][yi], g->board[xj][yj])) {
+                if (xj != MAX_INT32 && g->board[xj][yj] && g->board[xj][yj]->player == busyPlayer &&
+                    connected(g->board[xi][yi], g->board[xj][yj])) {
                     newAreas--;
                     for (int k = j + 1; k < 4; ++k) {
                         uint32_t xk = adjacent[k].x;
@@ -317,13 +326,16 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     } else {
         //TODO
         //Memoery errors
+        int freeAdjacentFields = freeAdjacent(g, busyPlayer, adjacent);
+        int samePlayerAdjacent = playerAdjacent(g, x, y, busyPlayer);
+        g->freeAdjacentFields[busyPlayer] -= freeAdjacentFields - (samePlayerAdjacent > 0);
+
         g->goldenMoves[player] = true;
         gamma_move(g, player, x, y);
         return true;
     }
 
 
-    return true;
 
 }
 
@@ -454,4 +466,3 @@ char* gamma_board(gamma_t* g) {
     boardString[stringIndex] = '\0';
     return boardString;
 }
-

@@ -2,7 +2,6 @@
 #define GAMMA_FINDUNION_H
 
 #include "stack.h"
-#include "stdbool.h"
 
 typedef struct findUnionNode findUnionNode_t;
 

@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const int INITIAL_STACK_SIZE = 16;
-
 struct stackNode {
     uint32_t x;
     uint32_t y;
