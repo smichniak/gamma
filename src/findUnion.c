@@ -15,7 +15,7 @@ findUnionNode_t* make_set(uint32_t player) {
 findUnionNode_t* find(findUnionNode_t* element) {
     //TODO
     //necessary?
-    // if (!element) return NULL;
+    //if (!element) return NULL;
     while (element->parent != element) {
         element->parent = element->parent->parent;
         element = element->parent;

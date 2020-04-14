@@ -19,7 +19,7 @@ set(CMAKE_C_FLAGS "-std=c11 -Wall -Wextra")
 # set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")
 # set(CMAKE_C_FLAGS_DEBUG "-g")
 
-set(TEST_FILE="src/gamma_test.c")
+set(TEST_FILE "src/gamma_test.c")
 
 # Wskazujemy pliki źródłowe.
 set(SOURCE_FILES

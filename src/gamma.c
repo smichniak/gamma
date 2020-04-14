@@ -197,9 +197,9 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y) {
         return true;
     }
     uint32_t player = g->board[x][y]->player;
- /*   findUnionNode_t* startPtr = make_set(g->board[x][y]->player);
-    free(g->board[x][y]);
-    g->board[x][y]=startPtr; */
+    /*   findUnionNode_t* startPtr = make_set(g->board[x][y]->player);
+       free(g->board[x][y]);
+       g->board[x][y]=startPtr; */
 
     StackNode_t* stackPtr = createStack(x, y);
 
@@ -263,11 +263,14 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         return false;
     }
 //For memory errors
-    //  findUnionNode_t* temp = g->board[x][y];
-    free(g->board[x][y]);
-    g->board[x][y] = calloc(sizeof(findUnionNode_t), 1);
+
+    //  g->board[x][y] = calloc(1, sizeof(findUnionNode_t));
+    g->board[x][y]->player = 0;
+    //g->board[x][y] = NULL;
+
     g->freeFields++;
     g->busyFields[busyPlayer]--;
+
 
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
@@ -285,6 +288,8 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
 
     //TODO
     //Count new areas for adajacent players, not the old one
+
+
 
     for (int i = 0; i < 4; ++i) {
         uint32_t xi = adjacent[i].x;
@@ -326,6 +331,10 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         }
     }
 
+    free(g->board[x][y]);
+    g->board[x][y] = NULL;
+
+
     g->playerAreas[busyPlayer] += newAreas;
     if (g->playerAreas[busyPlayer] > g->areas) {
         free(adjacent);
@@ -343,7 +352,6 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         gamma_move(g, player, x, y);
         return true;
     }
-
 
 
 }

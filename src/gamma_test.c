@@ -20,8 +20,8 @@
 
 
 /**
-* Tak ma wyglądać plansza po wykonaniu wszystkich testów.
-*/
+ * Tak ma wyglądać plansza po wykonaniu wszystkich testów.
+ */
 static const char board[] =
         "1.........\n"
         "..........\n"
@@ -98,4 +98,3 @@ int main() {
     gamma_delete(g);
     return 0;
 }
-
