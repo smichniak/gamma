@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 /**
  * Tak ma wyglądać plansza po wykonaniu wszystkich testów.
  */

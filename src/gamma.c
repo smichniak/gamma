@@ -333,19 +333,18 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
 
 
     g->playerAreas[busyPlayer] += newAreas;
+    int freeAdjacentFields = freeAdjacent(g, busyPlayer, adjacent);
+    g->freeAdjacentFields[busyPlayer] -= freeAdjacentFields;
+    free(adjacent);
+
     if (g->playerAreas[busyPlayer] > g->areas) {
-        free(adjacent);
         gamma_move(g, busyPlayer, x, y);
         return false;
     } else {
         //TODO
         //Memoery errors
-        int freeAdjacentFields = freeAdjacent(g, busyPlayer, adjacent);
-        int samePlayerAdjacent = playerAdjacent(g, x, y, busyPlayer);
-        g->freeAdjacentFields[busyPlayer] -= freeAdjacentFields - (samePlayerAdjacent > 0);
         g->goldenMoves[player] = true;
 
-        free(adjacent);
         gamma_move(g, player, x, y);
         return true;
     }
@@ -440,6 +439,8 @@ size_t addToBoard(uint32_t player, size_t stringIndex, char* boardString) {
     return stringIndex;
 }
 
+//TODO
+//No [], sth different
 char* gamma_board(gamma_t* g) {
     if (!g) {
         return NULL;
