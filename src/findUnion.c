@@ -16,11 +16,11 @@ findUnionNode_t* find(findUnionNode_t* element) {
     //TODO
     //necessary?
     //if (!element) return NULL;
-    while (element->parent != element) {
-        element->parent = element->parent->parent;
-        element = element->parent;
+    if (element->parent != element) {
+        element->parent = find(element->parent);
+
     }
-    return element;
+    return element->parent;
 }
 
 void merge(findUnionNode_t* a, findUnionNode_t* b) {
@@ -39,4 +39,8 @@ void merge(findUnionNode_t* a, findUnionNode_t* b) {
 
 bool connected(findUnionNode_t* a, findUnionNode_t* b) {
     return a && b && find(a) == find(b);
+}
+
+bool isRoot(findUnionNode_t* a) {
+    return find(a) == a;
 }

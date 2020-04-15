@@ -22,4 +22,6 @@ void merge(findUnionNode_t* a, findUnionNode_t* b);
 
 bool connected(findUnionNode_t* a, findUnionNode_t* b);
 
+bool isRoot(findUnionNode_t* a);
+
 #endif //GAMMA_FINDUNION_H

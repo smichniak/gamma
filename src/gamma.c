@@ -18,8 +18,7 @@ gamma_t* gamma_new(uint32_t width, uint32_t height,
     if (width < 1 || height < 1 || players < 1 || areas < 1) {
         return NULL;
     }
-    gamma_t* newGammaPtr;
-    newGammaPtr = malloc(sizeof(gamma_t));
+    gamma_t* newGammaPtr = malloc(sizeof(gamma_t));
 
     if (!newGammaPtr) {
         return NULL;
@@ -192,14 +191,11 @@ bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     return true;
 }
 
-bool dfs(gamma_t* g, uint32_t x, uint32_t y) {
+bool dfs(gamma_t* g, uint32_t x, uint32_t y, int* rootsPtr) {
     if (!g->board[x][y]) {
         return true;
     }
     uint32_t player = g->board[x][y]->player;
-    /*   findUnionNode_t* startPtr = make_set(g->board[x][y]->player);
-       free(g->board[x][y]);
-       g->board[x][y]=startPtr; */
 
     StackNode_t* stackPtr = createStack(x, y);
 
@@ -213,8 +209,13 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y) {
             return false;
         }
 
+        if (isRoot(g->board[currentX][currentY])) {
+            (*rootsPtr)++;
+        } else {
 
-        free(g->board[currentX][currentY]);
+            free(g->board[currentX][currentY]);
+            //  g->board[currentX][currentY] = NULL;
+        }
 
         findUnionNode_t* field = make_set(player);
         if (!field) {
@@ -243,17 +244,21 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y) {
     return true;
 }
 
-bool fixArea(gamma_t* g, uint32_t x, uint32_t y) {
-    dfs(g, x, y);
+bool fixArea(gamma_t* g, uint32_t x, uint32_t y, int* rootsPtr) {
+    dfs(g, x, y, rootsPtr);
     return true;
 }
 
 
 bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     if (!g || player < 1 || player > g->players || x >= g->width || y >= g->height || g->goldenMoves[player] ||
-        !g->board[x][y] || g->board[x][y]->player == player || (g->playerAreas[player] == g->areas && !playerAdjacent(g, player, x, y))) {
+        !g->board[x][y] || g->board[x][y]->player == player ||
+        (g->playerAreas[player] == g->areas && !playerAdjacent(g, player, x, y))) {
         return false;
     }
+
+    int roots = 0;
+    int* rootsPtr = &roots;
 
     uint32_t busyPlayer = g->board[x][y]->player;
     Tuple* adjacent = getAdjacent(g, x, y);
@@ -275,7 +280,7 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         if (x2 != MAX_INT32 && g->board[x2][y2] && g->board[x2][y2]->player == busyPlayer) {
             //TODO
             //Check for memory errors
-            fixArea(g, x2, y2);
+            fixArea(g, x2, y2, rootsPtr);
 
         }
     }
@@ -327,6 +332,8 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
             }
         }
     }
+
+    printf("%d", roots);
 
     free(g->board[x][y]);
     g->board[x][y] = NULL;

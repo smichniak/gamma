@@ -21,17 +21,6 @@
 /**
  * Tak ma wyglądać plansza po wykonaniu wszystkich testów.
  */
-static const char board[] =
-        "1.........\n"
-        "..........\n"
-        "..........\n"
-        "......2...\n"
-        ".....2....\n"
-        "..........\n"
-        "..........\n"
-        "1.........\n"
-        "1221......\n"
-        "1.........\n";
 
 /** @brief Testuje silnik gry gamma.
  * Przeprowadza przykładowe testy silnika gry gamma.
@@ -39,61 +28,97 @@ static const char board[] =
  * a w przeciwnym przypadku kod zakończenia programu jest kodem błędu.
  */
 int main() {
-    gamma_t *g;
+    gamma_t* board = gamma_new(4, 6, 2, 3);
+    assert( board != NULL );
 
-    g = gamma_new(0, 0, 0, 0);
-    assert(g == NULL);
 
-    g = gamma_new(10, 10, 2, 3);
-    assert(g != NULL);
+    assert( gamma_move(board, 1, 5, 2) == 0 );
+    assert( gamma_move(board, 2, 0, 1) == 1 );
+    assert( gamma_move(board, 1, 3, 0) == 1 );
+    assert( gamma_move(board, 2, 2, 3) == 1 );
+    assert( gamma_free_fields(board, 1) == 21 );
+    assert( gamma_move(board, 1, 2, 3) == 0 );
+    assert( gamma_move(board, 2, 0, 2) == 1 );
+    assert( gamma_move(board, 1, 2, 0) == 1 );
+    assert( gamma_move(board, 2, 1, 1) == 1 );
+    assert( gamma_move(board, 1, 2, 0) == 0 );
+    assert( gamma_move(board, 2, 5, 3) == 0 );
+    assert( gamma_move(board, 2, 0, 0) == 1 );
+    assert( gamma_busy_fields(board, 2) == 5 );
+    assert( gamma_move(board, 1, 5, 1) == 0 );
+    assert( gamma_move(board, 1, 0, 1) == 0 );
+    assert( gamma_golden_possible(board, 1) == 1 );
+    assert( gamma_move(board, 2, 0, 3) == 1 );
+    assert( gamma_move(board, 2, 0, 5) == 1 );
+    assert( gamma_move(board, 1, 1, 5) == 1 );
+    assert( gamma_move(board, 1, 1, 4) == 1 );
+    assert( gamma_move(board, 2, 5, 3) == 0 );
+    assert( gamma_move(board, 1, 2, 1) == 1 );
+    assert( gamma_move(board, 2, 2, 1) == 0 );
+    assert( gamma_move(board, 1, 2, 3) == 0 );
+    assert( gamma_move(board, 1, 3, 4) == 1 );
+    assert( gamma_move(board, 2, 2, 1) == 0 );
+    assert( gamma_move(board, 2, 2, 5) == 0 );
+    assert( gamma_golden_possible(board, 2) == 1 );
+    assert( gamma_move(board, 1, 4, 0) == 0 );
+    assert( gamma_move(board, 2, 4, 2) == 0 );
+    assert( gamma_move(board, 1, 2, 4) == 1 );
+    assert( gamma_move(board, 1, 2, 4) == 0 );
+    assert( gamma_busy_fields(board, 1) == 7 );
+    assert( gamma_move(board, 2, 4, 0) == 0 );
+    assert( gamma_move(board, 2, 0, 0) == 0 );
+    assert( gamma_move(board, 1, 5, 3) == 0 );
+    assert( gamma_move(board, 1, 2, 3) == 0 );
+    assert( gamma_free_fields(board, 2) == 6 );
+    assert( gamma_move(board, 1, 0, 0) == 0 );
+    assert( gamma_move(board, 1, 3, 5) == 1 );
+    assert( gamma_move(board, 2, 2, 5) == 0 );
+    assert( gamma_move(board, 1, 2, 2) == 1 );
+    assert( gamma_move(board, 2, 1, 2) == 1 );
+    assert( gamma_move(board, 2, 2, 4) == 0 );
+    assert( gamma_move(board, 1, 3, 3) == 1 );
+    assert( gamma_move(board, 1, 3, 5) == 0 );
+    assert( gamma_move(board, 2, 3, 1) == 0 );
+    assert( gamma_move(board, 2, 0, 5) == 0 );
+    assert( gamma_move(board, 1, 2, 0) == 0 );
+    assert( gamma_move(board, 1, 1, 3) == 1 );
+    char* b = gamma_board(board);
+    printf("%s", b);
+    free(b);
+    assert( gamma_golden_move(board, 1, 0, 0) == 1 );
 
-    assert(gamma_move(g, 1, 0, 0));
-    assert(gamma_busy_fields(g, 1) == 1);
-    assert(gamma_busy_fields(g, 2) == 0);
-    assert(gamma_free_fields(g, 1) == 99);
-    assert(gamma_free_fields(g, 2) == 99);
-    assert(!gamma_golden_possible(g, 1));
-    assert(gamma_move(g, 2, 3, 1));
-    assert(gamma_busy_fields(g, 1) == 1);
-    assert(gamma_busy_fields(g, 2) == 1);
-    assert(gamma_free_fields(g, 1) == 98);
-    assert(gamma_free_fields(g, 2) == 98);
-    assert(gamma_move(g, 1, 0, 2));
-    assert(gamma_move(g, 1, 0, 9));
-    assert(!gamma_move(g, 1, 5, 5));
-    assert(gamma_free_fields(g, 1) == 6);
-    assert(gamma_move(g, 1, 0, 1));
-    assert(gamma_free_fields(g, 1) == 95);
-    assert(gamma_move(g, 1, 5, 5));
-    assert(!gamma_move(g, 1, 6, 6));
-    assert(gamma_busy_fields(g, 1) == 5);
-    assert(gamma_free_fields(g, 1) == 10);
-    assert(gamma_move(g, 2, 2, 1));
-    assert(gamma_move(g, 2, 1, 1));
-    assert(gamma_free_fields(g, 1) == 9);
-    assert(gamma_free_fields(g, 2) == 92);
-    assert(!gamma_move(g, 2, 0, 1));
-    assert(gamma_golden_possible(g, 2));
-    assert(!gamma_golden_move(g, 2, 0, 1));
-    assert(gamma_golden_move(g, 2, 5, 5));
-    assert(!gamma_golden_possible(g, 2));
-    assert(gamma_move(g, 2, 6, 6));
-    assert(gamma_busy_fields(g, 1) == 4);
-    assert(gamma_free_fields(g, 1) == 91);
-    assert(gamma_busy_fields(g, 2) == 5);
-    assert(gamma_free_fields(g, 2) == 13);
-    assert(gamma_golden_move(g, 1, 3, 1));
-    assert(gamma_busy_fields(g, 1) == 5);
-    assert(gamma_free_fields(g, 1) == 8);
-    assert(gamma_busy_fields(g, 2) == 4);
-    assert(gamma_free_fields(g, 2) == 10);
 
-    char *p = gamma_board(g);
-    assert(p);
-    assert(strcmp(p, board) == 0);
-    printf("%s", p);
-    free(p);
+  /*  assert( gamma_move(board, 2, 2, 3) == 0 );
+    assert( gamma_move(board, 2, 3, 1) == 0 );
+    assert( gamma_move(board, 1, 2, 3) == 0 );
+    assert( gamma_busy_fields(board, 1) == 12 );
+    assert( gamma_free_fields(board, 1) == 5 );
+    assert( gamma_move(board, 2, 5, 2) == 0 );
+    assert( gamma_move(board, 2, 0, 4) == 1 );
+    assert( gamma_move(board, 1, 2, 1) == 0 );
+    assert( gamma_golden_possible(board, 1) == 0 );
+    assert( gamma_move(board, 2, 1, 3) == 0 );
+    assert( gamma_move(board, 2, 1, 4) == 0 );
+    assert( gamma_move(board, 1, 3, 0) == 0 );
+    assert( gamma_move(board, 2, 2, 3) == 0 );
+    assert( gamma_busy_fields(board, 2) == 8 );
+    assert( gamma_move(board, 1, 2, 3) == 0 );
+    assert( gamma_move(board, 1, 2, 5) == 1 );
+    assert( gamma_golden_possible(board, 1) == 0 );
+    assert( gamma_move(board, 2, 1, 3) == 0 );
+    assert( gamma_move(board, 2, 2, 4) == 0 );
+    assert( gamma_golden_possible(board, 2) == 1 );
+    assert( gamma_move(board, 1, 0, 4) == 0 );
+    assert( gamma_move(board, 2, 0, 1) == 0 );
+    assert( gamma_move(board, 2, 0, 3) == 0 );
+    assert( gamma_golden_possible(board, 2) == 1 );
+    assert( gamma_move(board, 1, 2, 1) == 0 );
+    assert( gamma_move(board, 1, 1, 5) == 0 );
+    assert( gamma_golden_possible(board, 1) == 0 );
+    assert( gamma_move(board, 2, 1, 4) == 0 ); */
 
-    gamma_delete(g);
+
+    gamma_delete(board);
+
     return 0;
 }
