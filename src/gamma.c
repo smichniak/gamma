@@ -2,18 +2,6 @@
 #include "findUnion.h"
 #include <string.h>
 
-typedef struct gamma {
-    uint32_t width;
-    uint32_t height;
-    uint32_t players;
-    uint32_t areas;
-    uint64_t freeFields;
-    uint64_t* busyFields;
-    uint64_t* freeAdjacentFields;
-    uint32_t* playerAreas;
-    bool* goldenMoves;
-    findUnionNode_t*** board;
-} gamma_t;
 
 gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t areas) {
     if (width < 1 || height < 1 || players < 1 || areas < 1) {
@@ -30,20 +18,11 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
     newGammaPtr->areas = areas;
     newGammaPtr->freeFields = width * height;
 
-    uint64_t* busyFields;
-    busyFields = calloc((players + 1), sizeof(uint64_t));
-
-    uint64_t* freeAdjacentFields;
-    freeAdjacentFields = calloc((players + 1), sizeof(uint64_t));
-
-    uint32_t* playerAreas;
-    playerAreas = calloc((players + 1), sizeof(uint32_t));
-
-    bool* goldenMoves;
-    goldenMoves = calloc((players + 1), sizeof(bool));
-
-    findUnionNode_t*** board;
-    board = calloc(width * (height + 1), sizeof(findUnionNode_t*));
+    uint64_t* busyFields = calloc((players + 1), sizeof(uint64_t));
+    uint64_t* freeAdjacentFields = calloc((players + 1), sizeof(uint64_t));
+    uint32_t* playerAreas = calloc((players + 1), sizeof(uint32_t));
+    bool* goldenMoves = calloc((players + 1), sizeof(bool));
+    findUnionNode_t*** board = calloc(width * (height + 1), sizeof(findUnionNode_t*));
 
     if (!busyFields || !freeAdjacentFields || !playerAreas || !goldenMoves || !board) {
         return NULL;
@@ -53,9 +32,8 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
     newGammaPtr->playerAreas = playerAreas;
     newGammaPtr->goldenMoves = goldenMoves;
 
-    findUnionNode_t** columnPtr;
     // columnPtr is now pointing to the first element in of 2D array
-    columnPtr = (findUnionNode_t**) (board + width);
+    findUnionNode_t** columnPtr = (findUnionNode_t**) (board + width);
 
     // for loop to point column pointer to appropriate location in 2D array
     for (uint32_t i = 0; i < width; ++i) {
@@ -83,8 +61,7 @@ void gamma_delete(gamma_t* g) {
 
 Tuple* getAdjacent(gamma_t* g, uint32_t x, uint32_t y) {
     Tuple* adjacent;
-    adjacent = calloc(sizeof(Tuple), 4);
-
+    adjacent = calloc(4, sizeof(Tuple));
     if (!adjacent) {
         return NULL;
     }
@@ -93,8 +70,6 @@ Tuple* getAdjacent(gamma_t* g, uint32_t x, uint32_t y) {
     for (int dx = -1; dx <= 1; ++dx) {
         for (int dy = -1; dy <= 1; ++dy) {
             if ((dx + dy) % 2 != 0) {
-                //TODO
-                //Possible error, x + dx possibly < 0
                 if (x + dx < g->width && y + dy < g->height) {
                     adjacent[index] = createTuple(x + dx, y + dy);
                 } else {
@@ -105,19 +80,17 @@ Tuple* getAdjacent(gamma_t* g, uint32_t x, uint32_t y) {
             }
         }
     }
-
     return adjacent;
 }
 
-int playerAdjacent(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
+int adjacentWithPLayer(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     int samePlayerAdjacent = 0;
     Tuple* adjacent = getAdjacent(g, x, y);
 
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
-        samePlayerAdjacent += x2 != MAX_INT32 && x2 < g->width && y2 < g->height &&
-                              g->board[x2][y2] && g->board[x2][y2]->player == player;
+        samePlayerAdjacent += x2 != MAX_INT32 && g->board[x2][y2] && g->board[x2][y2]->player == player;
     }
     free(adjacent);
     return samePlayerAdjacent;
@@ -130,7 +103,7 @@ int freeAdjacent(gamma_t* g, uint32_t player, Tuple* adjacent) {
         uint32_t y2 = adjacent[i].y;
         if (x2 != MAX_INT32 && !g->board[x2][y2]) {
             freeAdjacentCount++;
-            if (playerAdjacent(g, player, x2, y2)) {
+            if (adjacentWithPLayer(g, player, x2, y2)) {
                 freeAdjacentCount--;
             }
 
@@ -143,7 +116,7 @@ int freeAdjacent(gamma_t* g, uint32_t player, Tuple* adjacent) {
 bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     if (!g || player < 1 || player > g->players || x >= g->width || y >= g->height ||
         g->board[x][y] ||
-        (g->playerAreas[player] == g->areas && !playerAdjacent(g, player, x, y))) {
+        (g->playerAreas[player] == g->areas && !adjacentWithPLayer(g, player, x, y))) {
         return false;
     }
 
@@ -217,12 +190,9 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** roots, int* rootI
             return false;
         }
 
-        if (isRoot(g->board[currentX][currentY])) {
-            roots[*rootIndexPtr] = g->board[currentX][currentY];
-            (*rootIndexPtr)++;
-        } else {
-            free(g->board[currentX][currentY]);
-        }
+        roots[*rootIndexPtr] = g->board[currentX][currentY];
+        (*rootIndexPtr)++;
+
 
         findUnionNode_t* field = makeSet(player);
         if (!field) {
@@ -260,18 +230,21 @@ bool fixArea(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** roots, int* r
 bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     if (!g || player < 1 || player > g->players || x >= g->width || y >= g->height || g->goldenMoves[player] ||
         !g->board[x][y] || g->board[x][y]->player == player ||
-        (g->playerAreas[player] == g->areas && !playerAdjacent(g, player, x, y))) {
+        (g->playerAreas[player] == g->areas && !adjacentWithPLayer(g, player, x, y))) {
         return false;
     }
 
-    findUnionNode_t** roots = calloc(100, sizeof(findUnionNode_t*));
+    findUnionNode_t** roots = calloc(g->height * g->width, sizeof(findUnionNode_t*));
+    if (!roots) {
+        return false;
+    }
     int rootsIndex = 0;
     int* rootsIndexPtr = &rootsIndex;
 
 
     uint32_t busyPlayer = g->board[x][y]->player;
     Tuple* adjacent = getAdjacent(g, x, y);
-    int newAreas = playerAdjacent(g, busyPlayer, x, y) - 1;
+    int newAreas = adjacentWithPLayer(g, busyPlayer, x, y) - 1;
 
     if (!adjacent) {
         return false;

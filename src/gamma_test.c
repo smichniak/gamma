@@ -22,505 +22,885 @@ int main() {
 
 /*
 scenario: test_random_actions
-uuid: 183019027
+uuid: 136904063
 */
 /*
 random actions, total chaos
 */
-    gamma_t* board = gamma_new(13, 8, 4, 10);
-    assert(board != NULL);
+    gamma_t* board = gamma_new(9, 14, 6, 20);
+    assert( board != NULL );
 
 
-    assert(gamma_move(board, 1, 10, 6) == 1);
-    assert(gamma_move(board, 2, 7, 4) == 1);
-    assert(gamma_move(board, 2, 8, 1) == 1);
-    assert(gamma_move(board, 3, 3, 12) == 0);
-    assert(gamma_move(board, 3, 12, 4) == 1);
-    assert(gamma_move(board, 4, 4, 0) == 1);
-    assert(gamma_move(board, 1, 0, 9) == 0);
-    assert(gamma_move(board, 2, 1, 5) == 1);
-    assert(gamma_move(board, 2, 12, 7) == 1);
-    assert(gamma_busy_fields(board, 2) == 4);
-    assert(gamma_move(board, 3, 7, 11) == 0);
+    assert( gamma_move(board, 1, 5, 3) == 1 );
+    assert( gamma_move(board, 2, 9, 8) == 0 );
+    assert( gamma_move(board, 2, 1, 1) == 1 );
+    assert( gamma_move(board, 3, 3, 1) == 1 );
+    assert( gamma_move(board, 4, 12, 1) == 0 );
 
 
-    char* board140786974 = gamma_board(board);
-    assert(board140786974 != NULL);
-    assert(strcmp(board140786974,
-                  "............2\n"
-                  "..........1..\n"
-                  ".2...........\n"
-                  ".......2....3\n"
-                  ".............\n"
-                  ".............\n"
-                  "........2....\n"
-                  "....4........\n") == 0);
-    free(board140786974);
-    board140786974 = NULL;
-    assert(gamma_move(board, 4, 5, 6) == 1);
-    assert(gamma_move(board, 4, 10, 6) == 0);
-    assert(gamma_golden_possible(board, 4) == 1);
-    assert(gamma_move(board, 1, 7, 3) == 1);
-    assert(gamma_golden_possible(board, 1) == 1);
-    assert(gamma_move(board, 2, 1, 4) == 1);
-    assert(gamma_free_fields(board, 2) == 94);
-    assert(gamma_move(board, 3, 10, 2) == 1);
-    assert(gamma_move(board, 4, 4, 8) == 0);
-    assert(gamma_move(board, 1, 4, 11) == 0);
-    assert(gamma_move(board, 2, 9, 4) == 1);
-    assert(gamma_move(board, 2, 12, 6) == 1);
-    assert(gamma_busy_fields(board, 2) == 7);
-    assert(gamma_move(board, 3, 7, 2) == 1);
+    char* board418963378 = gamma_board(board);
+    assert( board418963378 != NULL );
+    assert( strcmp(board418963378,
+                   ".........\n"
+                   ".........\n"
+                   ".........\n"
+                   ".........\n"
+                   ".........\n"
+                   ".........\n"
+                   ".........\n"
+                   ".........\n"
+                   ".........\n"
+                   ".........\n"
+                   ".....1...\n"
+                   ".........\n"
+                   ".2.3.....\n"
+                   ".........\n") == 0);
+    free(board418963378);
+    board418963378 = NULL;
+    assert( gamma_move(board, 5, 7, 2) == 1 );
+    assert( gamma_move(board, 6, 6, 0) == 1 );
+    assert( gamma_move(board, 6, 4, 10) == 1 );
+    assert( gamma_move(board, 1, 7, 7) == 1 );
+    assert( gamma_busy_fields(board, 1) == 2 );
+    assert( gamma_move(board, 2, 2, 4) == 1 );
+    assert( gamma_move(board, 2, 5, 12) == 1 );
+    assert( gamma_move(board, 3, 1, 4) == 1 );
+    assert( gamma_move(board, 3, 5, 9) == 1 );
+    assert( gamma_free_fields(board, 3) == 115 );
+    assert( gamma_move(board, 4, 5, 2) == 1 );
+    assert( gamma_move(board, 4, 4, 12) == 1 );
+    assert( gamma_move(board, 5, 3, 7) == 1 );
+    assert( gamma_move(board, 5, 5, 4) == 1 );
+    assert( gamma_golden_possible(board, 5) == 1 );
+    assert( gamma_move(board, 6, 4, 7) == 1 );
+    assert( gamma_move(board, 6, 2, 9) == 1 );
+    assert( gamma_move(board, 1, 4, 4) == 1 );
+    assert( gamma_move(board, 1, 5, 2) == 0 );
+    assert( gamma_move(board, 2, 11, 6) == 0 );
+    assert( gamma_busy_fields(board, 2) == 3 );
+    assert( gamma_move(board, 3, 6, 7) == 1 );
+    assert( gamma_busy_fields(board, 3) == 4 );
+    assert( gamma_move(board, 4, 5, 0) == 1 );
+    assert( gamma_move(board, 5, 13, 0) == 0 );
+    assert( gamma_move(board, 6, 6, 0) == 0 );
+    assert( gamma_move(board, 1, 0, 5) == 1 );
+    assert( gamma_move(board, 2, 10, 3) == 0 );
+    assert( gamma_move(board, 3, 4, 6) == 1 );
+    assert( gamma_move(board, 4, 11, 5) == 0 );
+    assert( gamma_move(board, 5, 8, 7) == 1 );
+    assert( gamma_move(board, 6, 4, 2) == 1 );
+    assert( gamma_move(board, 6, 3, 12) == 1 );
+    assert( gamma_move(board, 1, 3, 13) == 1 );
+    assert( gamma_golden_possible(board, 1) == 1 );
+    assert( gamma_move(board, 2, 7, 2) == 0 );
+    assert( gamma_move(board, 2, 5, 5) == 1 );
+    assert( gamma_move(board, 3, 4, 1) == 1 );
+    assert( gamma_move(board, 3, 8, 12) == 1 );
+    assert( gamma_busy_fields(board, 3) == 7 );
+    assert( gamma_move(board, 4, 2, 1) == 1 );
+    assert( gamma_move(board, 4, 2, 11) == 1 );
+    assert( gamma_move(board, 5, 5, 12) == 0 );
+    assert( gamma_busy_fields(board, 5) == 4 );
+    assert( gamma_move(board, 6, 6, 3) == 1 );
+    assert( gamma_move(board, 1, 6, 1) == 1 );
+    assert( gamma_move(board, 2, 5, 7) == 1 );
+    assert( gamma_move(board, 2, 7, 9) == 1 );
+    assert( gamma_move(board, 3, 4, 7) == 0 );
+    assert( gamma_move(board, 3, 3, 4) == 1 );
+    assert( gamma_golden_possible(board, 3) == 1 );
+    assert( gamma_move(board, 4, 5, 4) == 0 );
+    assert( gamma_move(board, 4, 6, 13) == 1 );
+    assert( gamma_free_fields(board, 5) == 89 );
+    assert( gamma_move(board, 6, 0, 6) == 1 );
+    assert( gamma_free_fields(board, 6) == 88 );
 
 
-    char* board120794710 = gamma_board(board);
-    assert(board120794710 != NULL);
-    assert(strcmp(board120794710,
-                  "............2\n"
-                  ".....4....1.2\n"
-                  ".2...........\n"
-                  ".2.....2.2..3\n"
-                  ".......1.....\n"
-                  ".......3..3..\n"
-                  "........2....\n"
-                  "....4........\n") == 0);
-    free(board120794710);
-    board120794710 = NULL;
-    assert(gamma_move(board, 4, 5, 5) == 1);
-    assert(gamma_move(board, 4, 2, 3) == 1);
-    assert(gamma_move(board, 1, 9, 3) == 1);
-    assert(gamma_move(board, 2, 0, 0) == 1);
-    assert(gamma_move(board, 3, 4, 4) == 1);
-    assert(gamma_move(board, 4, 3, 6) == 1);
-    assert(gamma_move(board, 2, 8, 6) == 1);
-    assert(gamma_golden_move(board, 2, 2, 10) == 0);
-    assert(gamma_move(board, 3, 12, 4) == 0);
-    assert(gamma_move(board, 4, 4, 6) == 1);
-    assert(gamma_move(board, 4, 12, 7) == 0);
-    assert(gamma_golden_possible(board, 2) == 1);
-    assert(gamma_move(board, 3, 3, 2) == 1);
-    assert(gamma_move(board, 4, 3, 5) == 1);
-    assert(gamma_move(board, 1, 7, 10) == 0);
-    assert(gamma_move(board, 2, 6, 4) == 1);
-    assert(gamma_move(board, 3, 8, 5) == 1);
-    assert(gamma_move(board, 3, 1, 4) == 0);
-    assert(gamma_move(board, 4, 11, 3) == 1);
-    assert(gamma_move(board, 1, 3, 0) == 1);
-    assert(gamma_move(board, 2, 6, 7) == 1);
-    assert(gamma_move(board, 2, 5, 2) == 1);
-    assert(gamma_busy_fields(board, 2) == 12);
-    assert(gamma_move(board, 3, 0, 7) == 1);
-    assert(gamma_move(board, 3, 8, 0) == 1);
-    assert(gamma_move(board, 4, 4, 0) == 0);
-    assert(gamma_move(board, 4, 5, 7) == 1);
-    assert(gamma_move(board, 1, 6, 9) == 0);
-    assert(gamma_move(board, 1, 2, 4) == 1);
-    assert(gamma_free_fields(board, 1) == 70);
-    assert(gamma_move(board, 2, 0, 11) == 0);
-    assert(gamma_move(board, 2, 11, 4) == 1);
-    assert(gamma_move(board, 3, 6, 0) == 1);
-    assert(gamma_move(board, 3, 3, 3) == 1);
-    assert(gamma_move(board, 4, 0, 2) == 1);
-    assert(gamma_move(board, 4, 7, 7) == 1);
-    assert(gamma_move(board, 1, 1, 4) == 0);
-    assert(gamma_move(board, 1, 4, 7) == 1);
-    assert(gamma_move(board, 2, 3, 8) == 0);
-    assert(gamma_move(board, 3, 6, 9) == 0);
-    assert(gamma_move(board, 4, 6, 9) == 0);
-    assert(gamma_move(board, 4, 0, 3) == 1);
-    assert(gamma_move(board, 1, 12, 5) == 1);
-    assert(gamma_move(board, 1, 4, 7) == 0);
-    assert(gamma_move(board, 2, 5, 2) == 0);
+    char* board838994933 = gamma_board(board);
+    assert( board838994933 != NULL );
+    assert( strcmp(board838994933,
+                   "...1..4..\n"
+                   "...642..3\n"
+                   "..4......\n"
+                   "....6....\n"
+                   "..6..3.2.\n"
+                   ".........\n"
+                   "...562315\n"
+                   "6...3....\n"
+                   "1....2...\n"
+                   ".32315...\n"
+                   ".....16..\n"
+                   "....64.5.\n"
+                   ".2433.1..\n"
+                   ".....46..\n") == 0);
+    free(board838994933);
+    board838994933 = NULL;
+    assert( gamma_move(board, 1, 11, 1) == 0 );
+    assert( gamma_free_fields(board, 1) == 88 );
+    assert( gamma_move(board, 3, 1, 0) == 1 );
+    assert( gamma_move(board, 3, 1, 6) == 1 );
+    assert( gamma_move(board, 4, 3, 4) == 0 );
+    assert( gamma_move(board, 4, 6, 1) == 0 );
+    assert( gamma_move(board, 5, 8, 7) == 0 );
+    assert( gamma_move(board, 6, 8, 2) == 1 );
+    assert( gamma_move(board, 6, 1, 1) == 0 );
+    assert( gamma_move(board, 1, 4, 0) == 1 );
+    assert( gamma_move(board, 1, 5, 11) == 1 );
+    assert( gamma_move(board, 2, 6, 8) == 1 );
+    assert( gamma_move(board, 2, 1, 6) == 0 );
+    assert( gamma_move(board, 3, 5, 6) == 1 );
+    assert( gamma_move(board, 4, 8, 3) == 1 );
+    assert( gamma_busy_fields(board, 5) == 4 );
+    assert( gamma_move(board, 1, 8, 3) == 0 );
+    assert( gamma_move(board, 2, 5, 3) == 0 );
+    assert( gamma_move(board, 2, 4, 4) == 0 );
+    assert( gamma_move(board, 3, 6, 8) == 0 );
+    assert( gamma_move(board, 3, 8, 4) == 1 );
+    assert( gamma_move(board, 4, 8, 7) == 0 );
+    assert( gamma_move(board, 5, 10, 0) == 0 );
+    assert( gamma_move(board, 5, 8, 0) == 1 );
+    assert( gamma_free_fields(board, 5) == 78 );
+    assert( gamma_move(board, 6, 1, 7) == 1 );
+    assert( gamma_move(board, 6, 8, 0) == 0 );
 
 
-    char* board938474275 = gamma_board(board);
-    assert(board938474275 != NULL);
-    assert(strcmp(board938474275,
-                  "3...1424....2\n"
-                  "...444..2.1.2\n"
-                  ".2.4.4..3...1\n"
-                  ".21.3.22.2.23\n"
-                  "4.43...1.1.4.\n"
-                  "4..3.2.3..3..\n"
-                  "........2....\n"
-                  "2..14.3.3....\n") == 0);
-    free(board938474275);
-    board938474275 = NULL;
-    assert(gamma_move(board, 3, 5, 6) == 0);
-    assert(gamma_golden_possible(board, 3) == 1);
-    assert(gamma_move(board, 4, 7, 8) == 0);
-    assert(gamma_move(board, 4, 11, 6) == 1);
-    assert(gamma_golden_move(board, 4, 3, 9) == 0);
-    assert(gamma_move(board, 1, 2, 6) == 1);
-    assert(gamma_move(board, 1, 6, 5) == 1);
-    assert(gamma_move(board, 2, 5, 7) == 0);
-    assert(gamma_move(board, 2, 12, 3) == 0);
-    assert(gamma_move(board, 3, 2, 4) == 0);
-    assert(gamma_move(board, 3, 1, 7) == 1);
-    assert(gamma_move(board, 4, 2, 12) == 0);
-    assert(gamma_move(board, 4, 12, 5) == 0);
-    assert(gamma_move(board, 1, 5, 4) == 1);
-    assert(gamma_move(board, 3, 10, 2) == 0);
-    assert(gamma_move(board, 3, 6, 5) == 0);
-    assert(gamma_free_fields(board, 3) == 57);
-    assert(gamma_move(board, 4, 5, 4) == 0);
-    assert(gamma_move(board, 1, 1, 12) == 0);
-    assert(gamma_move(board, 2, 6, 6) == 1);
-    assert(gamma_move(board, 2, 7, 2) == 0);
-    assert(gamma_move(board, 3, 11, 2) == 1);
-    assert(gamma_move(board, 3, 9, 0) == 1);
-    assert(gamma_move(board, 4, 0, 11) == 0);
-    assert(gamma_move(board, 4, 0, 6) == 1);
-    assert(gamma_move(board, 1, 5, 10) == 0);
-    assert(gamma_move(board, 2, 1, 3) == 1);
-    assert(gamma_move(board, 3, 1, 7) == 0);
-    assert(gamma_move(board, 3, 2, 4) == 0);
-    assert(gamma_golden_move(board, 3, 3, 7) == 0);
-    assert(gamma_move(board, 4, 4, 3) == 1);
-    assert(gamma_move(board, 1, 0, 3) == 0);
-    assert(gamma_busy_fields(board, 1) == 10);
-    assert(gamma_golden_possible(board, 1) == 1);
-    assert(gamma_golden_possible(board, 2) == 1);
-    assert(gamma_move(board, 3, 0, 11) == 0);
-    assert(gamma_move(board, 4, 1, 9) == 0);
-    assert(gamma_move(board, 2, 3, 6) == 0);
-    assert(gamma_move(board, 2, 7, 7) == 0);
-    assert(gamma_move(board, 3, 8, 7) == 1);
-    assert(gamma_move(board, 4, 11, 2) == 0);
-    assert(gamma_move(board, 1, 7, 9) == 0);
-    assert(gamma_move(board, 1, 9, 0) == 0);
-    assert(gamma_free_fields(board, 2) == 23);
-    assert(gamma_move(board, 3, 1, 12) == 0);
-    assert(gamma_free_fields(board, 3) == 25);
-    assert(gamma_golden_move(board, 3, 6, 2) == 0);
+    char* board608950959 = gamma_board(board);
+    assert( board608950959 != NULL );
+    assert( strcmp(board608950959,
+                   "...1..4..\n"
+                   "...642..3\n"
+                   "..4..1...\n"
+                   "....6....\n"
+                   "..6..3.2.\n"
+                   "......2..\n"
+                   ".6.562315\n"
+                   "63..33...\n"
+                   "1....2...\n"
+                   ".32315..3\n"
+                   ".....16.4\n"
+                   "....64.56\n"
+                   ".2433.1..\n"
+                   ".3..146.5\n") == 0);
+    free(board608950959);
+    board608950959 = NULL;
+    assert( gamma_move(board, 2, 4, 5) == 1 );
+    assert( gamma_move(board, 2, 5, 8) == 1 );
+    assert( gamma_move(board, 3, 8, 7) == 0 );
+    assert( gamma_move(board, 3, 0, 11) == 1 );
+    assert( gamma_move(board, 4, 2, 12) == 1 );
 
 
-    char* board462402136 = gamma_board(board);
-    assert(board462402136 != NULL);
-    assert(strcmp(board462402136,
-                  "33..14243...2\n"
-                  "4.14442.2.142\n"
-                  ".2.4.41.3...1\n"
-                  ".21.3122.2.23\n"
-                  "42434..1.1.4.\n"
-                  "4..3.2.3..33.\n"
-                  "........2....\n"
-                  "2..14.3.33...\n") == 0);
-    free(board462402136);
-    board462402136 = NULL;
-    assert(gamma_move(board, 4, 11, 7) == 1);
-    assert(gamma_move(board, 4, 11, 0) == 1);
-    assert(gamma_free_fields(board, 4) == 22);
-    assert(gamma_golden_move(board, 4, 7, 1) == 0);
-    assert(gamma_move(board, 1, 1, 7) == 0);
-    assert(gamma_move(board, 2, 1, 4) == 0);
-    assert(gamma_move(board, 2, 0, 3) == 0);
-    assert(gamma_free_fields(board, 2) == 22);
-    assert(gamma_move(board, 3, 7, 2) == 0);
-    assert(gamma_move(board, 1, 1, 2) == 0);
-    assert(gamma_move(board, 1, 10, 2) == 0);
-    assert(gamma_move(board, 2, 2, 6) == 0);
-    assert(gamma_move(board, 2, 0, 2) == 0);
+    char* board973071442 = gamma_board(board);
+    assert( board973071442 != NULL );
+    assert( strcmp(board973071442,
+                   "...1..4..\n"
+                   "..4642..3\n"
+                   "3.4..1...\n"
+                   "....6....\n"
+                   "..6..3.2.\n"
+                   ".....22..\n"
+                   ".6.562315\n"
+                   "63..33...\n"
+                   "1...22...\n"
+                   ".32315..3\n"
+                   ".....16.4\n"
+                   "....64.56\n"
+                   ".2433.1..\n"
+                   ".3..146.5\n") == 0);
+    free(board973071442);
+    board973071442 = NULL;
+    assert( gamma_move(board, 6, 4, 9) == 1 );
+    assert( gamma_move(board, 1, 7, 6) == 1 );
+    assert( gamma_golden_possible(board, 1) == 1 );
+    assert( gamma_move(board, 2, 3, 7) == 0 );
 
 
-    char* board345271224 = gamma_board(board);
-    assert(board345271224 != NULL);
-    assert(strcmp(board345271224,
-                  "33..14243..42\n"
-                  "4.14442.2.142\n"
-                  ".2.4.41.3...1\n"
-                  ".21.3122.2.23\n"
-                  "42434..1.1.4.\n"
-                  "4..3.2.3..33.\n"
-                  "........2....\n"
-                  "2..14.3.33.4.\n") == 0);
-    free(board345271224);
-    board345271224 = NULL;
-    assert(gamma_move(board, 3, 0, 12) == 0);
-    assert(gamma_move(board, 3, 3, 7) == 0);
-    assert(gamma_move(board, 4, 6, 1) == 0);
-    assert(gamma_move(board, 4, 11, 6) == 0);
-    assert(gamma_move(board, 1, 7, 0) == 0);
-    assert(gamma_move(board, 2, 1, 3) == 0);
-    assert(gamma_move(board, 2, 11, 0) == 0);
-    assert(gamma_move(board, 3, 4, 2) == 1);
-    assert(gamma_busy_fields(board, 3) == 15);
-    assert(gamma_golden_possible(board, 3) == 1);
-    assert(gamma_move(board, 4, 1, 3) == 0);
-    assert(gamma_busy_fields(board, 4) == 17);
-    assert(gamma_golden_possible(board, 4) == 1);
-    assert(gamma_move(board, 1, 1, 2) == 0);
-    assert(gamma_move(board, 2, 8, 4) == 1);
-    assert(gamma_move(board, 2, 2, 2) == 1);
-    assert(gamma_move(board, 3, 2, 6) == 0);
-    assert(gamma_move(board, 4, 5, 10) == 0);
-    assert(gamma_move(board, 4, 9, 0) == 0);
-    assert(gamma_move(board, 1, 1, 9) == 0);
-    assert(gamma_move(board, 2, 3, 5) == 0);
-    assert(gamma_move(board, 3, 10, 4) == 0);
-    assert(gamma_move(board, 4, 0, 1) == 1);
-    assert(gamma_move(board, 4, 0, 5) == 1);
-    assert(gamma_move(board, 1, 11, 6) == 0);
-    assert(gamma_free_fields(board, 1) == 17);
-    assert(gamma_move(board, 2, 11, 2) == 0);
-    assert(gamma_move(board, 3, 8, 3) == 0);
-    assert(gamma_move(board, 4, 2, 12) == 0);
-    assert(gamma_move(board, 4, 9, 4) == 0);
-    assert(gamma_move(board, 1, 0, 10) == 0);
-    assert(gamma_move(board, 1, 6, 7) == 0);
-    assert(gamma_move(board, 2, 1, 4) == 0);
-    assert(gamma_move(board, 3, 3, 5) == 0);
-    assert(gamma_move(board, 3, 11, 7) == 0);
-    assert(gamma_move(board, 1, 3, 6) == 0);
-    assert(gamma_move(board, 2, 8, 2) == 1);
-    assert(gamma_move(board, 2, 11, 3) == 0);
-    assert(gamma_move(board, 3, 2, 5) == 0);
-    assert(gamma_move(board, 1, 5, 7) == 0);
-    assert(gamma_free_fields(board, 1) == 17);
-    assert(gamma_move(board, 2, 6, 7) == 0);
-    assert(gamma_move(board, 2, 11, 3) == 0);
-    assert(gamma_move(board, 3, 2, 0) == 0);
-    assert(gamma_free_fields(board, 4) == 19);
+    char* board228095439 = gamma_board(board);
+    assert( board228095439 != NULL );
+    assert( strcmp(board228095439,
+                   "...1..4..\n"
+                   "..4642..3\n"
+                   "3.4..1...\n"
+                   "....6....\n"
+                   "..6.63.2.\n"
+                   ".....22..\n"
+                   ".6.562315\n"
+                   "63..33.1.\n"
+                   "1...22...\n"
+                   ".32315..3\n"
+                   ".....16.4\n"
+                   "....64.56\n"
+                   ".2433.1..\n"
+                   ".3..146.5\n") == 0);
+    free(board228095439);
+    board228095439 = NULL;
+    assert( gamma_move(board, 3, 8, 4) == 0 );
+    assert( gamma_golden_possible(board, 3) == 1 );
+    assert( gamma_move(board, 5, 11, 1) == 0 );
+    assert( gamma_move(board, 5, 7, 2) == 0 );
+    assert( gamma_busy_fields(board, 5) == 5 );
+    assert( gamma_golden_move(board, 5, 3, 5) == 0 );
+    assert( gamma_move(board, 6, 3, 11) == 1 );
+    assert( gamma_move(board, 6, 4, 12) == 0 );
+    assert( gamma_golden_possible(board, 6) == 1 );
+    assert( gamma_move(board, 1, 3, 1) == 0 );
+    assert( gamma_move(board, 2, 3, 9) == 1 );
+    assert( gamma_move(board, 3, 1, 0) == 0 );
+    assert( gamma_free_fields(board, 3) == 69 );
+    assert( gamma_move(board, 4, 9, 1) == 0 );
+    assert( gamma_move(board, 4, 7, 9) == 0 );
+    assert( gamma_move(board, 5, 13, 5) == 0 );
+    assert( gamma_move(board, 5, 7, 11) == 1 );
+    assert( gamma_golden_possible(board, 5) == 1 );
+    assert( gamma_move(board, 6, 3, 8) == 1 );
+    assert( gamma_move(board, 1, 10, 3) == 0 );
+    assert( gamma_busy_fields(board, 1) == 9 );
+    assert( gamma_move(board, 2, 1, 4) == 0 );
+    assert( gamma_move(board, 2, 2, 8) == 1 );
+    assert( gamma_busy_fields(board, 2) == 11 );
+    assert( gamma_move(board, 3, 2, 1) == 0 );
+    assert( gamma_move(board, 3, 8, 6) == 1 );
+    assert( gamma_move(board, 4, 11, 4) == 0 );
+    assert( gamma_move(board, 4, 4, 4) == 0 );
+    assert( gamma_move(board, 5, 6, 7) == 0 );
 
 
-    char* board965276446 = gamma_board(board);
-    assert(board965276446 != NULL);
-    assert(strcmp(board965276446,
-                  "33..14243..42\n"
-                  "4.14442.2.142\n"
-                  "42.4.41.3...1\n"
-                  ".21.312222.23\n"
-                  "42434..1.1.4.\n"
-                  "4.2332.32.33.\n"
-                  "4.......2....\n"
-                  "2..14.3.33.4.\n") == 0);
-    free(board965276446);
-    board965276446 = NULL;
-    assert(gamma_move(board, 1, 2, 1) == 0);
-    assert(gamma_free_fields(board, 1) == 17);
-    assert(gamma_move(board, 2, 12, 1) == 0);
-    assert(gamma_busy_fields(board, 2) == 18);
-    assert(gamma_move(board, 3, 0, 10) == 0);
-    assert(gamma_move(board, 4, 10, 1) == 0);
-    assert(gamma_move(board, 4, 8, 6) == 0);
-    assert(gamma_free_fields(board, 4) == 19);
-    assert(gamma_move(board, 1, 3, 10) == 0);
-    assert(gamma_move(board, 1, 0, 1) == 0);
-    assert(gamma_move(board, 2, 1, 2) == 1);
-    assert(gamma_move(board, 3, 9, 7) == 1);
-    assert(gamma_free_fields(board, 3) == 23);
-    assert(gamma_move(board, 4, 7, 3) == 0);
-    assert(gamma_free_fields(board, 4) == 18);
-    assert(gamma_move(board, 1, 1, 11) == 0);
-    assert(gamma_move(board, 2, 5, 9) == 0);
-    assert(gamma_move(board, 2, 2, 6) == 0);
-    assert(gamma_move(board, 3, 9, 3) == 0);
-    assert(gamma_move(board, 3, 10, 0) == 1);
-    assert(gamma_move(board, 4, 5, 7) == 0);
-    assert(gamma_move(board, 4, 10, 1) == 0);
-    assert(gamma_move(board, 1, 1, 12) == 0);
-    assert(gamma_move(board, 1, 11, 1) == 0);
-    assert(gamma_move(board, 2, 3, 8) == 0);
-    assert(gamma_move(board, 3, 4, 10) == 0);
-    assert(gamma_move(board, 4, 2, 12) == 0);
-    assert(gamma_move(board, 1, 1, 9) == 0);
-    assert(gamma_move(board, 1, 11, 7) == 0);
-    assert(gamma_busy_fields(board, 1) == 10);
-    assert(gamma_move(board, 2, 3, 5) == 0);
-    assert(gamma_move(board, 2, 2, 4) == 0);
-    assert(gamma_move(board, 3, 4, 5) == 1);
-    assert(gamma_move(board, 3, 6, 5) == 0);
-    assert(gamma_move(board, 4, 8, 0) == 0);
-    assert(gamma_move(board, 4, 10, 7) == 1);
-    assert(gamma_move(board, 2, 3, 8) == 0);
-    assert(gamma_move(board, 2, 8, 4) == 0);
-    assert(gamma_move(board, 3, 12, 7) == 0);
-    assert(gamma_move(board, 4, 1, 4) == 0);
-    assert(gamma_move(board, 4, 9, 6) == 0);
-    assert(gamma_busy_fields(board, 4) == 20);
-    assert(gamma_move(board, 1, 12, 3) == 0);
-    assert(gamma_move(board, 1, 3, 5) == 0);
-    assert(gamma_golden_possible(board, 1) == 1);
-    assert(gamma_move(board, 2, 1, 4) == 0);
-    assert(gamma_move(board, 3, 10, 1) == 1);
-    assert(gamma_move(board, 3, 5, 4) == 0);
-    assert(gamma_busy_fields(board, 3) == 19);
-    assert(gamma_free_fields(board, 4) == 15);
-    assert(gamma_move(board, 1, 2, 12) == 0);
-    assert(gamma_move(board, 1, 4, 5) == 0);
-    assert(gamma_golden_possible(board, 1) == 1);
-    assert(gamma_move(board, 2, 5, 2) == 0);
-    assert(gamma_move(board, 3, 0, 12) == 0);
-    assert(gamma_move(board, 3, 1, 7) == 0);
-    assert(gamma_move(board, 4, 0, 6) == 0);
-    assert(gamma_move(board, 4, 11, 6) == 0);
-    assert(gamma_move(board, 1, 2, 9) == 0);
-    assert(gamma_move(board, 2, 5, 7) == 0);
-    assert(gamma_move(board, 3, 2, 12) == 0);
-    assert(gamma_move(board, 3, 11, 4) == 0);
-    assert(gamma_move(board, 4, 2, 12) == 0);
-    assert(gamma_move(board, 4, 2, 4) == 0);
-    assert(gamma_golden_move(board, 4, 7, 9) == 0);
-    assert(gamma_move(board, 1, 7, 2) == 0);
-    assert(gamma_free_fields(board, 1) == 16);
-    assert(gamma_move(board, 2, 0, 3) == 0);
-    assert(gamma_move(board, 3, 6, 9) == 0);
-    assert(gamma_move(board, 3, 8, 5) == 0);
-    assert(gamma_move(board, 4, 1, 11) == 0);
-    assert(gamma_move(board, 1, 5, 7) == 0);
-    assert(gamma_golden_possible(board, 1) == 1);
-    assert(gamma_move(board, 3, 1, 7) == 0);
-    assert(gamma_move(board, 3, 3, 4) == 1);
-    assert(gamma_move(board, 4, 7, 0) == 0);
+    char* board334690500 = gamma_board(board);
+    assert( board334690500 != NULL );
+    assert( strcmp(board334690500,
+                   "...1..4..\n"
+                   "..4642..3\n"
+                   "3.46.1.5.\n"
+                   "....6....\n"
+                   "..6263.2.\n"
+                   "..26.22..\n"
+                   ".6.562315\n"
+                   "63..33.13\n"
+                   "1...22...\n"
+                   ".32315..3\n"
+                   ".....16.4\n"
+                   "....64.56\n"
+                   ".2433.1..\n"
+                   ".3..146.5\n") == 0);
+    free(board334690500);
+    board334690500 = NULL;
+    assert( gamma_move(board, 6, 6, 3) == 0 );
+    assert( gamma_golden_possible(board, 6) == 1 );
+    assert( gamma_move(board, 1, 9, 6) == 0 );
+    assert( gamma_golden_possible(board, 1) == 1 );
+    assert( gamma_move(board, 2, 2, 0) == 1 );
+    assert( gamma_move(board, 3, 1, 7) == 0 );
+    assert( gamma_move(board, 4, 13, 7) == 0 );
+    assert( gamma_move(board, 5, 7, 0) == 1 );
+    assert( gamma_move(board, 5, 2, 1) == 0 );
 
 
-    char* board632997535 = gamma_board(board);
-    assert(board632997535 != NULL);
-    assert(strcmp(board632997535,
-                  "33..142433442\n"
-                  "4.14442.2.142\n"
-                  "42.4341.3...1\n"
-                  ".213312222.23\n"
-                  "42434..1.1.4.\n"
-                  "422332.32.33.\n"
-                  "4.......2.3..\n"
-                  "2..14.3.3334.\n") == 0);
-    free(board632997535);
-    board632997535 = NULL;
-    assert(gamma_move(board, 1, 0, 12) == 0);
+    char* board988406180 = gamma_board(board);
+    assert( board988406180 != NULL );
+    assert( strcmp(board988406180,
+                   "...1..4..\n"
+                   "..4642..3\n"
+                   "3.46.1.5.\n"
+                   "....6....\n"
+                   "..6263.2.\n"
+                   "..26.22..\n"
+                   ".6.562315\n"
+                   "63..33.13\n"
+                   "1...22...\n"
+                   ".32315..3\n"
+                   ".....16.4\n"
+                   "....64.56\n"
+                   ".2433.1..\n"
+                   ".32.14655\n") == 0);
+    free(board988406180);
+    board988406180 = NULL;
+    assert( gamma_move(board, 6, 2, 0) == 0 );
+    assert( gamma_move(board, 6, 5, 3) == 0 );
+    assert( gamma_golden_move(board, 6, 9, 3) == 0 );
+    assert( gamma_move(board, 1, 11, 4) == 0 );
+    assert( gamma_move(board, 1, 2, 6) == 1 );
+    assert( gamma_free_fields(board, 1) == 62 );
+    assert( gamma_move(board, 2, 4, 7) == 0 );
+    assert( gamma_move(board, 2, 2, 3) == 1 );
+    assert( gamma_move(board, 3, 5, 10) == 1 );
+    assert( gamma_golden_move(board, 3, 11, 7) == 0 );
+    assert( gamma_move(board, 4, 3, 9) == 0 );
+    assert( gamma_move(board, 4, 2, 13) == 1 );
+    assert( gamma_move(board, 5, 11, 4) == 0 );
+    assert( gamma_move(board, 5, 5, 13) == 1 );
+    assert( gamma_move(board, 6, 13, 1) == 0 );
+    assert( gamma_move(board, 6, 6, 12) == 1 );
+    assert( gamma_move(board, 1, 8, 8) == 1 );
+    assert( gamma_busy_fields(board, 1) == 11 );
+    assert( gamma_move(board, 2, 1, 10) == 1 );
+    assert( gamma_move(board, 2, 6, 9) == 1 );
+    assert( gamma_move(board, 3, 7, 0) == 0 );
+    assert( gamma_move(board, 4, 9, 8) == 0 );
+    assert( gamma_move(board, 5, 3, 4) == 0 );
+    assert( gamma_move(board, 6, 6, 3) == 0 );
+    assert( gamma_move(board, 1, 4, 6) == 0 );
+    assert( gamma_free_fields(board, 1) == 54 );
+    assert( gamma_golden_move(board, 1, 4, 5) == 1 );
+    assert( gamma_move(board, 2, 4, 6) == 0 );
+    assert( gamma_move(board, 2, 5, 8) == 0 );
+    assert( gamma_golden_possible(board, 2) == 1 );
+    assert( gamma_move(board, 3, 9, 1) == 0 );
+    assert( gamma_move(board, 3, 7, 4) == 1 );
 
 
-    char* board799309448 = gamma_board(board);
-    assert(board799309448 != NULL);
-    assert(strcmp(board799309448,
-                  "33..142433442\n"
-                  "4.14442.2.142\n"
-                  "42.4341.3...1\n"
-                  ".213312222.23\n"
-                  "42434..1.1.4.\n"
-                  "422332.32.33.\n"
-                  "4.......2.3..\n"
-                  "2..14.3.3334.\n") == 0);
-    free(board799309448);
-    board799309448 = NULL;
-    assert(gamma_move(board, 2, 0, 7) == 0);
-    assert(gamma_move(board, 2, 5, 4) == 0);
-    assert(gamma_busy_fields(board, 2) == 19);
-    assert(gamma_move(board, 3, 0, 2) == 0);
-    assert(gamma_move(board, 3, 0, 2) == 0);
-    assert(gamma_free_fields(board, 3) == 35);
-    assert(gamma_move(board, 4, 6, 7) == 0);
-    assert(gamma_move(board, 1, 12, 6) == 0);
-    assert(gamma_free_fields(board, 1) == 15);
-    assert(gamma_move(board, 3, 4, 0) == 0);
-    assert(gamma_move(board, 3, 12, 2) == 1);
-    assert(gamma_busy_fields(board, 3) == 21);
-    assert(gamma_move(board, 4, 1, 3) == 0);
-    assert(gamma_move(board, 4, 11, 4) == 0);
-    assert(gamma_move(board, 2, 1, 2) == 0);
-    assert(gamma_move(board, 3, 1, 5) == 0);
-    assert(gamma_busy_fields(board, 3) == 21);
-    assert(gamma_golden_move(board, 3, 3, 7) == 0);
-    assert(gamma_move(board, 4, 1, 9) == 0);
-    assert(gamma_move(board, 1, 1, 11) == 0);
-    assert(gamma_move(board, 1, 3, 0) == 0);
-    assert(gamma_move(board, 2, 7, 2) == 0);
-    assert(gamma_move(board, 4, 6, 7) == 0);
-    assert(gamma_move(board, 1, 7, 2) == 0);
-    assert(gamma_move(board, 1, 10, 7) == 0);
-    assert(gamma_move(board, 2, 1, 1) == 1);
-    assert(gamma_move(board, 2, 8, 2) == 0);
-    assert(gamma_free_fields(board, 2) == 33);
-    assert(gamma_move(board, 3, 1, 2) == 0);
-    assert(gamma_move(board, 4, 1, 9) == 0);
-    assert(gamma_move(board, 4, 11, 6) == 0);
-    assert(gamma_golden_possible(board, 4) == 1);
-    assert(gamma_golden_move(board, 4, 3, 3) == 1);
-    assert(gamma_move(board, 1, 1, 11) == 0);
-    assert(gamma_move(board, 1, 2, 3) == 0);
-    assert(gamma_move(board, 2, 2, 9) == 0);
-    assert(gamma_move(board, 3, 0, 0) == 0);
-    assert(gamma_free_fields(board, 3) == 33);
-    assert(gamma_move(board, 4, 1, 6) == 1);
-    assert(gamma_move(board, 1, 5, 11) == 0);
-    assert(gamma_golden_move(board, 1, 6, 1) == 0);
-    assert(gamma_move(board, 2, 12, 6) == 0);
-    assert(gamma_move(board, 1, 12, 6) == 0);
-    assert(gamma_move(board, 2, 1, 9) == 0);
-    assert(gamma_move(board, 3, 4, 0) == 0);
-    assert(gamma_move(board, 4, 7, 2) == 0);
-    assert(gamma_move(board, 1, 3, 12) == 0);
-    assert(gamma_move(board, 1, 1, 5) == 0);
-    assert(gamma_busy_fields(board, 1) == 10);
-    assert(gamma_move(board, 2, 5, 2) == 0);
-    assert(gamma_move(board, 2, 5, 3) == 1);
-    assert(gamma_move(board, 3, 3, 10) == 0);
-    assert(gamma_move(board, 3, 2, 6) == 0);
-    assert(gamma_move(board, 4, 1, 6) == 0);
-    assert(gamma_move(board, 4, 2, 5) == 1);
-    assert(gamma_move(board, 1, 1, 2) == 0);
-    assert(gamma_move(board, 1, 8, 4) == 0);
-    assert(gamma_busy_fields(board, 1) == 10);
-    assert(gamma_move(board, 2, 4, 3) == 0);
-    assert(gamma_golden_possible(board, 2) == 1);
-    assert(gamma_golden_move(board, 2, 4, 3) == 1);
-    assert(gamma_move(board, 3, 1, 9) == 0);
-    assert(gamma_move(board, 3, 6, 0) == 0);
-    assert(gamma_move(board, 4, 7, 0) == 1);
-    assert(gamma_move(board, 1, 2, 0) == 1);
-    assert(gamma_golden_move(board, 1, 2, 5) == 1);
-    assert(gamma_busy_fields(board, 2) == 22);
+    char* board113285364 = gamma_board(board);
+    assert( board113285364 != NULL );
+    assert( strcmp(board113285364,
+                   "..41.54..\n"
+                   "..46426.3\n"
+                   "3.46.1.5.\n"
+                   ".2..63...\n"
+                   "..626322.\n"
+                   "..26.22.1\n"
+                   ".6.562315\n"
+                   "631.33.13\n"
+                   "1...12...\n"
+                   ".32315.33\n"
+                   "..2..16.4\n"
+                   "....64.56\n"
+                   ".2433.1..\n"
+                   ".32.14655\n") == 0);
+    free(board113285364);
+    board113285364 = NULL;
+    assert( gamma_move(board, 4, 3, 3) == 1 );
+    assert( gamma_move(board, 6, 10, 2) == 0 );
+    assert( gamma_move(board, 6, 2, 6) == 0 );
+    assert( gamma_move(board, 1, 6, 3) == 0 );
+    assert( gamma_free_fields(board, 1) == 52 );
+    assert( gamma_move(board, 2, 0, 2) == 1 );
+    assert( gamma_move(board, 2, 0, 2) == 0 );
+    assert( gamma_golden_move(board, 2, 2, 7) == 0 );
+    assert( gamma_move(board, 3, 12, 1) == 0 );
+    assert( gamma_golden_possible(board, 3) == 1 );
+    assert( gamma_move(board, 4, 1, 7) == 0 );
+    assert( gamma_move(board, 4, 2, 12) == 0 );
+    assert( gamma_busy_fields(board, 4) == 10 );
+    assert( gamma_move(board, 5, 7, 0) == 0 );
+    assert( gamma_free_fields(board, 5) == 51 );
+    assert( gamma_move(board, 6, 1, 0) == 0 );
+    assert( gamma_move(board, 6, 5, 5) == 0 );
+    assert( gamma_move(board, 1, 3, 4) == 0 );
+    assert( gamma_move(board, 1, 3, 3) == 0 );
+    assert( gamma_move(board, 2, 3, 6) == 1 );
+    assert( gamma_move(board, 3, 8, 12) == 0 );
+    assert( gamma_move(board, 4, 5, 2) == 0 );
+    assert( gamma_busy_fields(board, 4) == 10 );
+    assert( gamma_move(board, 5, 1, 7) == 0 );
+    assert( gamma_move(board, 5, 8, 5) == 1 );
+    assert( gamma_golden_possible(board, 5) == 1 );
+    assert( gamma_move(board, 6, 12, 1) == 0 );
+    assert( gamma_move(board, 1, 5, 3) == 0 );
+    assert( gamma_move(board, 1, 8, 7) == 0 );
+    assert( gamma_move(board, 2, 8, 1) == 1 );
+    assert( gamma_move(board, 2, 7, 10) == 1 );
+    assert( gamma_move(board, 3, 3, 4) == 0 );
+    assert( gamma_busy_fields(board, 3) == 16 );
+    assert( gamma_move(board, 4, 13, 8) == 0 );
+    assert( gamma_move(board, 4, 8, 3) == 0 );
+    assert( gamma_move(board, 5, 8, 5) == 0 );
+    assert( gamma_busy_fields(board, 5) == 9 );
+    assert( gamma_move(board, 6, 0, 0) == 1 );
+    assert( gamma_free_fields(board, 6) == 46 );
+    assert( gamma_move(board, 1, 8, 0) == 0 );
+    assert( gamma_move(board, 3, 5, 7) == 0 );
+    assert( gamma_move(board, 3, 6, 5) == 1 );
+    assert( gamma_busy_fields(board, 3) == 17 );
+    assert( gamma_move(board, 4, 4, 4) == 0 );
+    assert( gamma_move(board, 4, 5, 7) == 0 );
+    assert( gamma_busy_fields(board, 4) == 10 );
+    assert( gamma_move(board, 5, 5, 9) == 0 );
+    assert( gamma_move(board, 6, 7, 0) == 0 );
+    assert( gamma_move(board, 1, 10, 3) == 0 );
+    assert( gamma_free_fields(board, 1) == 45 );
+    assert( gamma_move(board, 2, 7, 0) == 0 );
+    assert( gamma_busy_fields(board, 2) == 18 );
 
 
-    char* board443120857 = gamma_board(board);
-    assert(board443120857 != NULL);
-    assert(strcmp(board443120857,
-                  "33..142433442\n"
-                  "4414442.2.142\n"
-                  "4214341.3...1\n"
-                  ".213312222.23\n"
-                  "424422.1.1.4.\n"
-                  "422332.32.333\n"
-                  "42......2.3..\n"
-                  "2.114.343334.\n") == 0);
-    free(board443120857);
-    board443120857 = NULL;
-    assert(gamma_move(board, 3, 5, 10) == 0);
-    assert(gamma_move(board, 3, 1, 3) == 0);
-    assert(gamma_golden_possible(board, 3) == 1);
-    assert(gamma_move(board, 4, 5, 11) == 0);
-    assert(gamma_busy_fields(board, 4) == 22);
-    assert(gamma_golden_possible(board, 4) == 0);
-    assert(gamma_move(board, 1, 1, 2) == 0);
-    assert(gamma_move(board, 2, 4, 0) == 0);
-    assert(gamma_move(board, 2, 3, 2) == 0);
-    assert(gamma_move(board, 3, 3, 12) == 0);
-    assert(gamma_free_fields(board, 3) == 28);
-    assert(gamma_move(board, 4, 1, 9) == 0);
-    assert(gamma_move(board, 4, 12, 4) == 0);
-    assert(gamma_golden_possible(board, 4) == 0);
+    char* board686893453 = gamma_board(board);
+    assert( board686893453 != NULL );
+    assert( strcmp(board686893453,
+                   "..41.54..\n"
+                   "..46426.3\n"
+                   "3.46.1.5.\n"
+                   ".2..63.2.\n"
+                   "..626322.\n"
+                   "..26.22.1\n"
+                   ".6.562315\n"
+                   "631233.13\n"
+                   "1...123.5\n"
+                   ".32315.33\n"
+                   "..24.16.4\n"
+                   "2...64.56\n"
+                   ".2433.1.2\n"
+                   "632.14655\n") == 0);
+    free(board686893453);
+    board686893453 = NULL;
+    assert( gamma_move(board, 3, 8, 5) == 0 );
+    assert( gamma_move(board, 4, 5, 7) == 0 );
+    assert( gamma_free_fields(board, 4) == 45 );
 
 
-    char* board560133452 = gamma_board(board);
-    assert(board560133452 != NULL);
-    assert(strcmp(board560133452,
-                  "33..142433442\n"
-                  "4414442.2.142\n"
-                  "4214341.3...1\n"
-                  ".213312222.23\n"
-                  "424422.1.1.4.\n"
-                  "422332.32.333\n"
-                  "42......2.3..\n"
-                  "2.114.343334.\n") == 0);
-    free(board560133452);
-    board560133452 = NULL;
-    assert(gamma_move(board, 2, 3, 10) == 0);
-    assert(gamma_move(board, 2, 2, 5) == 0);
-    assert(gamma_move(board, 3, 0, 12) == 0);
-    assert(gamma_move(board, 3, 1, 2) == 0);
-    assert(gamma_move(board, 4, 3, 4) == 0);
-    assert(gamma_move(board, 4, 6, 5) == 0);
-    assert(gamma_free_fields(board, 4) == 11);
+    char* board549045748 = gamma_board(board);
+    assert( board549045748 != NULL );
+    assert( strcmp(board549045748,
+                   "..41.54..\n"
+                   "..46426.3\n"
+                   "3.46.1.5.\n"
+                   ".2..63.2.\n"
+                   "..626322.\n"
+                   "..26.22.1\n"
+                   ".6.562315\n"
+                   "631233.13\n"
+                   "1...123.5\n"
+                   ".32315.33\n"
+                   "..24.16.4\n"
+                   "2...64.56\n"
+                   ".2433.1.2\n"
+                   "632.14655\n") == 0);
+    free(board549045748);
+    board549045748 = NULL;
+    assert( gamma_move(board, 5, 3, 4) == 0 );
+    assert( gamma_move(board, 6, 9, 8) == 0 );
+    assert( gamma_move(board, 1, 10, 6) == 0 );
+    assert( gamma_move(board, 2, 4, 9) == 0 );
+    assert( gamma_move(board, 2, 0, 1) == 1 );
+    assert( gamma_move(board, 3, 7, 2) == 0 );
+    assert( gamma_move(board, 4, 0, 3) == 1 );
+    assert( gamma_move(board, 5, 0, 13) == 1 );
+    assert( gamma_move(board, 6, 4, 8) == 1 );
+    assert( gamma_move(board, 1, 2, 6) == 0 );
+    assert( gamma_move(board, 2, 4, 3) == 1 );
+    assert( gamma_move(board, 2, 6, 9) == 0 );
+
+
+    char* board924901582 = gamma_board(board);
+    assert( board924901582 != NULL );
+    assert( strcmp(board924901582,
+                   "5.41.54..\n"
+                   "..46426.3\n"
+                   "3.46.1.5.\n"
+                   ".2..63.2.\n"
+                   "..626322.\n"
+                   "..26622.1\n"
+                   ".6.562315\n"
+                   "631233.13\n"
+                   "1...123.5\n"
+                   ".32315.33\n"
+                   "4.24216.4\n"
+                   "2...64.56\n"
+                   "22433.1.2\n"
+                   "632.14655\n") == 0);
+    free(board924901582);
+    board924901582 = NULL;
+    assert( gamma_move(board, 3, 9, 0) == 0 );
+    assert( gamma_move(board, 3, 6, 13) == 0 );
+    assert( gamma_golden_move(board, 3, 3, 8) == 1 );
+    assert( gamma_move(board, 4, 5, 12) == 0 );
+    assert( gamma_move(board, 4, 1, 9) == 1 );
+    assert( gamma_free_fields(board, 4) == 39 );
+    assert( gamma_golden_possible(board, 4) == 1 );
+    assert( gamma_move(board, 5, 1, 6) == 0 );
+    assert( gamma_move(board, 5, 8, 1) == 0 );
+    assert( gamma_move(board, 6, 0, 4) == 1 );
+    assert( gamma_move(board, 6, 2, 6) == 0 );
+    assert( gamma_move(board, 1, 2, 5) == 1 );
+    assert( gamma_busy_fields(board, 1) == 13 );
+    assert( gamma_busy_fields(board, 2) == 20 );
+
+
+    char* board476175398 = gamma_board(board);
+    assert( board476175398 != NULL );
+    assert( strcmp(board476175398,
+                   "5.41.54..\n"
+                   "..46426.3\n"
+                   "3.46.1.5.\n"
+                   ".2..63.2.\n"
+                   ".4626322.\n"
+                   "..23622.1\n"
+                   ".6.562315\n"
+                   "631233.13\n"
+                   "1.1.123.5\n"
+                   "632315.33\n"
+                   "4.24216.4\n"
+                   "2...64.56\n"
+                   "22433.1.2\n"
+                   "632.14655\n") == 0);
+    free(board476175398);
+    board476175398 = NULL;
+    assert( gamma_move(board, 3, 5, 3) == 0 );
+    assert( gamma_golden_possible(board, 3) == 0 );
+    assert( gamma_move(board, 4, 1, 5) == 1 );
+    assert( gamma_move(board, 4, 1, 6) == 0 );
+
+
+    char* board269082086 = gamma_board(board);
+    assert( board269082086 != NULL );
+    assert( strcmp(board269082086,
+                   "5.41.54..\n"
+                   "..46426.3\n"
+                   "3.46.1.5.\n"
+                   ".2..63.2.\n"
+                   ".4626322.\n"
+                   "..23622.1\n"
+                   ".6.562315\n"
+                   "631233.13\n"
+                   "141.123.5\n"
+                   "632315.33\n"
+                   "4.24216.4\n"
+                   "2...64.56\n"
+                   "22433.1.2\n"
+                   "632.14655\n") == 0);
+    free(board269082086);
+    board269082086 = NULL;
+    assert( gamma_move(board, 5, 8, 1) == 0 );
+    assert( gamma_move(board, 5, 3, 12) == 0 );
+    assert( gamma_golden_possible(board, 5) == 1 );
+
+
+    char* board253447203 = gamma_board(board);
+    assert( board253447203 != NULL );
+    assert( strcmp(board253447203,
+                   "5.41.54..\n"
+                   "..46426.3\n"
+                   "3.46.1.5.\n"
+                   ".2..63.2.\n"
+                   ".4626322.\n"
+                   "..23622.1\n"
+                   ".6.562315\n"
+                   "631233.13\n"
+                   "141.123.5\n"
+                   "632315.33\n"
+                   "4.24216.4\n"
+                   "2...64.56\n"
+                   "22433.1.2\n"
+                   "632.14655\n") == 0);
+    free(board253447203);
+    board253447203 = NULL;
+    assert( gamma_move(board, 6, 11, 4) == 0 );
+    assert( gamma_move(board, 6, 5, 13) == 0 );
+    assert( gamma_move(board, 2, 9, 8) == 0 );
+    assert( gamma_move(board, 2, 6, 6) == 1 );
+    assert( gamma_move(board, 3, 8, 1) == 0 );
+    assert( gamma_move(board, 3, 8, 9) == 1 );
+    assert( gamma_move(board, 4, 2, 2) == 1 );
+    assert( gamma_move(board, 4, 3, 1) == 0 );
+    assert( gamma_move(board, 5, 2, 3) == 0 );
+    assert( gamma_move(board, 5, 5, 11) == 0 );
+    assert( gamma_move(board, 6, 11, 6) == 0 );
+    assert( gamma_move(board, 1, 4, 11) == 1 );
+    assert( gamma_move(board, 2, 2, 6) == 0 );
+    assert( gamma_move(board, 3, 13, 7) == 0 );
+    assert( gamma_move(board, 3, 8, 13) == 1 );
+    assert( gamma_move(board, 4, 2, 1) == 0 );
+    assert( gamma_move(board, 5, 5, 3) == 0 );
+    assert( gamma_move(board, 5, 2, 2) == 0 );
+    assert( gamma_busy_fields(board, 5) == 10 );
+    assert( gamma_free_fields(board, 5) == 31 );
+
+
+    char* board601871685 = gamma_board(board);
+    assert( board601871685 != NULL );
+    assert( strcmp(board601871685,
+                   "5.41.54.3\n"
+                   "..46426.3\n"
+                   "3.4611.5.\n"
+                   ".2..63.2.\n"
+                   ".46263223\n"
+                   "..23622.1\n"
+                   ".6.562315\n"
+                   "631233213\n"
+                   "141.123.5\n"
+                   "632315.33\n"
+                   "4.24216.4\n"
+                   "2.4.64.56\n"
+                   "22433.1.2\n"
+                   "632.14655\n") == 0);
+    free(board601871685);
+    board601871685 = NULL;
+    assert( gamma_move(board, 6, 0, 5) == 0 );
+    assert( gamma_move(board, 1, 8, 12) == 0 );
+    assert( gamma_move(board, 1, 8, 10) == 1 );
+    assert( gamma_move(board, 2, 4, 6) == 0 );
+    assert( gamma_move(board, 3, 6, 8) == 0 );
+    assert( gamma_move(board, 4, 11, 6) == 0 );
+    assert( gamma_move(board, 4, 1, 13) == 1 );
+    assert( gamma_move(board, 6, 9, 0) == 0 );
+    assert( gamma_move(board, 1, 13, 7) == 0 );
+    assert( gamma_move(board, 1, 2, 5) == 0 );
+    assert( gamma_golden_move(board, 1, 5, 1) == 0 );
+    assert( gamma_move(board, 2, 3, 11) == 0 );
+    assert( gamma_move(board, 3, 11, 1) == 0 );
+    assert( gamma_move(board, 3, 8, 9) == 0 );
+    assert( gamma_move(board, 4, 2, 3) == 0 );
+    assert( gamma_move(board, 5, 0, 3) == 0 );
+    assert( gamma_free_fields(board, 5) == 29 );
+    assert( gamma_move(board, 1, 4, 6) == 0 );
+    assert( gamma_move(board, 1, 4, 1) == 0 );
+    assert( gamma_move(board, 2, 2, 5) == 0 );
+    assert( gamma_move(board, 2, 8, 8) == 0 );
+    assert( gamma_move(board, 3, 5, 8) == 0 );
+    assert( gamma_golden_possible(board, 3) == 0 );
+    assert( gamma_move(board, 4, 2, 6) == 0 );
+    assert( gamma_move(board, 5, 1, 5) == 0 );
+    assert( gamma_move(board, 6, 6, 11) == 1 );
+    assert( gamma_golden_possible(board, 6) == 1 );
+    assert( gamma_move(board, 1, 2, 8) == 0 );
+    assert( gamma_move(board, 1, 4, 9) == 0 );
+    assert( gamma_free_fields(board, 1) == 28 );
+    assert( gamma_move(board, 2, 2, 3) == 0 );
+    assert( gamma_move(board, 3, 8, 12) == 0 );
+    assert( gamma_move(board, 4, 3, 7) == 0 );
+    assert( gamma_move(board, 5, 0, 3) == 0 );
+    assert( gamma_move(board, 5, 1, 4) == 0 );
+    assert( gamma_move(board, 6, 1, 5) == 0 );
+    assert( gamma_move(board, 6, 5, 10) == 0 );
+    assert( gamma_free_fields(board, 6) == 28 );
+    assert( gamma_move(board, 1, 5, 2) == 0 );
+    assert( gamma_move(board, 1, 1, 12) == 1 );
+    assert( gamma_busy_fields(board, 1) == 16 );
+    assert( gamma_move(board, 2, 10, 2) == 0 );
+    assert( gamma_move(board, 2, 8, 4) == 0 );
+    assert( gamma_move(board, 3, 10, 2) == 0 );
+    assert( gamma_move(board, 3, 0, 4) == 0 );
+    assert( gamma_move(board, 4, 1, 7) == 0 );
+    assert( gamma_move(board, 4, 3, 3) == 0 );
+    assert( gamma_move(board, 5, 2, 6) == 0 );
+    assert( gamma_move(board, 5, 1, 2) == 1 );
+
+
+    char* board573122900 = gamma_board(board);
+    assert( board573122900 != NULL );
+    assert( strcmp(board573122900,
+                   "5441.54.3\n"
+                   ".146426.3\n"
+                   "3.461165.\n"
+                   ".2..63.21\n"
+                   ".46263223\n"
+                   "..23622.1\n"
+                   ".6.562315\n"
+                   "631233213\n"
+                   "141.123.5\n"
+                   "632315.33\n"
+                   "4.24216.4\n"
+                   "254.64.56\n"
+                   "22433.1.2\n"
+                   "632.14655\n") == 0);
+    free(board573122900);
+    board573122900 = NULL;
+    assert( gamma_move(board, 6, 10, 0) == 0 );
+    assert( gamma_busy_fields(board, 6) == 17 );
+    assert( gamma_move(board, 1, 1, 10) == 0 );
+    assert( gamma_move(board, 1, 1, 12) == 0 );
+    assert( gamma_move(board, 2, 8, 0) == 0 );
+    assert( gamma_move(board, 2, 8, 10) == 0 );
+    assert( gamma_free_fields(board, 2) == 26 );
+    assert( gamma_move(board, 3, 0, 6) == 0 );
+    assert( gamma_move(board, 3, 5, 0) == 0 );
+    assert( gamma_busy_fields(board, 3) == 20 );
+    assert( gamma_move(board, 4, 7, 2) == 0 );
+    assert( gamma_move(board, 4, 1, 5) == 0 );
+    assert( gamma_move(board, 5, 5, 7) == 0 );
+    assert( gamma_move(board, 6, 10, 3) == 0 );
+
+
+    char* board396557111 = gamma_board(board);
+    assert( board396557111 != NULL );
+    assert( strcmp(board396557111,
+                   "5441.54.3\n"
+                   ".146426.3\n"
+                   "3.461165.\n"
+                   ".2..63.21\n"
+                   ".46263223\n"
+                   "..23622.1\n"
+                   ".6.562315\n"
+                   "631233213\n"
+                   "141.123.5\n"
+                   "632315.33\n"
+                   "4.24216.4\n"
+                   "254.64.56\n"
+                   "22433.1.2\n"
+                   "632.14655\n") == 0);
+    free(board396557111);
+    board396557111 = NULL;
+    assert( gamma_move(board, 2, 9, 0) == 0 );
+    assert( gamma_move(board, 3, 8, 7) == 0 );
+    assert( gamma_move(board, 4, 8, 7) == 0 );
+    assert( gamma_free_fields(board, 4) == 26 );
+    assert( gamma_golden_possible(board, 4) == 1 );
+    assert( gamma_move(board, 5, 6, 1) == 0 );
+    assert( gamma_move(board, 6, 2, 3) == 0 );
+    assert( gamma_move(board, 1, 1, 7) == 0 );
+    assert( gamma_move(board, 1, 5, 0) == 0 );
+    assert( gamma_move(board, 2, 2, 3) == 0 );
+    assert( gamma_move(board, 2, 1, 2) == 0 );
+    assert( gamma_move(board, 3, 12, 7) == 0 );
+    assert( gamma_move(board, 3, 7, 2) == 0 );
+    assert( gamma_golden_possible(board, 3) == 0 );
+    assert( gamma_free_fields(board, 4) == 26 );
+    assert( gamma_move(board, 5, 5, 5) == 0 );
+    assert( gamma_move(board, 5, 5, 2) == 0 );
+    assert( gamma_golden_possible(board, 5) == 1 );
+    assert( gamma_move(board, 6, 10, 2) == 0 );
+    assert( gamma_move(board, 2, 5, 7) == 0 );
+    assert( gamma_move(board, 2, 8, 1) == 0 );
+    assert( gamma_move(board, 3, 2, 3) == 0 );
+    assert( gamma_move(board, 3, 6, 5) == 0 );
+    assert( gamma_free_fields(board, 3) == 26 );
+    assert( gamma_move(board, 4, 5, 0) == 0 );
+    assert( gamma_busy_fields(board, 4) == 15 );
+    assert( gamma_move(board, 5, 11, 8) == 0 );
+    assert( gamma_move(board, 6, 2, 0) == 0 );
+    assert( gamma_move(board, 1, 13, 7) == 0 );
+    assert( gamma_move(board, 1, 4, 0) == 0 );
+
+
+    char* board848732053 = gamma_board(board);
+    assert( board848732053 != NULL );
+    assert( strcmp(board848732053,
+                   "5441.54.3\n"
+                   ".146426.3\n"
+                   "3.461165.\n"
+                   ".2..63.21\n"
+                   ".46263223\n"
+                   "..23622.1\n"
+                   ".6.562315\n"
+                   "631233213\n"
+                   "141.123.5\n"
+                   "632315.33\n"
+                   "4.24216.4\n"
+                   "254.64.56\n"
+                   "22433.1.2\n"
+                   "632.14655\n") == 0);
+    free(board848732053);
+    board848732053 = NULL;
+    assert( gamma_move(board, 2, 2, 6) == 0 );
+    assert( gamma_golden_move(board, 2, 13, 2) == 0 );
+    assert( gamma_move(board, 3, 3, 1) == 0 );
+    assert( gamma_move(board, 4, 1, 7) == 0 );
+    assert( gamma_move(board, 5, 0, 3) == 0 );
+    assert( gamma_move(board, 5, 5, 0) == 0 );
+    assert( gamma_golden_possible(board, 5) == 1 );
+    assert( gamma_move(board, 6, 7, 2) == 0 );
+    assert( gamma_golden_possible(board, 6) == 1 );
+    assert( gamma_move(board, 1, 2, 4) == 0 );
+    assert( gamma_move(board, 1, 0, 1) == 0 );
+    assert( gamma_move(board, 2, 13, 4) == 0 );
+    assert( gamma_move(board, 2, 5, 8) == 0 );
+    assert( gamma_golden_possible(board, 2) == 1 );
+    assert( gamma_move(board, 3, 8, 0) == 0 );
+    assert( gamma_golden_possible(board, 3) == 0 );
+    assert( gamma_move(board, 4, 11, 1) == 0 );
+    assert( gamma_move(board, 5, 8, 7) == 0 );
+    assert( gamma_free_fields(board, 5) == 26 );
+    assert( gamma_move(board, 6, 11, 1) == 0 );
+    assert( gamma_move(board, 6, 1, 8) == 1 );
+    assert( gamma_golden_move(board, 6, 12, 8) == 0 );
+    assert( gamma_move(board, 1, 2, 6) == 0 );
+    assert( gamma_move(board, 1, 2, 9) == 0 );
+    assert( gamma_move(board, 3, 8, 12) == 0 );
+    assert( gamma_move(board, 4, 8, 11) == 1 );
+    assert( gamma_move(board, 4, 5, 1) == 1 );
+    assert( gamma_move(board, 5, 8, 7) == 0 );
+
+
+    char* board984230501 = gamma_board(board);
+    assert( board984230501 != NULL );
+    assert( strcmp(board984230501,
+                   "5441.54.3\n"
+                   ".146426.3\n"
+                   "3.4611654\n"
+                   ".2..63.21\n"
+                   ".46263223\n"
+                   ".623622.1\n"
+                   ".6.562315\n"
+                   "631233213\n"
+                   "141.123.5\n"
+                   "632315.33\n"
+                   "4.24216.4\n"
+                   "254.64.56\n"
+                   "2243341.2\n"
+                   "632.14655\n") == 0);
+    free(board984230501);
+    board984230501 = NULL;
+    assert( gamma_move(board, 6, 11, 1) == 0 );
+    assert( gamma_move(board, 6, 4, 4) == 0 );
+    assert( gamma_move(board, 1, 4, 6) == 0 );
+    assert( gamma_free_fields(board, 1) == 23 );
+    assert( gamma_move(board, 2, 13, 4) == 0 );
+    assert( gamma_move(board, 3, 12, 7) == 0 );
+    assert( gamma_move(board, 3, 7, 11) == 0 );
+    assert( gamma_move(board, 4, 3, 1) == 0 );
+    assert( gamma_move(board, 4, 1, 13) == 0 );
+    assert( gamma_move(board, 5, 3, 7) == 0 );
+    assert( gamma_move(board, 6, 0, 3) == 0 );
+    assert( gamma_move(board, 6, 8, 7) == 0 );
+    assert( gamma_move(board, 1, 8, 10) == 0 );
+    assert( gamma_move(board, 1, 4, 12) == 0 );
+    assert( gamma_golden_possible(board, 1) == 0 );
+    assert( gamma_move(board, 2, 3, 11) == 0 );
+    assert( gamma_move(board, 3, 8, 4) == 0 );
+    assert( gamma_move(board, 3, 6, 8) == 0 );
+    assert( gamma_move(board, 4, 8, 0) == 0 );
+    assert( gamma_move(board, 5, 4, 6) == 0 );
+    assert( gamma_move(board, 5, 8, 1) == 0 );
+    assert( gamma_move(board, 6, 0, 3) == 0 );
+
+
+    char* board488504702 = gamma_board(board);
+    assert( board488504702 != NULL );
+    assert( strcmp(board488504702,
+                   "5441.54.3\n"
+                   ".146426.3\n"
+                   "3.4611654\n"
+                   ".2..63.21\n"
+                   ".46263223\n"
+                   ".623622.1\n"
+                   ".6.562315\n"
+                   "631233213\n"
+                   "141.123.5\n"
+                   "632315.33\n"
+                   "4.24216.4\n"
+                   "254.64.56\n"
+                   "2243341.2\n"
+                   "632.14655\n") == 0);
+    free(board488504702);
+    board488504702 = NULL;
+    assert( gamma_move(board, 1, 7, 3) == 1 );
+    assert( gamma_free_fields(board, 2) == 22 );
+    assert( gamma_golden_move(board, 2, 8, 3) == 1 );
+    assert( gamma_move(board, 3, 5, 7) == 0 );
+    assert( gamma_move(board, 3, 6, 4) == 1 );
+
+
+    char* board351782329 = gamma_board(board);
+    assert( board351782329 != NULL );
+    assert( strcmp(board351782329,
+                   "5441.54.3\n"
+                   ".146426.3\n"
+                   "3.4611654\n"
+                   ".2..63.21\n"
+                   ".46263223\n"
+                   ".623622.1\n"
+                   ".6.562315\n"
+                   "631233213\n"
+                   "141.123.5\n"
+                   "632315333\n"
+                   "4.2421612\n"
+                   "254.64.56\n"
+                   "2243341.2\n"
+                   "632.14655\n") == 0);
+    free(board351782329);
+    board351782329 = NULL;
+    assert( gamma_move(board, 4, 10, 2) == 0 );
+    assert( gamma_move(board, 5, 0, 3) == 0 );
+    assert( gamma_move(board, 5, 7, 11) == 0 );
+    assert( gamma_move(board, 6, 11, 1) == 0 );
+    assert( gamma_free_fields(board, 6) == 21 );
+    assert( gamma_golden_move(board, 6, 7, 5) == 0 );
 
 
     gamma_delete(board);
