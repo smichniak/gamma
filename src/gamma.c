@@ -308,9 +308,6 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         return false;
     }
 
-    free(g->board[x][y]);
-    g->board[x][y] = NULL;
-
     updateAdjacentFree(g, adjacent, 1);
 
     int newAreas = adjacentWithPLayer(g, busyPlayer, adjacent) - 1;
@@ -351,6 +348,8 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         return false;
     }
     free(adjacent);
+    free(g->board[x][y]);
+    g->board[x][y] = NULL;
     for (uint64_t field = 0; field < oldFieldsIndex; ++field) {
         free(oldFields[field]);
     }
