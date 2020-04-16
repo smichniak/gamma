@@ -9,27 +9,16 @@
 #ifndef GAMMA_H
 #define GAMMA_H
 
+#include <stdbool.h>
+#include <stdint.h>
 #include "findUnion.h"
+
 
 /**
  * Struktura przechowująca stan gry.
  */
+typedef struct gamma gamma_t;
 
-//TODO
-//Move to gamma.c
-typedef struct gamma {
-    uint32_t width;
-    uint32_t height;
-    uint32_t players;
-    uint32_t areas;
-    uint64_t freeFields;
-    uint64_t* busyFields;
-    uint64_t* freeAdjacentFields;
-    uint32_t* playerAreas;
-    bool* goldenMoves;
-    findUnionNode_t*** board;
-
-} gamma_t;
 
 /** @brief Tworzy strukturę przechowującą stan gry.
  * Alokuje pamięć na nową strukturę przechowującą stan gry.
@@ -38,7 +27,7 @@ typedef struct gamma {
  * @param[in] height  – wysokość planszy, liczba dodatnia,
  * @param[in] players – liczba graczy, liczba dodatnia,
  * @param[in] areas   – maksymalna liczba obszarów,
- *                      jakie może zająć jeden gracz.
+ *                      jakie może zająć jeden gracz, liczba dodatnia.
  * @return Wskaźnik na utworzoną strukturę lub NULL, gdy nie udało się
  * zaalokować pamięci lub któryś z parametrów jest niepoprawny.
  */
@@ -50,7 +39,7 @@ gamma_t* gamma_new(uint32_t width, uint32_t height,
  * Nic nie robi, jeśli wskaźnik ten ma wartość NULL.
  * @param[in] g       – wskaźnik na usuwaną strukturę.
  */
-void gamma_delete(gamma_t* g);
+void gamma_delete(gamma_t *g);
 
 /** @brief Wykonuje ruch.
  * Ustawia pionek gracza @p player na polu (@p x, @p y).
@@ -64,7 +53,7 @@ void gamma_delete(gamma_t* g);
  * @return Wartość @p true, jeśli ruch został wykonany, a @p false,
  * gdy ruch jest nielegalny lub któryś z parametrów jest niepoprawny.
  */
-bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y);
+bool gamma_move(gamma_t *g, uint32_t player, uint32_t x, uint32_t y);
 
 /** @brief Wykonuje złoty ruch.
  * Ustawia pionek gracza @p player na polu (@p x, @p y) zajętym przez innego
@@ -80,7 +69,7 @@ bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y);
  * gdy gracz wykorzystał już swój złoty ruch, ruch jest nielegalny
  * lub któryś z parametrów jest niepoprawny.
  */
-bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y);
+bool gamma_golden_move(gamma_t *g, uint32_t player, uint32_t x, uint32_t y);
 
 /** @brief Podaje liczbę pól zajętych przez gracza.
  * Podaje liczbę pól zajętych przez gracza @p player.
@@ -90,7 +79,7 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y);
  * @return Liczba pól zajętych przez gracza lub zero,
  * jeśli któryś z parametrów jest niepoprawny.
  */
-uint64_t gamma_busy_fields(gamma_t* g, uint32_t player);
+uint64_t gamma_busy_fields(gamma_t *g, uint32_t player);
 
 /** @brief Podaje liczbę pól, jakie jeszcze gracz może zająć.
  * Podaje liczbę wolnych pól, na których w danym stanie gry gracz @p player może
@@ -101,7 +90,7 @@ uint64_t gamma_busy_fields(gamma_t* g, uint32_t player);
  * @return Liczba pól, jakie jeszcze może zająć gracz lub zero,
  * jeśli któryś z parametrów jest niepoprawny.
  */
-uint64_t gamma_free_fields(gamma_t* g, uint32_t player);
+uint64_t gamma_free_fields(gamma_t *g, uint32_t player);
 
 /** @brief Sprawdza, czy gracz może wykonać złoty ruch.
  * Sprawdza, czy gracz @p player jeszcze nie wykonał w tej rozgrywce złotego
@@ -113,7 +102,7 @@ uint64_t gamma_free_fields(gamma_t* g, uint32_t player);
  * złotego ruchu i jest przynajmniej jedno pole zajęte przez innego gracza,
  * a @p false w przeciwnym przypadku.
  */
-bool gamma_golden_possible(gamma_t* g, uint32_t player);
+bool gamma_golden_possible(gamma_t *g, uint32_t player);
 
 /** @brief Daje napis opisujący stan planszy.
  * Alokuje w pamięci bufor, w którym umieszcza napis zawierający tekstowy
@@ -123,6 +112,6 @@ bool gamma_golden_possible(gamma_t* g, uint32_t player);
  * @return Wskaźnik na zaalokowany bufor zawierający napis opisujący stan
  * planszy lub NULL, jeśli nie udało się zaalokować pamięci.
  */
-char* gamma_board(gamma_t* g);
+char* gamma_board(gamma_t *g);
 
 #endif /* GAMMA_H */

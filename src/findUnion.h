@@ -2,23 +2,19 @@
 #define GAMMA_FINDUNION_H
 
 #include "stack.h"
+#include <stdlib.h>
 
 typedef struct findUnionNode findUnionNode_t;
 
 typedef struct findUnionNode {
-    uint64_t player;
-    //TODO
-    //Think about this type size
-    uint64_t depth;
+    uint32_t player;
+    uint64_t rank;
     findUnionNode_t* parent;
 } findUnionNode_t;
 
+findUnionNode_t* makeSet(uint32_t player);
 
-//TODO
-//Change name to my style
-findUnionNode_t* make_set(uint32_t player);
-
-void merge(findUnionNode_t* a, findUnionNode_t* b);
+void unite(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2);
 
 bool connected(findUnionNode_t* a, findUnionNode_t* b);
 

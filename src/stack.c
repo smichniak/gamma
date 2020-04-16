@@ -1,5 +1,4 @@
 #include "stack.h"
-#include <stdio.h>
 #include <stdlib.h>
 
 struct stackNode {
@@ -7,13 +6,6 @@ struct stackNode {
     uint32_t y;
     StackNode_t* next;
 };
-
-Tuple createTuple(uint32_t x, uint32_t y) {
-    Tuple newTuple;
-    newTuple.x = x;
-    newTuple.y = y;
-    return newTuple;
-}
 
 StackNode_t* createStack(uint32_t x, uint32_t y) {
     StackNode_t* node = malloc(sizeof(StackNode_t));
@@ -26,7 +18,7 @@ StackNode_t* createStack(uint32_t x, uint32_t y) {
     return node;
 }
 
-bool isEmpty(StackNode_t* stackPtr) {
+bool isStackEmpty(StackNode_t* stackPtr) {
     return !stackPtr;
 }
 

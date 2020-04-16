@@ -1,21 +1,15 @@
 #ifndef GAMMA_STACK_H
 #define GAMMA_STACK_H
 
-#include <stdint.h>
+#include "utilities.h"
 #include <stdbool.h>
-
-typedef struct {
-    uint32_t x;
-    uint32_t y;
-} Tuple;
+#include <stdio.h>
 
 typedef struct stackNode StackNode_t;
 
-Tuple createTuple(uint32_t x, uint32_t y);
-
 StackNode_t* createStack(uint32_t x, uint32_t y);
 
-bool isEmpty(StackNode_t* stackPtr);
+bool isStackEmpty(StackNode_t* stackPtr);
 
 StackNode_t* putLast(StackNode_t* stackPtr, uint32_t x, uint32_t y);
 
