@@ -233,8 +233,8 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
 
         oldFields[*oldFieldsIndexPtr] = g->board[currentX][currentY];
         (*oldFieldsIndexPtr)++;
-        unite(g->board[x][y], newField);
         g->board[currentX][currentY] = newField;
+        unite(g->board[x][y], newField);
 
         for (int i = 0; i < 4; ++i) {
             uint32_t x2 = adjacent[i].x;
@@ -314,7 +314,7 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     for (int i = 0; i < 4; ++i) {
         uint32_t xi = adjacent[i].x;
         uint32_t yi = adjacent[i].y;
-        if (validCoordinates(g, xi, yi) && g->board[xi][yi]) {
+        if (validCoordinates(g, xi, yi) && g->board[xi][yi] && g->board[xi][yi]->player == busyPlayer) {
             for (int j = i + 1; j < 4; ++j) {
                 uint32_t xj = adjacent[j].x;
                 uint32_t yj = adjacent[j].y;
@@ -342,6 +342,7 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         }
     }
 
+
     int freeAdjacentFields = newFreeAdjacent(g, busyPlayer, adjacent);
     if (freeAdjacentFields < 0) {
         free(adjacent);
@@ -361,6 +362,7 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     g->playerAreas[busyPlayer] += newAreas;
 
     if (g->playerAreas[busyPlayer] > g->areas) {
+
         gamma_move(g, busyPlayer, x, y);
         return false;
     }
