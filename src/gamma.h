@@ -11,25 +11,11 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "findUnion.h"
-
 
 /**
  * Struktura przechowująca stan gry.
  */
-typedef struct gamma {
-    uint32_t width;
-    uint32_t height;
-    uint32_t players;
-    uint32_t areas;
-    uint64_t freeFields;
-    uint64_t* busyFields;
-    uint64_t* freeAdjacentFields;
-    uint32_t* playerAreas;
-    bool* goldenMoves;
-    findUnionNode_t*** board;
-} gamma_t;
-
+typedef struct gamma gamma_t;
 
 /** @brief Tworzy strukturę przechowującą stan gry.
  * Alokuje pamięć na nową strukturę przechowującą stan gry.

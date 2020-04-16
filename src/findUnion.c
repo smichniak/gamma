@@ -33,10 +33,6 @@ void unite(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2) {
     }
 }
 
-bool connected(findUnionNode_t* a, findUnionNode_t* b) {
-    return a && b && find(a) == find(b);
-}
-
-bool isRoot(findUnionNode_t* a) {
-    return find(a) == a;
+bool connected(findUnionNode_t* NodePtr1, findUnionNode_t* NodePtr2) {
+    return NodePtr1 && NodePtr2 && find(NodePtr1) == find(NodePtr2);
 }

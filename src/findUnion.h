@@ -16,8 +16,7 @@ findUnionNode_t* makeSet(uint32_t player);
 
 void unite(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2);
 
-bool connected(findUnionNode_t* a, findUnionNode_t* b);
+bool connected(findUnionNode_t* NodePtr1, findUnionNode_t* NodePtr2);
 
-bool isRoot(findUnionNode_t* a);
 
 #endif //GAMMA_FINDUNION_H
