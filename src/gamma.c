@@ -45,11 +45,11 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
     newGammaPtr->areas = areas;
     newGammaPtr->freeFields = width * height;
 
-    uint64_t* busyFields = calloc((players + 1), sizeof(uint64_t));
-    uint64_t* freeAdjacentFields = calloc((players + 1), sizeof(uint64_t));
-    uint32_t* playerAreas = calloc((players + 1), sizeof(uint32_t));
-    bool* goldenMoves = calloc((players + 1), sizeof(bool));
-    findUnionNode_t*** board = calloc(width * (height + 1), sizeof(findUnionNode_t*));
+    uint64_t* busyFields = calloc((uint64_t) players + 1, sizeof(uint64_t));
+    uint64_t* freeAdjacentFields = calloc((uint64_t) players + 1, sizeof(uint64_t));
+    uint32_t* playerAreas = calloc((uint64_t) players + 1, sizeof(uint32_t));
+    bool* goldenMoves = calloc((uint64_t) players + 1, sizeof(bool));
+    findUnionNode_t*** board = calloc((uint64_t) width * ((uint64_t) height + 1), sizeof(findUnionNode_t*));
 
     if (!busyFields || !freeAdjacentFields || !playerAreas || !goldenMoves || !board) {
         return NULL;
@@ -261,14 +261,23 @@ bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNo
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
         if (validCoordinates(g, x2, y2) && g->board[x2][y2] && g->board[x2][y2]->player == busyPlayer) {
-            bool successfulDfs = dfs(g, x2, y2, oldFields, oldFieldsIndexPtr);
-            if (!successfulDfs) {
-                free(adjacent);
-                for (uint64_t field = 0; field < *oldFieldsIndexPtr; ++field) {
-                    free(oldFields[field]);
+            bool alreadyDoneDfs = false;
+            for (int j = 0; j < i; ++j) {
+                uint32_t xj = adjacent[j].x;
+                uint32_t yj = adjacent[j].y;
+                alreadyDoneDfs = alreadyDoneDfs || (validCoordinates(g, xj, yj) &&
+                                                    connected(g->board[x2][y2], g->board[xj][yj]));
+            }
+            if (!alreadyDoneDfs) {
+                bool successfulDfs = dfs(g, x2, y2, oldFields, oldFieldsIndexPtr);
+                if (!successfulDfs) {
+                    free(adjacent);
+                    for (uint64_t field = 0; field < *oldFieldsIndexPtr; ++field) {
+                        free(oldFields[field]);
+                    }
+                    free(oldFields);
+                    return false;
                 }
-                free(oldFields);
-                return false;
             }
         }
     }
@@ -291,16 +300,16 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         return false;
     }
 
-    uint32_t busyPlayer = g->board[x][y]->player;
-    g->board[x][y]->player = 0;
-
-    findUnionNode_t** oldFields = calloc(g->height * g->width, sizeof(findUnionNode_t*));
+    findUnionNode_t** oldFields = malloc(2 * g->height * g->width * sizeof(findUnionNode_t*));
     if (!oldFields) {
         free(adjacent);
         return false;
     }
     uint64_t oldFieldsIndex = 0;
     uint64_t* oldFieldsIndexPtr = &oldFieldsIndex;
+
+    uint32_t busyPlayer = g->board[x][y]->player;
+    g->board[x][y]->player = 0;
 
     bool successfulDfs = dfsOnAdjacent(g, busyPlayer, adjacent, oldFields, oldFieldsIndexPtr);
     if (!successfulDfs) {
