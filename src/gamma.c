@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja modułu gamma.h
+ *
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
+ * @date 16.04.2020
+ */
+
 #include "gamma.h"
 #include "findUnion.h"
 #include <string.h>
@@ -219,16 +226,15 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
             return false;
         }
 
-        oldFields[*oldFieldsIndexPtr] = g->board[currentX][currentY];
-        (*oldFieldsIndexPtr)++;
-
         findUnionNode_t* newField = makeSet(player);
         if (!newField) {
             return false;
         }
 
-        g->board[currentX][currentY] = newField;
+        oldFields[*oldFieldsIndexPtr] = g->board[currentX][currentY];
+        (*oldFieldsIndexPtr)++;
         unite(g->board[x][y], newField);
+        g->board[currentX][currentY] = newField;
 
         for (int i = 0; i < 4; ++i) {
             uint32_t x2 = adjacent[i].x;
@@ -249,14 +255,8 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
     return true;
 }
 
-bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent) {
-    findUnionNode_t** oldFields = calloc(g->height * g->width, sizeof(findUnionNode_t*));
-    if (!oldFields) {
-        return false;
-    }
-    uint64_t oldFieldsIndex = 0;
-    uint64_t* oldFieldsIndexPtr = &oldFieldsIndex;
-
+bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNode_t** oldFields,
+                   uint64_t* oldFieldsIndexPtr) {
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
@@ -264,7 +264,7 @@ bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent) {
             bool successfulDfs = dfs(g, x2, y2, oldFields, oldFieldsIndexPtr);
             if (!successfulDfs) {
                 free(adjacent);
-                for (uint64_t field = 0; field < oldFieldsIndex; ++field) {
+                for (uint64_t field = 0; field < *oldFieldsIndexPtr; ++field) {
                     free(oldFields[field]);
                 }
                 free(oldFields);
@@ -273,10 +273,6 @@ bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent) {
         }
     }
 
-    for (uint64_t m = 0; m < oldFieldsIndex; ++m) {
-        free(oldFields[m]);
-    }
-    free(oldFields);
     return true;
 }
 
@@ -298,7 +294,15 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     uint32_t busyPlayer = g->board[x][y]->player;
     g->board[x][y]->player = 0;
 
-    bool successfulDfs = dfsOnAdjacent(g, busyPlayer, adjacent);
+    findUnionNode_t** oldFields = calloc(g->height * g->width, sizeof(findUnionNode_t*));
+    if (!oldFields) {
+        free(adjacent);
+        return false;
+    }
+    uint64_t oldFieldsIndex = 0;
+    uint64_t* oldFieldsIndexPtr = &oldFieldsIndex;
+
+    bool successfulDfs = dfsOnAdjacent(g, busyPlayer, adjacent, oldFields, oldFieldsIndexPtr);
     if (!successfulDfs) {
         free(adjacent);
         return false;
@@ -347,6 +351,10 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         return false;
     }
     free(adjacent);
+    for (uint64_t field = 0; field < oldFieldsIndex; ++field) {
+        free(oldFields[field]);
+    }
+    free(oldFields);
 
     g->freeAdjacentFields[busyPlayer] -= freeAdjacentFields;
     g->freeFields++;

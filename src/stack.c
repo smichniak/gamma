@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja modułu stack.h
+ *
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
+ * @date 16.04.2020
+ */
+
 #include "stack.h"
 #include <stdlib.h>
 

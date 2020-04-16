@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja modułu findUnion.h
+ *
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
+ * @date 16.04.2020
+ */
+
 #include "findUnion.h"
 
 findUnionNode_t* makeSet(uint32_t player) {

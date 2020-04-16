@@ -1,3 +1,10 @@
+/** @file
+ * Interfejs struktury stosu
+ *
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
+ * @date 16.04.2020
+ */
+
 #ifndef GAMMA_STACK_H
 #define GAMMA_STACK_H
 

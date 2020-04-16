@@ -1,3 +1,10 @@
+/** @file
+ * Interfejs funkcji pomocniczych
+ *
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
+ * @date 16.04.2020
+ */
+
 #ifndef GAMMA_UTILITIES_H
 #define GAMMA_UTILITIES_H
 
