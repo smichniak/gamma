@@ -347,6 +347,9 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
  */
 bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNode_t** oldFields,
                    uint64_t* oldFieldsIndexPtr) {
+    int newA[4] = {-1, -1, -1, -1};
+    int newAreas = -1;
+
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
@@ -360,6 +363,7 @@ bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNo
             }
             if (!alreadyDoneDfs) {
                 bool successfulDfs = dfs(g, x2, y2, oldFields, oldFieldsIndexPtr);
+                newA[i] = i;
                 if (!successfulDfs) {
                     free(adjacent);
                     for (uint64_t field = 0; field < *oldFieldsIndexPtr; ++field) {
@@ -372,7 +376,13 @@ bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNo
         }
     }
 
-    return true;
+    for (int i = 0; i < 4; ++i) {
+        if (newA[i] != -1) {
+            newAreas++;
+        }
+    }
+
+    return newAreas;
 }
 
 bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
@@ -402,16 +412,19 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     oldFields[0] = g->board[x][y];
     g->board[x][y] = NULL;
 
-    bool successfulDfs = dfsOnAdjacent(g, busyPlayer, adjacent, oldFields, oldFieldsIndexPtr);
-    if (!successfulDfs) {
+
+
+    int newAreas = dfsOnAdjacent(g, busyPlayer, adjacent, oldFields, oldFieldsIndexPtr);
+    /*if (!successfulDfs) {
         free(adjacent);
         return false;
-    }
+    }*/
 
     updateAdjacentFree(g, adjacent, 1);
 
-    int newAreas = adjacentWithPLayer(g, busyPlayer, adjacent) - 1;
-    for (int i = 0; i < 4; ++i) {
+
+
+  /*  for (int i = 0; i < 4; ++i) {
         uint32_t xi = adjacent[i].x;
         uint32_t yi = adjacent[i].y;
         if (validCoordinates(g, xi, yi) && getPlayer(g->board[xi][yi]) == busyPlayer) {
@@ -441,7 +454,7 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
                 }
             }
         }
-    }
+    }*/
 
 
     int freeAdjacentFields = newFreeAdjacent(g, busyPlayer, adjacent);
