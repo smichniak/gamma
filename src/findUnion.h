@@ -13,7 +13,8 @@
 
 typedef struct findUnionNode findUnionNode_t;
 
-/** Struktura umieszczana w zajętym polu, łączy się z sąsiednimi polami tworząc obszar.
+/** @struct findUnionNode Struktura umieszczana w zajętym polu, łączy się z sąsiednimi z tym samym
+ * graczem polami tworząc obszar.
  */
 typedef struct findUnionNode {
     uint32_t player; ///< Numer gracza na polu
@@ -29,14 +30,21 @@ typedef struct findUnionNode {
  */
 findUnionNode_t* makeSet(uint32_t player);
 
-/** @brief Łączy dwa drzewa Find-Union..
- * Łączy dwa drzewa wyko
- * @param[in, out] nodePtr1  – numer gracza, liczba dodatnia niewiększa od wartości @p players z funkcji
- * @ref gamma_new,
- * @return Wskaźnik na utworzony wierzchołek lub NULL, gdy nie udało się zaalokować pamięci.
+/** @brief Łączy dwa drzewa Find-Union.
+ * Łączy dwa drzewa wykorzystując rangi drzew do optymalizacji. Drzewo z mniejszą rangą podczepiamy pod to, z
+ * większą.
+ * @param[in, out] nodePtr1  – wskaźnik na wierzchołek pierwszego drzewa
+ * @param[in, out] nodePtr2  – wskaźnik na wierzchołek drugiego drzewa
  */
 void unite(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2);
 
+/** @brief Sprawdza, czy dwa wierzchołki są w jednym drzewie.
+ * Sprawdza, czy wierzchołki są w jednym drzewie wykorzystując strukturę Find-Union. Wierzchołki są połączone,
+ * jeśli są w drzewie z tym samym korzeniem.
+ * @param[in, out] nodePtr1  – wskaźnik na wierzchołek pierwszego drzewa
+ * @param[in, out] nodePtr2  – wskaźnik na wierzchołek drugiego drzewa
+ * @return true, jeśli są połączone, false jeśli dowolny z nich jest NULL lub nie są połączone
+ */
 bool connected(findUnionNode_t* NodePtr1, findUnionNode_t* NodePtr2);
 
 

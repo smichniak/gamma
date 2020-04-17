@@ -23,8 +23,8 @@ set(TEST_FILE="src/gamma_test.c")
 
 # Wskazujemy pliki źródłowe.
 set(SOURCE_FILES
-        ${TEST_FILE}
-        #src/gamma_test.c
+        #${TEST_FILE}
+        src/gamma_test.c
         src/gamma.c src/gamma.h
         src/findUnion.c src/findUnion.h
         src/stack.c src/stack.h

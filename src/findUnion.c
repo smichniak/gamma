@@ -18,11 +18,17 @@ findUnionNode_t* makeSet(uint32_t player) {
     return nodePtr;
 }
 
-findUnionNode_t* find(findUnionNode_t* element) {
-    if (element->parent != element) {
-        element->parent = find(element->parent);
+/** @brief Znajduje korzeń wejściowego drzewa.
+ * Znajduje korzeń wejściowego drzewa Find-Union. Wykorzystuje kompresje ścieżek, by zmniejszać wysokość drzewa
+ * i optymalizować kolejne wyszukania.
+ * @param[in, out] nodePtr  – wskaźnik na wierzchołek drzewa
+ * @return Wskaźnik na korzeń drzewa, do którego należy wejściowy wierzchołek
+ */
+findUnionNode_t* find(findUnionNode_t* nodePtr) {
+    if (nodePtr->parent != nodePtr) {
+        nodePtr->parent = find(nodePtr->parent);
     }
-    return element->parent;
+    return nodePtr->parent;
 }
 
 void unite(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2) {
