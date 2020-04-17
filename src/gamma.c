@@ -334,10 +334,9 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
     return true;
 }
 
-//TODO
-//Update doc
 /** @brief Uruchamia algorytm dfs dla sąsiednich pól.
  * Przegląda tablicę pól @p adjacent i uruchami funkcję @ref dfs dla każdego z nich.
+ * Liczy nowe obszary powstałe przy usunięciu pionka.
  * @param[in,out] g   – wskaźnik na strukturę przechowującą stan gry,
  * @param[in] busyPlayer  – numer gracza na usuwanym polu, liczba dodatnia niewiększa
  *                          od wartości @p players z funkcji @ref gamma_new,
@@ -345,12 +344,10 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
  * @param[in, out] oldFields - wskaźnik na pierwszy element tablicy wskaźników na pola,
  * @param[in, out] oldFieldsIndexPtr - wskaźnik na indeks pierwszego wolnego miejsca w tablicy
  * @p oldFields.
- * @return Wartość @p true, jeśli pomyślnie wykonano dfs dla wszytskich sąsiednich pól, @p false
- * w przypadku problemów z pamięcią.
+ * @return Liczba nowych obszarów w przypadku sukcjesu, -2 jeśli wystąpiły problemy z pamięcią.
  */
 int dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNode_t** oldFields,
                    uint64_t* oldFieldsIndexPtr) {
-    int newA[4] = {-1, -1, -1, -1};
     int newAreas = -1;
 
     for (int i = 0; i < 4; ++i) {
@@ -367,7 +364,7 @@ int dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNod
             if (!alreadyDoneDfs) {
 
                 bool successfulDfs = dfs(g, x2, y2, oldFields, oldFieldsIndexPtr);
-                newA[i] = i;
+                newAreas++;
                 if (!successfulDfs) {
                     free(adjacent);
                     for (uint64_t field = 0; field < *oldFieldsIndexPtr; ++field) {
@@ -379,13 +376,6 @@ int dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNod
             }
         }
     }
-
-    for (int i = 0; i < 4; ++i) {
-        if (newA[i] != -1) {
-            newAreas++;
-        }
-    }
-
 
     return newAreas;
 }
@@ -420,47 +410,12 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
 
 
     int newAreas = dfsOnAdjacent(g, busyPlayer, adjacent, oldFields, oldFieldsIndexPtr);
-    /*if (!successfulDfs) {
+    if (newAreas == -2) {
         free(adjacent);
         return false;
-    }*/
+    }
 
     updateAdjacentFree(g, adjacent, 1);
-
-
-
-  /*  for (int i = 0; i < 4; ++i) {
-        uint32_t xi = adjacent[i].x;
-        uint32_t yi = adjacent[i].y;
-        if (validCoordinates(g, xi, yi) && getPlayer(g->board[xi][yi]) == busyPlayer) {
-            for (int j = i + 1; j < 4; ++j) {
-                uint32_t xj = adjacent[j].x;
-                uint32_t yj = adjacent[j].y;
-                if (validCoordinates(g, xj, yj) &&
-                    getPlayer(g->board[xj][yj]) == busyPlayer &&
-                    connected(g->board[xi][yi], g->board[xj][yj])) {
-                    newAreas--;
-                    for (int k = j + 1; k < 4; ++k) {
-                        uint32_t xk = adjacent[k].x;
-                        uint32_t yk = adjacent[k].y;
-                        if (validCoordinates(g, xk, yk) && g->board[xk][yk] &&
-                            connected(g->board[xj][yj], g->board[xk][yk])) {
-                            newAreas++;
-                            if (k == 2) {
-                                uint32_t x3 = adjacent[3].x;
-                                uint32_t y3 = adjacent[3].y;
-                                if (validCoordinates(g, x3, y3) && g->board[x3][y3] &&
-                                    connected(g->board[xk][yk], g->board[x3][y3])) {
-                                    newAreas--;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }*/
-
 
     int freeAdjacentFields = newFreeAdjacent(g, busyPlayer, adjacent);
     if (freeAdjacentFields < 0) {
