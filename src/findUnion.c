@@ -7,6 +7,15 @@
 
 #include "findUnion.h"
 
+/** @struct findUnionNode Struktura umieszczana w zajętym polu, łączy się z sąsiednimi z tym samym
+ * graczem polami tworząc obszar.
+ */
+typedef struct findUnionNode {
+    uint32_t player; ///< Numer gracza na polu
+    uint64_t rank; ///< Ranga pola, używana w łączeniu drzew Find-Union
+    findUnionNode_t* parent; ///< Wskaźnik na rodziaca w strukturze Find-Union
+} findUnionNode_t;
+
 findUnionNode_t* makeSet(uint32_t player) {
     findUnionNode_t* nodePtr = malloc(sizeof(findUnionNode_t));
     if (!nodePtr) {
@@ -18,11 +27,18 @@ findUnionNode_t* makeSet(uint32_t player) {
     return nodePtr;
 }
 
+uint32_t getPlayer(findUnionNode_t* nodePtr) {
+    if (!nodePtr) {
+        return 0;
+    }
+    return nodePtr->player;
+}
+
 /** @brief Znajduje korzeń wejściowego drzewa.
  * Znajduje korzeń wejściowego drzewa Find-Union. Wykorzystuje kompresje ścieżek, by zmniejszać wysokość drzewa
  * i optymalizować kolejne wyszukania.
- * @param[in, out] nodePtr  – wskaźnik na wierzchołek drzewa
- * @return Wskaźnik na korzeń drzewa, do którego należy wejściowy wierzchołek
+ * @param[in, out] nodePtr  – wskaźnik na wierzchołek drzewa.
+ * @return Wskaźnik na korzeń drzewa, do którego należy wejściowy wierzchołek.
  */
 findUnionNode_t* find(findUnionNode_t* nodePtr) {
     if (nodePtr->parent != nodePtr) {

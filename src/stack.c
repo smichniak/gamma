@@ -8,10 +8,12 @@
 #include "stack.h"
 #include <stdlib.h>
 
+/** @struct stackNode Struktura stosu.
+ */
 struct stackNode {
-    uint32_t x;
-    uint32_t y;
-    StackNode_t* next;
+    uint32_t x; ///< Pierwsza pamiętana wartość elementu stosu
+    uint32_t y; ///< Druga pamiętana wartość elementu stosu
+    StackNode_t* next; ///< Wskaźnik na nastepny element stosu
 };
 
 StackNode_t* createStack(uint32_t x, uint32_t y) {

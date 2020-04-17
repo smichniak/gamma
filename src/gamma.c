@@ -116,7 +116,7 @@ int adjacentWithPLayer(gamma_t* g, uint32_t player, Tuple* adjacent) {
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
         samePlayerAdjacent +=
-                validCoordinates(g, x2, y2) && g->board[x2][y2] && g->board[x2][y2]->player == player;
+                validCoordinates(g, x2, y2) && getPlayer(g->board[x2][y2]) == player;
     }
     return samePlayerAdjacent;
 }
@@ -146,7 +146,7 @@ int newAreas(gamma_t* g, findUnionNode_t* field, Tuple* adjacent) {
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
-        if (validCoordinates(g, x2, y2) && g->board[x2][y2] && g->board[x2][y2]->player == field->player &&
+        if (validCoordinates(g, x2, y2) && getPlayer(g->board[x2][y2]) == getPlayer(field) &&
             !connected(field, g->board[x2][y2])) {
 
             unite(field, g->board[x2][y2]);
@@ -164,11 +164,11 @@ void updateAdjacentFree(gamma_t* g, Tuple* adjacent, int toAdd) {
         if (validCoordinates(g, x2, y2)) {
             bool counted = false;
             for (int j = 0; j < i; ++j) {
-                counted = counted || (g->board[x2][y2] && g->board[x2][y2]->player == alreadyCounted[j]);
+                counted = counted || getPlayer(g->board[x2][y2]) == alreadyCounted[j];
             }
             if (g->board[x2][y2] && !counted) {
-                g->freeAdjacentFields[g->board[x2][y2]->player] += toAdd;
-                alreadyCounted[i] = g->board[x2][y2]->player;
+                g->freeAdjacentFields[getPlayer(g->board[x2][y2])] += toAdd;
+                alreadyCounted[i] = getPlayer(g->board[x2][y2]);
             }
         }
     }
@@ -208,7 +208,7 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
     if (!g->board[x][y]) {
         return true;
     }
-    uint32_t player = g->board[x][y]->player;
+    uint32_t player = getPlayer(g->board[x][y]);
     StackNode_t* stackPtr = createStack(x, y);
 
     if (!stackPtr) {
@@ -239,7 +239,7 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
         for (int i = 0; i < 4; ++i) {
             uint32_t x2 = adjacent[i].x;
             uint32_t y2 = adjacent[i].y;
-            if (validCoordinates(g, x2, y2) && g->board[x2][y2] && g->board[x2][y2]->player == player &&
+            if (validCoordinates(g, x2, y2) && getPlayer(g->board[x2][y2]) == player &&
                 !connected(g->board[x][y], g->board[x2][y2])) {
                 StackNode_t* newLast = putLast(stackPtr, x2, y2);
                 if (!newLast) {
@@ -260,7 +260,7 @@ bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNo
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
-        if (validCoordinates(g, x2, y2) && g->board[x2][y2] && g->board[x2][y2]->player == busyPlayer) {
+        if (validCoordinates(g, x2, y2) && getPlayer(g->board[x2][y2]) == busyPlayer) {
             bool alreadyDoneDfs = false;
             for (int j = 0; j < i; ++j) {
                 uint32_t xj = adjacent[j].x;
@@ -287,7 +287,7 @@ bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNo
 
 bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     if (!g || !validPlayer(g, player) || !validCoordinates(g, x, y) || g->goldenMoves[player] ||
-        !g->board[x][y] || g->board[x][y]->player == player) {
+        !g->board[x][y] || getPlayer(g->board[x][y]) == player) {
         return false;
     }
     Tuple* adjacent = getAdjacent(g, x, y);
@@ -305,11 +305,12 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         free(adjacent);
         return false;
     }
-    uint64_t oldFieldsIndex = 0;
+    uint64_t oldFieldsIndex = 1;
     uint64_t* oldFieldsIndexPtr = &oldFieldsIndex;
 
-    uint32_t busyPlayer = g->board[x][y]->player;
-    g->board[x][y]->player = 0;
+    uint32_t busyPlayer = getPlayer(g->board[x][y]);
+    oldFields[0] = g->board[x][y];
+    g->board[x][y] = NULL;
 
     bool successfulDfs = dfsOnAdjacent(g, busyPlayer, adjacent, oldFields, oldFieldsIndexPtr);
     if (!successfulDfs) {
@@ -323,12 +324,12 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     for (int i = 0; i < 4; ++i) {
         uint32_t xi = adjacent[i].x;
         uint32_t yi = adjacent[i].y;
-        if (validCoordinates(g, xi, yi) && g->board[xi][yi] && g->board[xi][yi]->player == busyPlayer) {
+        if (validCoordinates(g, xi, yi) &&  getPlayer(g->board[xi][yi]) == busyPlayer) {
             for (int j = i + 1; j < 4; ++j) {
                 uint32_t xj = adjacent[j].x;
                 uint32_t yj = adjacent[j].y;
-                if (validCoordinates(g, xj, yj) && g->board[xj][yj] &&
-                    g->board[xj][yj]->player == busyPlayer && connected(g->board[xi][yi], g->board[xj][yj])) {
+                if (validCoordinates(g, xj, yj) &&
+                    getPlayer(g->board[xj][yj]) == busyPlayer && connected(g->board[xi][yi], g->board[xj][yj])) {
                     newAreas--;
                     for (int k = j + 1; k < 4; ++k) {
                         uint32_t xk = adjacent[k].x;
@@ -358,8 +359,8 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         return false;
     }
     free(adjacent);
-    free(g->board[x][y]);
-    g->board[x][y] = NULL;
+    //free(g->board[x][y]);
+   // g->board[x][y] = NULL;
     for (uint64_t field = 0; field < oldFieldsIndex; ++field) {
         free(oldFields[field]);
     }
@@ -469,7 +470,7 @@ char* gamma_board(gamma_t* g) {
         for (uint32_t column = 0; column < g->width; ++column) {
 
             findUnionNode_t* fieldPtr = g->board[column][row];
-            uint32_t player = fieldPtr ? fieldPtr->player : 0;
+            uint32_t player = getPlayer(fieldPtr);
 
             stringIndex = addToBoard(player, maxPlayerDigits, stringIndex, boardString);
             if (stringIndex == 0) {

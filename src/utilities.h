@@ -10,7 +10,10 @@
 
 #include <stdint.h>
 
+/** @brief Maksymalan wartość zmiennej typu uint32_t.
+ */
 const uint32_t MAX_INT32;
+
 
 typedef struct {
     uint32_t x;
