@@ -1,14 +1,14 @@
 /** @file
  * Implementacja modułu findUnion.h
  *
- * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
  * @date 16.04.2020
  */
 
 #include "findUnion.h"
 
-/** @struct findUnionNode_t Struktura umieszczana w zajętym polu, łączy się z sąsiednimi z tym samym
- * graczem polami tworząc obszar.
+/** @struct findUnionNode_t
+ * Struktura umieszczana w zajętym polu, łączy się z sąsiednimi polami z tym samym graczem tworząc obszar.
  */
 typedef struct findUnionNode {
     uint32_t player; ///< Numer gracza na polu

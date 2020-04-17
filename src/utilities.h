@@ -1,7 +1,7 @@
 /** @file
  * Interfejs funkcji pomocniczych
  *
- * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
  * @date 16.04.2020
  */
 
@@ -10,7 +10,8 @@
 
 #include <stdint.h>
 
-/** @struct Tuple Struktura pary uporządkowanej. Zawiera dwie liczby nieujemne.
+/** @struct Tuple
+ * Struktura pary uporządkowanej. Zawiera dwie liczby nieujemne.
  */
 typedef struct {
     uint32_t x;

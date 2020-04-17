@@ -1,7 +1,7 @@
 /** @file
  * Interfejs struktury drzewa Find-Union
  *
- * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
  * @date 16.04.2020
  */
 
@@ -11,7 +11,7 @@
 #include "stack.h"
 #include <stdlib.h>
 
-/**
+/** @struct findUnionNode_t
  * Struktura przechowująca wierzchołek drzewa Find-Union.
  */
 typedef struct findUnionNode findUnionNode_t;

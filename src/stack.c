@@ -1,14 +1,15 @@
 /** @file
  * Implementacja modułu stack.h
  *
- * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
  * @date 16.04.2020
  */
 
 #include "stack.h"
 #include <stdlib.h>
 
-/** @struct stackNode Struktura stosu. Przechowuje dwie wartości i wskaźnik na następny element stosu.
+/** @struct stackNode
+ * Struktura stosu. Przechowuje dwie wartości i wskaźnik na następny element stosu.
  */
 struct stackNode {
     uint32_t x; ///< Pierwsza pamiętana wartość elementu stosu

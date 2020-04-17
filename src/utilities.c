@@ -1,7 +1,7 @@
 /** @file
  * Implementacja modułu utilities.h
  *
- * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
  * @date 16.04.2020
  */
 

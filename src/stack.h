@@ -1,7 +1,7 @@
 /** @file
  * Interfejs struktury stosu
  *
- * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
  * @date 16.04.2020
  */
 
@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-/**
+/** @struct StackNode_t
  * Struktura przechowująca jeden element stosu.
  */
 typedef struct stackNode StackNode_t;

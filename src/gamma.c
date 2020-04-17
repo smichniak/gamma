@@ -1,7 +1,7 @@
 /** @file
  * Implementacja modułu gamma.h
  *
- * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
  * @date 16.04.2020
  */
 
@@ -9,7 +9,8 @@
 #include "findUnion.h"
 #include <string.h>
 
-/** @struct gamma_t Struktura przechowująca stan gry.
+/** @struct gamma_t
+ * Struktura przechowująca stan gry.
  */
 typedef struct gamma {
     uint32_t width; ///< Szerokość planszy, liczba dodatnia
