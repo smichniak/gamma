@@ -9,7 +9,7 @@
 #include "findUnion.h"
 #include <string.h>
 
-/** @struct gamma_t
+/** @struct gamma
  * Struktura przechowująca stan gry.
  */
 struct gamma {
@@ -32,7 +32,7 @@ struct gamma {
  *                      @p width z funkcji @ref gamma_new,
  * @param[in] y       – numer wiersza, liczba nieujemna mniejsza od wartości
  *                      @p height z funkcji @ref gamma_new.
- * @return Wartość @p true, dla poprawnych współrzędnych, a @p false,
+ * @return Wartość @p true, dla poprawnych współrzędnych, a @p false
  * w przeciwnym przypadku.
  */
 bool validCoordinates(gamma_t* g, uint32_t x, uint32_t y) {
@@ -43,7 +43,7 @@ bool validCoordinates(gamma_t* g, uint32_t x, uint32_t y) {
  * @param[in] g       – wskaźnik na strukturę przechowującą stan gry,
  * @param[in] player  – numer gracza, liczba dodatnia niewiększa od wartości
  *                      @p players z funkcji @ref gamma_new.
- * @return Wartość @p true, dla poprawnego gracza, a @p false,
+ * @return Wartość @p true, dla poprawnego gracza, a @p false
  * w przeciwnym przypadku.
  */
 bool validPlayer(gamma_t* g, uint32_t player) {
@@ -213,8 +213,8 @@ int newAreasMove(gamma_t* g, findUnionNode_t* field, Tuple* adjacent) {
 
 /** @brief Aktualizuje liczbę wolnych pól.
  * Przegląda tablicę pól @p adjacent i dla każdego pola aktualizuje liczbę wolnych pół, wokoł tego pola.
- * Każdego gracza zliczamy tylko raz. Przy położeniu nowego pionka zmniejszamy liczbę wolnych pól o 1,
- * gdy usuwamy pionek, zwiększamy liczbę.
+ * Każdego gracza zliczamy tylko raz. Przy położeniu nowego pionka zmniejszamy liczbę wolnych pól o 1, a
+ * gdy usuwamy pionek, zwiększamy.
  * @param[in, out] g           – wskaźnik na strukturę przechowującą stan gry,
  * @param[in, out] adjacent    - maksymalnie czteroelementowa tablica par współrzędnych @p x i @p y
  * @param[in] toAdd            - @p -1 lub @p 1

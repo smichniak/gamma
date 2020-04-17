@@ -17,7 +17,7 @@
  */
 typedef struct stackNode StackNode_t;
 
-/** @brief Tworzy stos
+/** @brief Tworzy stos.
  * Alokuje pamięć na nowy stos. Inicjuje stos z wejściowymi wartościami.
  * @param[in] x  – numer kolumny, liczba nieujemna mniejsza od wartości
  *                      @p width z funkcji @ref gamma_new,
