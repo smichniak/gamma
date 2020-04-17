@@ -10,11 +10,11 @@
 /** @struct findUnionNode_t
  * Struktura umieszczana w zajętym polu, łączy się z sąsiednimi polami z tym samym graczem tworząc obszar.
  */
-typedef struct findUnionNode {
+struct findUnionNode {
     uint32_t player; ///< Numer gracza na polu
     uint64_t rank; ///< Ranga pola, używana w łączeniu drzew Find-Union
     findUnionNode_t* parent; ///< Wskaźnik na rodziaca w strukturze Find-Union
-} findUnionNode_t;
+};
 
 findUnionNode_t* makeSet(uint32_t player) {
     findUnionNode_t* nodePtr = malloc(sizeof(findUnionNode_t));
@@ -62,6 +62,6 @@ void unite(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2) {
     }
 }
 
-bool connected(findUnionNode_t* NodePtr1, findUnionNode_t* NodePtr2) {
-    return NodePtr1 && NodePtr2 && find(NodePtr1) == find(NodePtr2);
+bool connected(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2) {
+    return nodePtr1 && nodePtr2 && find(nodePtr1) == find(nodePtr2);
 }

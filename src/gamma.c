@@ -12,7 +12,7 @@
 /** @struct gamma_t
  * Struktura przechowująca stan gry.
  */
-typedef struct gamma {
+struct gamma {
     uint32_t width; ///< Szerokość planszy, liczba dodatnia
     uint32_t height; ///< Wysokość planszy, liczba dodatnia
     uint32_t players; ///< Liczba graczy, liczba dodatnia
@@ -23,7 +23,7 @@ typedef struct gamma {
     uint32_t* playerAreas; ///< Tablica zajętych obszarów przez danego gracza, indeksowana numerami graczy
     bool* goldenMoves; ///< Tablica wartości logicznych, @p false dla gracza, który jeszcze nie wykonał złotego ruchu, @p true w przeciwnym przyapdku, indeksowana numerami graczy
     findUnionNode_t*** board; ///< Dwuwymiarowa tablica planszy, w każdym zajętym polu wskaźnik na wierzchołek drzewa Find-Union obszaru, indeksowana współrzędnymi pola
-} gamma_t;
+};
 
 /** @brief Sprawdza poprawność współrzędnych.
  * Sprawdza, czy współrzędne @p x i @p y są poprawne dla planszy @p g.
@@ -279,7 +279,7 @@ bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
  * @param[in, out] oldFields - wskaźnik na pierwszy element tablicy wskaźników na pola,
  * @param[in, out] oldFieldsIndexPtr - wskaźnik na indeks pierwszego wolnego miejsca w tablicy
  * @p oldFields.
- * @return Wartość @p true, jeśli pomyślnie wykonano dfs dla wszytskich, potrzebnych pól, @p false,
+ * @return Wartość @p true, jeśli pomyślnie wykonano dfs dla wszytskich potrzebnych pól, @p false
  * w przypadku problemów z pamięcią.
  */
 bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64_t* oldFieldsIndexPtr) {
@@ -342,7 +342,7 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
  * @param[in, out] oldFields - wskaźnik na pierwszy element tablicy wskaźników na pola,
  * @param[in, out] oldFieldsIndexPtr - wskaźnik na indeks pierwszego wolnego miejsca w tablicy
  * @p oldFields.
- * @return Wartość @p true, jeśli pomyślnie wykonano dfs dla wszytskich sąsiednich pól, @p false,
+ * @return Wartość @p true, jeśli pomyślnie wykonano dfs dla wszytskich sąsiednich pól, @p false
  * w przypadku problemów z pamięcią.
  */
 bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNode_t** oldFields,

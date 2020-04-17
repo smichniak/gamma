@@ -46,7 +46,7 @@ void unite(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2);
  * @param[in, out] nodePtr2  – wskaźnik na wierzchołek drugiego drzewa.
  * @return Wartość @p true, jeśli są połączone, @p false jeśli dowolny z nich jest NULL lub nie są połączone.
  */
-bool connected(findUnionNode_t* NodePtr1, findUnionNode_t* NodePtr2);
+bool connected(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2);
 
 
 #endif //GAMMA_FINDUNION_H
