@@ -1,13 +1,11 @@
 /** @file
- * Implementacja funckji pomocniczych
+ * Implementacja modułu utilities.h
  *
  * @author Szymon Michniak <s.michniak@student.uw.edu.pll>
  * @date 16.04.2020
  */
 
 #include "utilities.h"
-
-const uint32_t MAX_INT32 = 4294967295;
 
 Tuple createTuple(uint32_t x, uint32_t y) {
     Tuple newTuple;

@@ -7,7 +7,7 @@
 
 #include "findUnion.h"
 
-/** @struct findUnionNode Struktura umieszczana w zajętym polu, łączy się z sąsiednimi z tym samym
+/** @struct findUnionNode_t Struktura umieszczana w zajętym polu, łączy się z sąsiednimi z tym samym
  * graczem polami tworząc obszar.
  */
 typedef struct findUnionNode {

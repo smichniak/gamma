@@ -8,7 +8,7 @@
 #include "stack.h"
 #include <stdlib.h>
 
-/** @struct stackNode Struktura stosu.
+/** @struct stackNode Struktura stosu. Przechowuje dwie wartości i wskaźnik na następny element stosu.
  */
 struct stackNode {
     uint32_t x; ///< Pierwsza pamiętana wartość elementu stosu
