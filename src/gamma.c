@@ -264,6 +264,7 @@ bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     g->freeFields--;
 
     free(adjacent);
+
     return true;
 }
 
@@ -333,6 +334,8 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
     return true;
 }
 
+//TODO
+//Update doc
 /** @brief Uruchamia algorytm dfs dla sąsiednich pól.
  * Przegląda tablicę pól @p adjacent i uruchami funkcję @ref dfs dla każdego z nich.
  * @param[in,out] g   – wskaźnik na strukturę przechowującą stan gry,
@@ -345,7 +348,7 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
  * @return Wartość @p true, jeśli pomyślnie wykonano dfs dla wszytskich sąsiednich pól, @p false
  * w przypadku problemów z pamięcią.
  */
-bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNode_t** oldFields,
+int dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNode_t** oldFields,
                    uint64_t* oldFieldsIndexPtr) {
     int newA[4] = {-1, -1, -1, -1};
     int newAreas = -1;
@@ -362,6 +365,7 @@ bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNo
                                                     connected(g->board[x2][y2], g->board[xj][yj]));
             }
             if (!alreadyDoneDfs) {
+
                 bool successfulDfs = dfs(g, x2, y2, oldFields, oldFieldsIndexPtr);
                 newA[i] = i;
                 if (!successfulDfs) {
@@ -370,7 +374,7 @@ bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNo
                         free(oldFields[field]);
                     }
                     free(oldFields);
-                    return false;
+                    return -2;
                 }
             }
         }
@@ -381,6 +385,7 @@ bool dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNo
             newAreas++;
         }
     }
+
 
     return newAreas;
 }
