@@ -38,7 +38,7 @@ static const char board[] =
  * a w przeciwnym przypadku kod zakończenia programu jest kodem błędu.
  */
 int main() {
-    gamma_t *g;
+    gamma_t* g;
 
     g = gamma_new(0, 0, 0, 0);
     assert(g == NULL);
@@ -87,7 +87,7 @@ int main() {
     assert(gamma_busy_fields(g, 2) == 4);
     assert(gamma_free_fields(g, 2) == 10);
 
-    char *p = gamma_board(g);
+    char* p = gamma_board(g);
     assert(p);
     assert(strcmp(p, board) == 0);
     printf("%s", p);

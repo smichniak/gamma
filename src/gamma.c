@@ -21,8 +21,10 @@ struct gamma {
     uint64_t* busyFields; ///< Tablica liczby pól zajętych przez danego gracza, indeksowana numerami graczy
     uint64_t* freeAdjacentFields; ///< Tablica wolnych pól wokół danego gracza, indeksowana numerami graczy
     uint32_t* playerAreas; ///< Tablica zajętych obszarów przez danego gracza, indeksowana numerami graczy
-    bool* goldenMoves; ///< Tablica wartości logicznych, @p false dla gracza, który jeszcze nie wykonał złotego ruchu, @p true w przeciwnym przyapdku, indeksowana numerami graczy
-    findUnionNode_t*** board; ///< Dwuwymiarowa tablica planszy, w każdym zajętym polu wskaźnik na wierzchołek drzewa Find-Union obszaru, indeksowana współrzędnymi pola
+    bool* goldenMoves; /**< Tablica wartości logicznych, @p false dla gracza, który jeszcze nie wykonał złotego
+                            ruchu, @p true w przeciwnym przyapdku, indeksowana numerami graczy */
+    findUnionNode_t*** board; /**< Dwuwymiarowa tablica planszy, w każdym zajętym polu wskaźnik na wierzchołek
+                                   drzewa Find-Union obszaru, indeksowana współrzędnymi pola */
 };
 
 /** @brief Sprawdza poprawność współrzędnych.
@@ -65,6 +67,7 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
     newGammaPtr->areas = areas;
     newGammaPtr->freeFields = width * height;
 
+    //Rzutowanie na uint64_t, ponieważ dla players = UINT32_MAX, players + 1 = 0
     uint64_t* busyFields = calloc((uint64_t) players + 1, sizeof(uint64_t));
     uint64_t* freeAdjacentFields = calloc((uint64_t) players + 1, sizeof(uint64_t));
     uint32_t* playerAreas = calloc((uint64_t) players + 1, sizeof(uint32_t));
@@ -79,10 +82,10 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
     newGammaPtr->playerAreas = playerAreas;
     newGammaPtr->goldenMoves = goldenMoves;
 
-    // columnPtr is now pointing to the first element in of 2D array
+    //Wskaźnik kolumny wskazuje na pierwszy element w tablicy 2D
     findUnionNode_t** columnPtr = (findUnionNode_t**) (board + width);
 
-    // for loop to point column pointer to appropriate location in 2D array
+    //Dla każdej kolumny ustawiamy jej wskaźnik na prawidłowe miejsce
     for (uint32_t i = 0; i < width; ++i) {
         board[i] = (columnPtr + height * i);
     }
@@ -118,6 +121,7 @@ void gamma_delete(gamma_t* g) {
  */
 Tuple* getAdjacent(gamma_t* g, uint32_t x, uint32_t y) {
     Tuple* adjacent;
+    //Są 4 sąsiedznie pola
     adjacent = calloc(4, sizeof(Tuple));
     if (!adjacent) {
         return NULL;
@@ -130,7 +134,8 @@ Tuple* getAdjacent(gamma_t* g, uint32_t x, uint32_t y) {
                 if (validCoordinates(g, x + dx, y + dy)) {
                     adjacent[index] = createTuple(x + dx, y + dy);
                 } else {
-                    //Field out of bound
+                    //Pole poza granicami planszy oznaczamy przez UINT32_MAX
+                    //Normalnie pole nigdy nie ma takich współrzędnych
                     adjacent[index] = createTuple(UINT32_MAX, UINT32_MAX);
                 }
                 index++;
@@ -153,8 +158,7 @@ int adjacentWithPLayer(gamma_t* g, uint32_t player, Tuple* adjacent) {
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
-        samePlayerAdjacent +=
-                validCoordinates(g, x2, y2) && getPlayer(g->board[x2][y2]) == player;
+        samePlayerAdjacent += validCoordinates(g, x2, y2) && getPlayer(g->board[x2][y2]) == player;
     }
     return samePlayerAdjacent;
 }
@@ -180,6 +184,7 @@ int newFreeAdjacent(gamma_t* g, uint32_t player, Tuple* adjacent) {
                 return -1;
             }
             if (adjacentWithPLayer(g, player, adjacentTo2)) {
+                //Odejmujemy pola, które już są policzone, jako wolne i sąsiadujące z danym graczem
                 freeAdjacent--;
             }
             free(adjacentTo2);
@@ -191,12 +196,13 @@ int newFreeAdjacent(gamma_t* g, uint32_t player, Tuple* adjacent) {
 /** @brief Zwraca liczbę nowych obszarów po zwykłym ruchu.
  * Przegląda tablicę pól @p adjacent i zlicza pola zajęte przez gracza @p player,
  * które po położeniu pionka łączą się w jeden obszar.
- * @param[in, out] g           – wskaźnik na strukturę przechowującą stan gry,
- * @param[in, out] field  – pole, na którym stawiamy pionek, element @p g,
- * @param[in, out] adjacent    - maksymalnie czteroelementowa tablica par współrzędnych @p x i @p y
+ * @param[in, out] g         – wskaźnik na strukturę przechowującą stan gry,
+ * @param[in, out] field     – pole, na którym stawiamy pionek, element @p g,
+ * @param[in, out] adjacent  - maksymalnie czteroelementowa tablica par współrzędnych @p x i @p y
  * @return Liczba ze zbioru {-3, -2, -1, 0, 1}, o ile zmienia się liczba obszarów zajętych przez gracza.
  */
 int newAreasMove(gamma_t* g, findUnionNode_t* field, Tuple* adjacent) {
+    //Nowy pionek może statnowić jeden, nowy obszar
     int newArea = 1;
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
@@ -205,6 +211,7 @@ int newAreasMove(gamma_t* g, findUnionNode_t* field, Tuple* adjacent) {
             !connected(field, g->board[x2][y2])) {
 
             unite(field, g->board[x2][y2]);
+            //Nowych obszarów jest mniej, jeśli dołączamy się do już istniejacych
             newArea--;
         }
     }
@@ -255,6 +262,7 @@ bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         return false;
     }
 
+    //Stawiamy nowy pionek, zmniejszamy o 1 wolne pola
     updateAdjacentFree(g, adjacent, -1);
 
     g->busyFields[player]++;
@@ -264,7 +272,6 @@ bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     g->freeFields--;
 
     free(adjacent);
-
     return true;
 }
 
@@ -272,11 +279,11 @@ bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
  * Po usunięciu pionka przechodzi pola połączone z nim i umieszcza w nich nowe wskaźniki na wierzchołki
  * Find-Union, które nie są połączone z usuniętym pionkiem. Stare pola do zwolnienia później umieszcza
  * w tablicy, na którą wskazuje @p oldFields.
- * @param[in,out] g   – wskaźnik na strukturę przechowującą stan gry,
- * @param[in] x       – numer kolumny, liczba nieujemna mniejsza od wartości
- *                      @p width z funkcji @ref gamma_new,
- * @param[in] y       – numer wiersza, liczba nieujemna mniejsza od wartości
- *                      @p height z funkcji @ref gamma_new,
+ * @param[in,out] g          – wskaźnik na strukturę przechowującą stan gry,
+ * @param[in] x              – numer kolumny, liczba nieujemna mniejsza od wartości
+ *                             @p width z funkcji @ref gamma_new,
+ * @param[in] y              – numer wiersza, liczba nieujemna mniejsza od wartości
+ *                             @p height z funkcji @ref gamma_new,
  * @param[in, out] oldFields - wskaźnik na pierwszy element tablicy wskaźników na pola,
  * @param[in, out] oldFieldsIndexPtr - wskaźnik na indeks pierwszego wolnego miejsca w tablicy
  * @p oldFields.
@@ -337,17 +344,18 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
 /** @brief Uruchamia algorytm dfs dla sąsiednich pól.
  * Przegląda tablicę pól @p adjacent i uruchami funkcję @ref dfs dla każdego z nich.
  * Liczy nowe obszary powstałe przy usunięciu pionka.
- * @param[in,out] g   – wskaźnik na strukturę przechowującą stan gry,
- * @param[in] busyPlayer  – numer gracza na usuwanym polu, liczba dodatnia niewiększa
- *                          od wartości @p players z funkcji @ref gamma_new,
- * @param[in, out] adjacent - maksymalnie czteroelementowa tablica par współrzędnych @p x i @p y
+ * @param[in,out] g          – wskaźnik na strukturę przechowującą stan gry,
+ * @param[in] busyPlayer     – numer gracza na usuwanym polu, liczba dodatnia niewiększa
+ *                             od wartości @p players z funkcji @ref gamma_new,
+ * @param[in, out] adjacent  - maksymalnie czteroelementowa tablica par współrzędnych @p x i @p y
  * @param[in, out] oldFields - wskaźnik na pierwszy element tablicy wskaźników na pola,
  * @param[in, out] oldFieldsIndexPtr - wskaźnik na indeks pierwszego wolnego miejsca w tablicy
  * @p oldFields.
  * @return Liczba nowych obszarów w przypadku sukcjesu, -2 jeśli wystąpiły problemy z pamięcią.
  */
 int dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNode_t** oldFields,
-                   uint64_t* oldFieldsIndexPtr) {
+                  uint64_t* oldFieldsIndexPtr) {
+    //Usunięcie pionka może zmniejszyć liczbę obszarów o 1
     int newAreas = -1;
 
     for (int i = 0; i < 4; ++i) {
@@ -362,8 +370,8 @@ int dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNod
                                                     connected(g->board[x2][y2], g->board[xj][yj]));
             }
             if (!alreadyDoneDfs) {
-
                 bool successfulDfs = dfs(g, x2, y2, oldFields, oldFieldsIndexPtr);
+                //Jeśli pola po usunięciu przestają być połączone, to powstaje więcej obszarów
                 newAreas++;
                 if (!successfulDfs) {
                     free(adjacent);
@@ -395,19 +403,18 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         return false;
     }
 
+    //Tablica na stare pola, które są połączone z usuwanym polem
     findUnionNode_t** oldFields = malloc(2 * g->height * g->width * sizeof(findUnionNode_t*));
     if (!oldFields) {
         free(adjacent);
         return false;
     }
+    uint32_t busyPlayer = getPlayer(g->board[x][y]);
+
+    oldFields[0] = g->board[x][y];
     uint64_t oldFieldsIndex = 1;
     uint64_t* oldFieldsIndexPtr = &oldFieldsIndex;
-
-    uint32_t busyPlayer = getPlayer(g->board[x][y]);
-    oldFields[0] = g->board[x][y];
     g->board[x][y] = NULL;
-
-
 
     int newAreas = dfsOnAdjacent(g, busyPlayer, adjacent, oldFields, oldFieldsIndexPtr);
     if (newAreas == -2) {
@@ -415,6 +422,7 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         return false;
     }
 
+    //Usuwamy pionek, zwiększamy wolne pole o 1
     updateAdjacentFree(g, adjacent, 1);
 
     int freeAdjacentFields = newFreeAdjacent(g, busyPlayer, adjacent);
@@ -434,7 +442,7 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     g->playerAreas[busyPlayer] += newAreas;
 
     if (g->playerAreas[busyPlayer] > g->areas) {
-
+        //Jeśli obszarów jest za dużo, to stawiamy stary pionek
         gamma_move(g, busyPlayer, x, y);
         return false;
     }
@@ -442,7 +450,6 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     g->goldenMoves[player] = true;
     gamma_move(g, player, x, y);
     return true;
-
 }
 
 uint64_t gamma_busy_fields(gamma_t* g, uint32_t player) {
@@ -458,6 +465,8 @@ uint64_t gamma_free_fields(gamma_t* g, uint32_t player) {
         return 0;
     }
     if (g->playerAreas[player] == g->areas) {
+        //Jeśli gracz zajmuje maksymalną liczbę obszarów, to może stawiać pionki
+        //tylko na polach sąsiednich do swoich
         return g->freeAdjacentFields[player];
     }
     return g->freeFields;
@@ -467,7 +476,7 @@ bool gamma_golden_possible(gamma_t* g, uint32_t player) {
     if (!g || !validPlayer(g, player) || g->goldenMoves[player]) {
         return false;
     }
-    for (uint32_t otherPlayer = g->players; otherPlayer > 0; --otherPlayer) {
+    for (uint32_t otherPlayer = 1; validPlayer(g, otherPlayer); ++otherPlayer) {
         if (g->busyFields[otherPlayer] > 0 && player != otherPlayer) {
             return true;
         }
@@ -492,9 +501,9 @@ uint32_t maxPlayerOnBoard(gamma_t* g) {
 /** @brief Dodaje gracza do napisu planszy.
  * Dodaje numer gracza jako napis na końcu tablicy znaków reprezentującej planszę, napis gracza uzupełnia
  * pustymi znakami, by miał taką długość, jak długość napisu największego gracza na planszy.
- * @param[in] player  – numer gracza, liczba dodatnia niewiększa od wartości
- *                      @p players z funkcji @ref gamma_new,
- * @param[in] maxPlayerDigits - liczba cyfr największego gracza,
+ * @param[in] player           – numer gracza, liczba dodatnia niewiększa od wartości
+ *                               @p players z funkcji @ref gamma_new,
+ * @param[in] maxPlayerDigits  - liczba cyfr największego gracza,
  * @param[in, out] stringIndex - indeks ostatniego wolnego miejsca w tablicy znaków,
  * @param[in, out] boardString - tablica znaków, napis reprezentujący planszę.
  * @return Numer największego gracza, który ma pionek na planszy.
@@ -503,7 +512,7 @@ size_t addToBoard(uint32_t player, int maxPlayerDigits, size_t stringIndex, char
     int playerDigits = digits(player);
 
     char* playerString;
-    //+1 for \0
+    //+1 dla \0
     playerString = malloc(sizeof(char) * (playerDigits + 1));
     if (!playerString) {
         return 0;
@@ -517,6 +526,7 @@ size_t addToBoard(uint32_t player, int maxPlayerDigits, size_t stringIndex, char
         maxPlayerDigits--;
     }
     for (int spaceIndex = 0; spaceIndex < maxPlayerDigits; ++spaceIndex) {
+        //Pozostale znaki uzupełniamy spacjami
         boardString[stringIndex] = ' ';
         stringIndex++;
     }
@@ -533,11 +543,12 @@ char* gamma_board(gamma_t* g) {
     uint32_t maxPlayer = maxPlayerOnBoard(g);
     int maxPlayerDigits = digits(maxPlayer);
 
+    //Jeśli na planszy są gracze co najmniej dwucyfrowi, to między każdym gracze robi odstęp
     uint64_t spaces = maxPlayerDigits == 1 ? 0 : g->width * g->height;
 
     char* boardString;
-    boardString = malloc(
-            sizeof(char) * (maxPlayerDigits * g->width * g->height + spaces + g->height + 1));
+    //+g->height na \n po każdym rzędzie, +1 na \0
+    boardString = malloc(sizeof(char) * (maxPlayerDigits * g->width * g->height + spaces + g->height + 1));
     if (!boardString) {
         return NULL;
     }
@@ -545,7 +556,6 @@ char* gamma_board(gamma_t* g) {
     size_t stringIndex = 0;
     for (uint32_t row = g->height - 1; row < g->height; --row) {
         for (uint32_t column = 0; column < g->width; ++column) {
-
             findUnionNode_t* fieldPtr = g->board[column][row];
             uint32_t player = getPlayer(fieldPtr);
 
@@ -560,7 +570,7 @@ char* gamma_board(gamma_t* g) {
                 stringIndex++;
             }
         }
-        //Add \n after each row
+        //\n po każdym rzędzie
         boardString[stringIndex] = '\n';
         stringIndex++;
     }

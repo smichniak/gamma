@@ -42,6 +42,7 @@ uint32_t getPlayer(findUnionNode_t* nodePtr) {
  */
 findUnionNode_t* find(findUnionNode_t* nodePtr) {
     if (nodePtr->parent != nodePtr) {
+        //Kompresja ścieżek
         nodePtr->parent = find(nodePtr->parent);
     }
     return nodePtr->parent;
@@ -53,6 +54,7 @@ void unite(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2) {
 
     if (nodePtrRoot1 != nodePtrRoot2) {
         if (nodePtrRoot1->rank < nodePtrRoot2->rank) {
+            //Mniejsze drzewo podczepiamy pod większe, zapewnia dobrą złożoność
             nodePtrRoot1->parent = nodePtrRoot2;
             nodePtrRoot2->rank++;
         } else {

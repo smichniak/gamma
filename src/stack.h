@@ -19,7 +19,7 @@ typedef struct stackNode stackNode_t;
 
 /** @brief Tworzy stos.
  * Alokuje pamięć na nowy stos. Inicjuje stos z wejściowymi wartościami.
- * @param[in] x  – numer kolumny, liczba nieujemna mniejsza od wartości
+ * @param[in] x       – numer kolumny, liczba nieujemna mniejsza od wartości
  *                      @p width z funkcji @ref gamma_new,
  * @param[in] y       – numer wiersza, liczba nieujemna mniejsza od wartości
  *                      @p height z funkcji @ref gamma_new.
@@ -37,10 +37,10 @@ bool isStackEmpty(stackNode_t* stackPtr);
  * Alokuje pamięć na nowy element stosu z wartościami @p x i @p y. Ustawia nowy element na koniec wejściowego
  * stosu.
  * @param[in, out] stackPtr  – wskaźnik na stos.
- * @param[in] x  – numer kolumny, liczba nieujemna mniejsza od wartości
- *                      @p width z funkcji @ref gamma_new,
- * @param[in] y       – numer wiersza, liczba nieujemna mniejsza od wartości
- *                      @p height z funkcji @ref gamma_new.
+ * @param[in] x              – numer kolumny, liczba nieujemna mniejsza od wartości
+ *                             @p width z funkcji @ref gamma_new,
+ * @param[in] y              – numer wiersza, liczba nieujemna mniejsza od wartości
+ *                             @p height z funkcji @ref gamma_new.
  * @return Wskaźnik na ostatni element stosu lub NULL, jeśli nie udało się zaalokować pamięci
  */
 stackNode_t* putLast(stackNode_t* stackPtr, uint32_t x, uint32_t y);

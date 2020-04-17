@@ -20,7 +20,7 @@ typedef struct {
 
 /** @brief Tworzy nową parę.
  * Tworzy i zwraca parę z wejściowymi wartościami.
- * @param[in] x  – numer kolumny, liczba nieujemna mniejsza od wartości
+ * @param[in] x       – numer kolumny, liczba nieujemna mniejsza od wartości
  *                      @p width z funkcji @ref gamma_new,
  * @param[in] y       – numer wiersza, liczba nieujemna mniejsza od wartości
  *                      @p height z funkcji @ref gamma_new.
