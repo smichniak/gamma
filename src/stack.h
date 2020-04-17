@@ -12,10 +12,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-/** @struct StackNode_t
+/** @typedef stackNode_t
  * Struktura przechowująca jeden element stosu.
  */
-typedef struct stackNode StackNode_t;
+typedef struct stackNode stackNode_t;
 
 /** @brief Tworzy stos.
  * Alokuje pamięć na nowy stos. Inicjuje stos z wejściowymi wartościami.
@@ -25,13 +25,13 @@ typedef struct stackNode StackNode_t;
  *                      @p height z funkcji @ref gamma_new.
  * @return Wskaźnik na pierwszy element utworzonego stosu lub NULL, jeśli nie udało sie zaalokować pamięci
  */
-StackNode_t* createStack(uint32_t x, uint32_t y);
+stackNode_t* createStack(uint32_t x, uint32_t y);
 
 /** @brief Sprawdza, czy stos jest pusty.
  * @param[in] stackPtr  – wskaźnik na stos.
- * @return Wartość @p true, jeśli stos jest pusty lub @p false w przeciwnym przypadku.
+ * @return Wartość @p true, jeśli stos jest pusty,a @p false w przeciwnym przypadku.
  */
-bool isStackEmpty(StackNode_t* stackPtr);
+bool isStackEmpty(stackNode_t* stackPtr);
 
 /** @brief Ustawia nowy element na koniec stosu.
  * Alokuje pamięć na nowy element stosu z wartościami @p x i @p y. Ustawia nowy element na koniec wejściowego
@@ -43,26 +43,26 @@ bool isStackEmpty(StackNode_t* stackPtr);
  *                      @p height z funkcji @ref gamma_new.
  * @return Wskaźnik na ostatni element stosu lub NULL, jeśli nie udało się zaalokować pamięci
  */
-StackNode_t* putLast(StackNode_t* stackPtr, uint32_t x, uint32_t y);
+stackNode_t* putLast(stackNode_t* stackPtr, uint32_t x, uint32_t y);
 
 /** @brief Usuwa ostatni element ze stosu.
  * Zwalania pamięć zajętą przez ostatni element. Zwraca nowy, ostatni element.
  * @param[in, out] stackPtr  – wskaźnik na stos.
  * @return Wskaźnik na nowy, ostatni element stosu po usunięciu.
  */
-StackNode_t* removeLast(StackNode_t* stackPtr);
+stackNode_t* removeLast(stackNode_t* stackPtr);
 
 /** @brief Zwraca wartość ostatniego elementu ze stosu.
  * Tworzy i zwraca krotkę (@p x, @p y) z wartościami @p x i @p y z funkcji @ref createStack.
  * @param[in] stackPtr  – wskaźnik na stos.
  * @return Krotka @ref Tuple z wartościami z ostatniego elementu stosu.
  */
-Tuple getLast(StackNode_t* stackPtr);
+Tuple getLast(stackNode_t* stackPtr);
 
 /** @brief Usuwa stos.
  * Zwalnia zaalokowaną pamięć na wszystkie elementy w stosie.
  * @param[in, out] stackPtr  – wskaźnik na stos.
  */
-void removeStack(StackNode_t* stackPtr);
+void removeStack(stackNode_t* stackPtr);
 
 #endif //GAMMA_STACK_H

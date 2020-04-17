@@ -14,11 +14,11 @@
 struct stackNode {
     uint32_t x; ///< Pierwsza pamiętana wartość elementu stosu
     uint32_t y; ///< Druga pamiętana wartość elementu stosu
-    StackNode_t* next; ///< Wskaźnik na nastepny element stosu
+    stackNode_t* next; ///< Wskaźnik na nastepny element stosu
 };
 
-StackNode_t* createStack(uint32_t x, uint32_t y) {
-    StackNode_t* node = malloc(sizeof(StackNode_t));
+stackNode_t* createStack(uint32_t x, uint32_t y) {
+    stackNode_t* node = malloc(sizeof(stackNode_t));
     if (!node) {
         return NULL;
     }
@@ -28,12 +28,12 @@ StackNode_t* createStack(uint32_t x, uint32_t y) {
     return node;
 }
 
-bool isStackEmpty(StackNode_t* stackPtr) {
+bool isStackEmpty(stackNode_t* stackPtr) {
     return !stackPtr;
 }
 
-StackNode_t* putLast(StackNode_t* stackPtr, uint32_t x, uint32_t y) {
-    StackNode_t* nodePtr = createStack(x, y);
+stackNode_t* putLast(stackNode_t* stackPtr, uint32_t x, uint32_t y) {
+    stackNode_t* nodePtr = createStack(x, y);
     if (!nodePtr) {
         return NULL;
     }
@@ -41,17 +41,17 @@ StackNode_t* putLast(StackNode_t* stackPtr, uint32_t x, uint32_t y) {
     return nodePtr;
 }
 
-StackNode_t* removeLast(StackNode_t* stackPtr) {
-    StackNode_t* toReturn = stackPtr->next;
+stackNode_t* removeLast(stackNode_t* stackPtr) {
+    stackNode_t* toReturn = stackPtr->next;
     free(stackPtr);
     return toReturn;
 }
 
-Tuple getLast(StackNode_t* stackPtr) {
+Tuple getLast(stackNode_t* stackPtr) {
     return createTuple(stackPtr->x, stackPtr->y);
 }
 
-void removeStack(StackNode_t* stackPtr) {
+void removeStack(stackNode_t* stackPtr) {
     if (stackPtr) {
         removeStack(stackPtr->next);
         free(stackPtr);

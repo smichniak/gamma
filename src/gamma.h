@@ -13,7 +13,7 @@
 #include <stdint.h>
 
 /**
- * @struct gamma_t
+ * @typedef gamma_t
  * Struktura przechowująca stan gry.
  */
 typedef struct gamma gamma_t;

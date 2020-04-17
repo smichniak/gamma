@@ -287,7 +287,7 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
         return true;
     }
     uint32_t player = getPlayer(g->board[x][y]);
-    StackNode_t* stackPtr = createStack(x, y);
+    stackNode_t* stackPtr = createStack(x, y);
 
     if (!stackPtr) {
         return false;
@@ -319,7 +319,7 @@ bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64
             uint32_t y2 = adjacent[i].y;
             if (validCoordinates(g, x2, y2) && getPlayer(g->board[x2][y2]) == player &&
                 !connected(g->board[x][y], g->board[x2][y2])) {
-                StackNode_t* newLast = putLast(stackPtr, x2, y2);
+                stackNode_t* newLast = putLast(stackPtr, x2, y2);
                 if (!newLast) {
                     removeStack(stackPtr);
                     free(adjacent);

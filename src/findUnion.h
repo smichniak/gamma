@@ -11,7 +11,7 @@
 #include "stack.h"
 #include <stdlib.h>
 
-/** @struct findUnionNode_t
+/** @typedef findUnionNode_t
  * Struktura przechowująca wierzchołek drzewa Find-Union.
  */
 typedef struct findUnionNode findUnionNode_t;
