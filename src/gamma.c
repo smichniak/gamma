@@ -74,6 +74,10 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
     bool* goldenMoves = calloc((uint64_t) players + 1, sizeof(bool));
     findUnionNode_t*** board = calloc((uint64_t) width * ((uint64_t) height + 1), sizeof(findUnionNode_t*));
 
+    //TODO
+    //Zwolnić pamięć jeśli alokacja, która się nie powiodła nie była pierwsza.
+    //TODO
+    //Przenieć alokacje stosu tutaj
     if (!busyFields || !freeAdjacentFields || !playerAreas || !goldenMoves || !board) {
         return NULL;
     }
