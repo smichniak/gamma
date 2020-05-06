@@ -785,7 +785,7 @@ static const test_list_t test_list[] = {
         TEST(middle_board),
 };
 
-int main(int argc, char *argv[]) {
+/*int main(int argc, char *argv[]) {
 
 
     for (size_t i = 0; i < SIZE(test_list); ++i) {
@@ -795,4 +795,4 @@ int main(int argc, char *argv[]) {
     }
 
     return WRONG_TEST;
-}
+}*/

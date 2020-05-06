@@ -2,16 +2,18 @@
 #define GAMMA_INPUTPARSER_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
-typedef struct {
-    char *function;
-    char *firstArgument;
-    char *secondArgument;
-    char *thirdArgument;
+typedef struct{
+    char function;
+    uint32_t firstArgument;
+    uint32_t secondArgument;
+    uint32_t thirdArgument;
+    uint32_t fourthArgument;
     bool isValid;
 
-} Command;
+} command_t;
 
-Command getCommand(char *line);
+command_t getCommand(char* line);
 
 #endif //GAMMA_INPUTPARSER_H

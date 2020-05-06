@@ -1,6 +1,8 @@
 #include "inputParser.h"
-#include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 //Valid characters in commands must have ASCII codes in range [33, 255]
 const int MIN_ASCII = 33;
@@ -9,24 +11,51 @@ const int MAX_ASCII = 255;
 const char WHITE_CHARS[] = " \t\v\f\r";
 const char* VALID_FUNCTIONS = "BImgbfqp";
 
+typedef struct {
+    uint32_t value;
+    bool valid;
+} argument_t;
+
 
 //Default command is valid and does nothing
-Command defaultCommand() {
-    Command defComamand;
-    defComamand.function = NULL;
-    defComamand.firstArgument = NULL;
-    defComamand.secondArgument = NULL;
-    defComamand.thirdArgument = NULL;
+command_t defaultCommand() {
+    command_t defComamand;
+    defComamand.function = ' ';
+    defComamand.firstArgument = 0;
+    defComamand.secondArgument = 0;
+    defComamand.thirdArgument = 0;
     defComamand.isValid = true;
     return defComamand;
 }
+
+bool isWhite(char chracter) {
+    for (uint32_t i = 0; i < strlen(WHITE_CHARS); ++i) {
+        if (WHITE_CHARS[i] == chracter) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool isZero(char* string) {
+    if (strlen(string) < 1) {
+        return false;
+    }
+    for (uint32_t i = 0; i < strlen(string); ++i) {
+        if (string[i] != '0') {
+            return false;
+        }
+    }
+    return true;
+}
+
 
 bool validFunction(char* function) {
     if (strlen(function) > 1) {
         return false;
     }
 
-    for (int i = 0; i < (int) strlen(VALID_FUNCTIONS); ++i) {
+    for (uint32_t i = 0; i < strlen(VALID_FUNCTIONS); ++i) {
         if (VALID_FUNCTIONS[i] == function[0]) {
             return true;
         }
@@ -34,28 +63,28 @@ bool validFunction(char* function) {
     return false;
 }
 
-bool validString(char* string) {
-    if (string == NULL) {
-        return true;
-    } else {
-        int isValid = true;
+argument_t validArgument(char* string) {
+    argument_t argument;
+    argument.valid = true;
 
-        //Unsigned string for proper extended ASCII handling
-        unsigned char* unsignedString = (unsigned char*) string;
-        for (int i = 0; i < (int) strlen(string); ++i) {
-            //Every char in string must be in given range
-            isValid = isValid && unsignedString[i] >= MIN_ASCII && unsignedString[i] <= MAX_ASCII;
-        }
-        return isValid;
+    uint32_t value = strtoul(string, NULL, 10);
+    if (!isdigit(string[0]) || (value == 0 && !isZero(string))) {
+        argument.valid = false;
+    } else {
+        argument.value = value;
     }
+
+    return argument;
 }
 
 
-Command getCommand(char* line) {
-    Command command = defaultCommand();
+command_t getCommand(char* line) {
+    command_t command = defaultCommand();
 
     if (line != NULL && line[0] != '#') {
-        if (line[strlen(line) - 1] != '\n') {
+        if (isWhite(line[0])) {
+            command.isValid = false;
+        } else if (line[strlen(line) - 1] != '\n') {
             char* noWhites = strtok(line, WHITE_CHARS);
             if (noWhites != NULL) { //Line with only white characters and no \n is valid
                 command.isValid = false;
@@ -69,6 +98,7 @@ Command getCommand(char* line) {
             char* firstArg = strtok(NULL, WHITE_CHARS);
             char* secondArg = strtok(NULL, WHITE_CHARS);
             char* thirdArg = strtok(NULL, WHITE_CHARS);
+            char* fourthArg = strtok(NULL, WHITE_CHARS);
             char* restOfLine = strtok(NULL, WHITE_CHARS);
 
             if (function != NULL) {
