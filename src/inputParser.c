@@ -1,48 +1,45 @@
 #include "inputParser.h"
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 
-//Valid characters in commands must have ASCII codes in range [33, 255]
-const int MIN_ASCII = 33;
-const int MAX_ASCII = 255;
 //Whitespace characters that separate command arguments
 const char WHITE_CHARS[] = " \t\v\f\r";
-const char* VALID_FUNCTIONS = "BImgbfqp";
-
-typedef struct {
-    uint32_t value;
-    bool valid;
-} argument_t;
-
+const char* VALID_FUNCTIONS = "BImgbfqp ";
 
 //Default command is valid and does nothing
 command_t defaultCommand() {
     command_t defComamand;
-    defComamand.function = ' ';
-    defComamand.firstArgument = 0;
-    defComamand.secondArgument = 0;
-    defComamand.thirdArgument = 0;
-    defComamand.isValid = true;
     return defComamand;
 }
 
-bool isWhite(char chracter) {
+bool isWhite(char character) {
     for (uint32_t i = 0; i < strlen(WHITE_CHARS); ++i) {
-        if (WHITE_CHARS[i] == chracter) {
+        if (WHITE_CHARS[i] == character) {
             return true;
         }
     }
     return false;
 }
 
-bool isZero(char* string) {
+/*bool isZero(char* string) {
     if (strlen(string) < 1) {
         return false;
     }
     for (uint32_t i = 0; i < strlen(string); ++i) {
         if (string[i] != '0') {
+            return false;
+        }
+    }
+    return true;
+}*/
+
+bool onlyDigits(char* string) {
+    for (uint32_t i = 0; i < strlen(string); ++i) {
+        if (!isdigit(string[i])) {
             return false;
         }
     }
@@ -65,13 +62,22 @@ bool validFunction(char* function) {
 
 argument_t validArgument(char* string) {
     argument_t argument;
+    argument.value = 0;
     argument.valid = true;
+    argument.empty = false;
 
-    uint32_t value = strtoul(string, NULL, 10);
-    if (!isdigit(string[0]) || (value == 0 && !isZero(string))) {
+    if (string == NULL) {
+        argument.empty = true;
+    } else if (!onlyDigits(string)) {
         argument.valid = false;
     } else {
-        argument.value = value;
+        uint64_t conversion = strtoul(string, NULL, 10);
+       if (conversion > UINT32_MAX) {
+           argument.valid = false;
+       } else {
+            argument.value = conversion;
+       }
+
     }
 
     return argument;
@@ -79,9 +85,11 @@ argument_t validArgument(char* string) {
 
 
 command_t getCommand(char* line) {
-    command_t command = defaultCommand();
+    command_t command;
+    command.function = ' ';
+    command.isValid = true;
 
-    if (line != NULL && line[0] != '#') {
+    if (line != NULL && line[0] != '#' && line[0] != '\n') {
         if (isWhite(line[0])) {
             command.isValid = false;
         } else if (line[strlen(line) - 1] != '\n') {
@@ -95,25 +103,119 @@ command_t getCommand(char* line) {
 
             //We get every part separated by white characters
             char* function = strtok(line, WHITE_CHARS);
+
             char* firstArg = strtok(NULL, WHITE_CHARS);
+            argument_t firstArgument = validArgument(firstArg);
+
             char* secondArg = strtok(NULL, WHITE_CHARS);
+            argument_t secondArgument = validArgument(secondArg);
+
             char* thirdArg = strtok(NULL, WHITE_CHARS);
+            argument_t thirdArgument = validArgument(thirdArg);
+
             char* fourthArg = strtok(NULL, WHITE_CHARS);
+            argument_t fourthArgument = validArgument(fourthArg);
+
             char* restOfLine = strtok(NULL, WHITE_CHARS);
 
             if (function != NULL) {
-                if (restOfLine != NULL || !validString(function) || !validString(firstArg) ||
-                    !validString(secondArg) || !validString(thirdArg) || !validFunction(function)) {
-                    //Valid line can't have more thant three arguments and each argument must be valid
+                if (restOfLine != NULL || !validFunction(function) || !firstArgument.valid ||
+                    !secondArgument.valid || !thirdArgument.valid ||
+                    !fourthArgument.valid) {
+                    //Valid line can't have more thant four arguments and each argument must be valid
                     command.isValid = false;
                 } else {
-                    command.function = function;
-                    command.firstArgument = firstArg;
-                    command.secondArgument = secondArg;
-                    command.thirdArgument = thirdArg;
+                    command.function = function[0];
+                    command.firstArgument = firstArgument;
+                    command.secondArgument = secondArgument;
+                    command.thirdArgument = thirdArgument;
+                    command.fourthArgument = fourthArgument;
                 }
             }
         }
     }
     return command;
+}
+
+
+gamma_t* executeCommand(command_t command, gamma_t* g, int line) {
+    if (!command.isValid) {
+        fprintf(stderr, "ERROR %d\n", line);
+    } else {
+        switch (command.function) {
+            case 'B':
+                if (g) {
+                    fprintf(stderr, "ERROR %d\n", line);
+                } else {
+                    gamma_t* result = gamma_new(command.firstArgument.value, command.secondArgument.value,
+                                                command.thirdArgument.value, command.fourthArgument.value);
+                    if (!result) {
+                        fprintf(stderr, "ERROR %d\n", line);
+                    } else {
+                        g = result;
+                        printf("OK %d\n", line);
+                    }
+                }
+                break;
+            case 'I':
+                fprintf(stderr, "ERROR %d\n", line);
+                break;
+            case 'p':
+                if (!command.firstArgument.empty) {
+                    fprintf(stderr, "ERROR %d\n", line);
+                } else {
+                    char* board = gamma_board(g);
+                    if (!board) {
+                        fprintf(stderr, "ERROR %d\n", line);
+                    } else {
+                        printf("%s", board);
+                    }
+                }
+                break;
+            case 'q':
+                if (command.firstArgument.empty || !command.secondArgument.empty) {
+                    fprintf(stderr, "ERROR %d\n", line);
+                } else {
+                    printf("%d\n", gamma_golden_possible(g, command.firstArgument.value));
+                }
+                break;
+            case 'f':
+                if (command.firstArgument.empty || !command.secondArgument.empty) {
+                    fprintf(stderr, "ERROR %d\n", line);
+                } else {
+                    printf("%llu\n", gamma_free_fields(g, command.firstArgument.value));
+                }
+                break;
+            case 'b':
+                if (command.firstArgument.empty || !command.secondArgument.empty) {
+                    fprintf(stderr, "ERROR %d\n", line);
+                } else {
+                    printf("%llu\n", gamma_busy_fields(g, command.firstArgument.value));
+                }
+                break;
+            case 'g':
+                if (command.thirdArgument.empty || !command.fourthArgument.empty) {
+                    fprintf(stderr, "ERROR %d\n", line);
+                } else {
+                    printf("%d\n",
+                           gamma_golden_move(g, command.firstArgument.value, command.secondArgument.value,
+                                             command.thirdArgument.value));
+                }
+                break;
+            case 'm':
+                if (command.thirdArgument.empty || !command.fourthArgument.empty) {
+                    fprintf(stderr, "ERROR %d\n", line);
+                } else {
+                    printf("%d\n", gamma_move(g, command.firstArgument.value, command.secondArgument.value,
+                                              command.thirdArgument.value));
+                }
+                break;
+            case ' ':
+                break;
+            default:
+                fprintf(stderr, "ERROR %d\n", line);
+        }
+    }
+
+    return g;
 }
