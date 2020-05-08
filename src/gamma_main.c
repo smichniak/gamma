@@ -1,10 +1,8 @@
 #define _XOPEN_SOURCE 700
 
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <limits.h>
 #include "gamma.h"
 #include "inputParser.h"
 
@@ -23,6 +21,8 @@ int main() {
         line = NULL;
     }
     free(line);
+
+    gamma_delete(g);
 
     return 0;
 

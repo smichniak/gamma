@@ -4,17 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <limits.h>
 
 //Whitespace characters that separate command arguments
 const char WHITE_CHARS[] = " \t\v\f\r";
 const char* VALID_FUNCTIONS = "BImgbfqp ";
 
-//Default command is valid and does nothing
-command_t defaultCommand() {
-    command_t defComamand;
-    return defComamand;
-}
 
 bool isWhite(char character) {
     for (uint32_t i = 0; i < strlen(WHITE_CHARS); ++i) {
@@ -24,18 +18,6 @@ bool isWhite(char character) {
     }
     return false;
 }
-
-/*bool isZero(char* string) {
-    if (strlen(string) < 1) {
-        return false;
-    }
-    for (uint32_t i = 0; i < strlen(string); ++i) {
-        if (string[i] != '0') {
-            return false;
-        }
-    }
-    return true;
-}*/
 
 bool onlyDigits(char* string) {
     for (uint32_t i = 0; i < strlen(string); ++i) {
@@ -72,22 +54,31 @@ argument_t validArgument(char* string) {
         argument.valid = false;
     } else {
         uint64_t conversion = strtoul(string, NULL, 10);
-       if (conversion > UINT32_MAX) {
-           argument.valid = false;
-       } else {
+        if (conversion > UINT32_MAX) {
+            argument.valid = false;
+        } else {
             argument.value = conversion;
-       }
+        }
 
     }
 
     return argument;
 }
 
-
-command_t getCommand(char* line) {
+command_t defCommand() {
     command_t command;
     command.function = ' ';
     command.isValid = true;
+    command.firstArgument = validArgument("");
+    command.secondArgument = validArgument("");
+    command.thirdArgument = validArgument("");
+    command.fourthArgument = validArgument("");
+    return command;
+}
+
+
+command_t getCommand(char* line) {
+    command_t command = defCommand();
 
     if (line != NULL && line[0] != '#' && line[0] != '\n') {
         if (isWhite(line[0])) {
@@ -137,85 +128,92 @@ command_t getCommand(char* line) {
     return command;
 }
 
+void printError(int line) {
+    fprintf(stderr, "ERROR %d\n", line);
+}
 
 gamma_t* executeCommand(command_t command, gamma_t* g, int line) {
     if (!command.isValid) {
-        fprintf(stderr, "ERROR %d\n", line);
-    } else {
-        switch (command.function) {
-            case 'B':
-                if (g) {
-                    fprintf(stderr, "ERROR %d\n", line);
-                } else {
-                    gamma_t* result = gamma_new(command.firstArgument.value, command.secondArgument.value,
-                                                command.thirdArgument.value, command.fourthArgument.value);
-                    if (!result) {
-                        fprintf(stderr, "ERROR %d\n", line);
-                    } else {
-                        g = result;
-                        printf("OK %d\n", line);
-                    }
-                }
-                break;
-            case 'I':
-                fprintf(stderr, "ERROR %d\n", line);
-                break;
-            case 'p':
-                if (!command.firstArgument.empty) {
-                    fprintf(stderr, "ERROR %d\n", line);
-                } else {
-                    char* board = gamma_board(g);
-                    if (!board) {
-                        fprintf(stderr, "ERROR %d\n", line);
-                    } else {
-                        printf("%s", board);
-                    }
-                }
-                break;
-            case 'q':
-                if (command.firstArgument.empty || !command.secondArgument.empty) {
-                    fprintf(stderr, "ERROR %d\n", line);
-                } else {
-                    printf("%d\n", gamma_golden_possible(g, command.firstArgument.value));
-                }
-                break;
-            case 'f':
-                if (command.firstArgument.empty || !command.secondArgument.empty) {
-                    fprintf(stderr, "ERROR %d\n", line);
-                } else {
-                    printf("%llu\n", gamma_free_fields(g, command.firstArgument.value));
-                }
-                break;
-            case 'b':
-                if (command.firstArgument.empty || !command.secondArgument.empty) {
-                    fprintf(stderr, "ERROR %d\n", line);
-                } else {
-                    printf("%llu\n", gamma_busy_fields(g, command.firstArgument.value));
-                }
-                break;
-            case 'g':
-                if (command.thirdArgument.empty || !command.fourthArgument.empty) {
-                    fprintf(stderr, "ERROR %d\n", line);
-                } else {
-                    printf("%d\n",
-                           gamma_golden_move(g, command.firstArgument.value, command.secondArgument.value,
-                                             command.thirdArgument.value));
-                }
-                break;
-            case 'm':
-                if (command.thirdArgument.empty || !command.fourthArgument.empty) {
-                    fprintf(stderr, "ERROR %d\n", line);
-                } else {
-                    printf("%d\n", gamma_move(g, command.firstArgument.value, command.secondArgument.value,
-                                              command.thirdArgument.value));
-                }
-                break;
-            case ' ':
-                break;
-            default:
-                fprintf(stderr, "ERROR %d\n", line);
+        printError(line);
+    } else if (command.function == ' ') { //Do nothing
+    } else if (command.function == 'B') {
+        if (g) {
+            printError(line);
+        } else {
+            gamma_t* result = gamma_new(command.firstArgument.value, command.secondArgument.value,
+                                        command.thirdArgument.value, command.fourthArgument.value);
+            if (!result) {
+                printError(line);
+            } else {
+                g = result;
+                printf("OK %d\n", line);
+            }
         }
+
+    } else if (command.function == 'I') {
+        printError(line);
+
+    } else if (!command.fourthArgument.empty || !g) {
+        printError(line);
+
+    } else if (command.function == 'm') {
+        if (command.thirdArgument.empty) {
+            printError(line);
+        } else {
+            printf("%d\n", gamma_move(g, command.firstArgument.value, command.secondArgument.value,
+                                      command.thirdArgument.value));
+        }
+
+    } else if (command.function == 'g') {
+        if (command.thirdArgument.empty) {
+            printError(line);
+        } else {
+            printf("%d\n",
+                   gamma_golden_move(g, command.firstArgument.value, command.secondArgument.value,
+                                     command.thirdArgument.value));
+        }
+
+    } else if (!command.secondArgument.empty) {
+        printError(line);
+
+    } else if (command.function == 'b') {
+        if (command.firstArgument.empty) {
+            printError(line);
+        } else {
+            printf("%llu\n", gamma_busy_fields(g, command.firstArgument.value));
+        }
+
+    } else if (command.function == 'f') {
+        if (command.firstArgument.empty) {
+            printError(line);
+        } else {
+            printf("%llu\n", gamma_free_fields(g, command.firstArgument.value));
+        }
+
+    } else if (command.function == 'q') {
+        if (command.firstArgument.empty) {
+            printError(line);
+        } else {
+            printf("%d\n", gamma_golden_possible(g, command.firstArgument.value));
+        }
+
+    } else if (command.function == 'p') {
+        if (!command.firstArgument.empty) {
+            printError(line);
+        } else {
+            char* board = gamma_board(g);
+            if (!board) {
+                printError(line);
+            } else {
+                printf("%s", board);
+                free(board);
+            }
+        }
+
     }
 
     return g;
+
 }
+
+
