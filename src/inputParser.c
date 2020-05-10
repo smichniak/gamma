@@ -7,7 +7,7 @@
 
 //Whitespace characters that separate command arguments
 const char WHITE_CHARS[] = " \t\v\f\r";
-const char* VALID_FUNCTIONS = "BImgbfqp ";
+const char VALID_FUNCTIONS[] = "BImgbfqp ";
 
 
 bool isWhite(char character) {
@@ -213,7 +213,4 @@ gamma_t* executeCommand(command_t command, gamma_t* g, int line) {
     }
 
     return g;
-
 }
-
-
