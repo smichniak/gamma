@@ -11,12 +11,24 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "findUnion.h"
+
 
 /**
  * @typedef gamma_t
  * Struktura przechowująca stan gry.
  */
 typedef struct gamma gamma_t;
+
+uint32_t get_width(gamma_t* g);
+
+uint32_t get_height(gamma_t* g);
+
+uint32_t get_players(gamma_t* g);
+
+uint64_t get_busy_fields(gamma_t* g, uint32_t player);
+
+findUnionNode_t* get_field(gamma_t* g, uint32_t x, uint32_t y);
 
 /** @brief Tworzy strukturę przechowującą stan gry.
  * Alokuje pamięć na nową strukturę przechowującą stan gry.

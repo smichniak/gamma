@@ -6,6 +6,7 @@
  */
 
 #include "gamma.h"
+#include "display.h"
 #include "findUnion.h"
 #include <string.h>
 
@@ -26,6 +27,22 @@ struct gamma {
     findUnionNode_t*** board; /**< Dwuwymiarowa tablica planszy, w każdym zajętym polu wskaźnik na wierzchołek
                                    drzewa Find-Union obszaru, indeksowana współrzędnymi pola */
 };
+
+uint32_t get_width(gamma_t* g) {
+    return g->width;
+}
+uint32_t get_height(gamma_t* g) {
+    return g->height;
+}
+uint32_t get_players(gamma_t* g) {
+    return g->players;
+}
+uint64_t get_busy_fields(gamma_t* g, uint32_t player) {
+    return g->busyFields[player];
+}
+findUnionNode_t* get_field(gamma_t* g, uint32_t x, uint32_t y) {
+    return g->board[x][y];
+}
 
 /** @brief Sprawdza poprawność współrzędnych.
  * Sprawdza, czy współrzędne @p x i @p y są poprawne dla planszy @p g.
@@ -488,96 +505,6 @@ bool gamma_golden_possible(gamma_t* g, uint32_t player) {
     return false;
 }
 
-/** @brief Zwraca największego gracza na planszy.
- * Przeszukuje tablice zajętych pól i zwraca największego gracza z niezerową liczbą zajętych pól.
- * @param[in] g       – wskaźnik na strukturę przechowującą stan gry.
- * @return Numer największego gracza, który ma pionek na planszy.
- */
-uint32_t maxPlayerOnBoard(gamma_t* g) {
-    for (uint32_t player = g->players; player > 0; --player) {
-        if (g->busyFields[player] > 0) {
-            return player;
-        }
-    }
-    return 0;
-}
-
-/** @brief Dodaje gracza do napisu planszy.
- * Dodaje numer gracza jako napis na końcu tablicy znaków reprezentującej planszę, napis gracza uzupełnia
- * pustymi znakami, by miał taką długość, jak długość napisu największego gracza na planszy.
- * @param[in] player           – numer gracza, liczba dodatnia niewiększa od wartości
- *                               @p players z funkcji @ref gamma_new,
- * @param[in] maxPlayerDigits  - liczba cyfr największego gracza,
- * @param[in, out] stringIndex - indeks ostatniego wolnego miejsca w tablicy znaków,
- * @param[in, out] boardString - tablica znaków, napis reprezentujący planszę.
- * @return Numer największego gracza, który ma pionek na planszy.
- */
-size_t addToBoard(uint32_t player, int maxPlayerDigits, size_t stringIndex, char* boardString) {
-    int playerDigits = digits(player);
-
-    char* playerString;
-    //+1 dla \0
-    playerString = malloc(sizeof(char) * (playerDigits + 1));
-    if (!playerString) {
-        return 0;
-    }
-
-    player == 0 ? playerString[0] = '.' : sprintf(playerString, "%u", player);
-
-    for (int digitIndex = 0; digitIndex < playerDigits; ++digitIndex) {
-        boardString[stringIndex] = playerString[digitIndex];
-        stringIndex++;
-        maxPlayerDigits--;
-    }
-    for (int spaceIndex = 0; spaceIndex < maxPlayerDigits; ++spaceIndex) {
-        //Pozostale znaki uzupełniamy spacjami
-        boardString[stringIndex] = ' ';
-        stringIndex++;
-    }
-
-    free(playerString);
-    return stringIndex;
-}
-
 char* gamma_board(gamma_t* g) {
-    if (!g) {
-        return NULL;
-    }
-
-    uint32_t maxPlayer = maxPlayerOnBoard(g);
-    int maxPlayerDigits = digits(maxPlayer);
-
-    //Jeśli na planszy są gracze co najmniej dwucyfrowi, to między każdym gracze robi odstęp
-    uint64_t spaces = maxPlayerDigits == 1 ? 0 : g->width * g->height;
-
-    char* boardString;
-    //+g->height na \n po każdym rzędzie, +1 na \0
-    boardString = malloc(sizeof(char) * (maxPlayerDigits * g->width * g->height + spaces + g->height + 1));
-    if (!boardString) {
-        return NULL;
-    }
-
-    size_t stringIndex = 0;
-    for (uint32_t row = g->height - 1; row < g->height; --row) {
-        for (uint32_t column = 0; column < g->width; ++column) {
-            findUnionNode_t* fieldPtr = g->board[column][row];
-            uint32_t player = getPlayer(fieldPtr);
-
-            stringIndex = addToBoard(player, maxPlayerDigits, stringIndex, boardString);
-            if (stringIndex == 0) {
-                free(boardString);
-                return NULL;
-            }
-
-            if (spaces) {
-                boardString[stringIndex] = ' ';
-                stringIndex++;
-            }
-        }
-        //\n po każdym rzędzie
-        boardString[stringIndex] = '\n';
-        stringIndex++;
-    }
-    boardString[stringIndex] = '\0';
-    return boardString;
+    return boardWithHighlight(g, false, 0, 0);
 }

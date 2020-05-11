@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "display.h"
+
+#include <unistd.h>
+#include <termios.h>
 
 //Whitespace characters that separate command arguments
 const char WHITE_CHARS[] = " \t\v\f\r";
@@ -27,7 +31,6 @@ bool onlyDigits(char* string) {
     }
     return true;
 }
-
 
 bool validFunction(char* function) {
     if (strlen(function) > 1) {
@@ -65,6 +68,86 @@ argument_t validArgument(char* string) {
     return argument;
 }
 
+void interactiveInput(gamma_t* g) {
+    uint32_t x = 0;
+    uint32_t y = 0;
+    uint32_t maxX = get_width(g) - 1;
+    uint32_t maxY = get_height(g) - 1;
+
+    struct termios original, raw;
+
+    // Save original serial communication configuration for stdin
+    int a = tcgetattr(STDIN_FILENO, &original);
+    if (a != 0) {
+        exit(1);
+    }
+
+    raw = original;
+
+    raw.c_lflag &= ~(ICANON | ECHO);
+    a = tcsetattr(STDIN_FILENO, TCSANOW, &raw);
+    if (a != 0) {
+        exit(1);
+    }
+
+    clear();
+    char k = '\0';
+
+    while (1) {
+
+        if (k == 'g' || k == 'G') {
+            printf("GOLDEN MOVE\n");
+        }
+        // clear();
+        k = getchar();
+        if (k == 'k') {
+            printResults(g);
+            break;
+        }
+
+        if (k == '\033') { // if the first value is esc
+            if (getchar() == '[') {
+                switch (getchar()) { // the real value
+                    case 'A':
+                        // code for arrow up
+                        if (y != maxY) {
+                            y++;
+                        }
+                        break;
+                    case 'B':
+                        // code for arrow down
+                        if (y != 0) {
+                            y--;
+                        }
+                        break;
+                    case 'C':
+                        // code for arrow right
+                        if (x != maxX) {
+                            x++;
+                        }
+                        break;
+                    case 'D':
+                        // code for arrow left
+                        if (x != 0) {
+                            x--;
+                        }
+                        break;
+                }
+                clear();
+                printf("%s", boardWithHighlight(g, true, x, y));
+            }
+        }
+
+    }
+
+    a = tcsetattr(STDIN_FILENO, TCSANOW, &original);
+    if (a != 0) {
+        exit(1);
+    }
+
+    exit(0);
+}
+
 command_t defCommand() {
     command_t command;
     command.function = ' ';
@@ -75,7 +158,6 @@ command_t defCommand() {
     command.fourthArgument = validArgument("");
     return command;
 }
-
 
 command_t getCommand(char* line) {
     command_t command = defCommand();
@@ -136,22 +218,21 @@ gamma_t* executeCommand(command_t command, gamma_t* g, int line) {
     if (!command.isValid) {
         printError(line);
     } else if (command.function == ' ') { //Do nothing
-    } else if (command.function == 'B') {
+    } else if (command.function == 'B' || command.function == 'I') {
         if (g) {
             printError(line);
         } else {
-            gamma_t* result = gamma_new(command.firstArgument.value, command.secondArgument.value,
-                                        command.thirdArgument.value, command.fourthArgument.value);
-            if (!result) {
+            gamma_t* new_gamma = gamma_new(command.firstArgument.value, command.secondArgument.value,
+                                           command.thirdArgument.value, command.fourthArgument.value);
+            if (!new_gamma) {
                 printError(line);
-            } else {
-                g = result;
+            } else if (command.function == 'B') {
+                g = new_gamma;
                 printf("OK %d\n", line);
+            } else {
+                interactiveInput(new_gamma);
             }
         }
-
-    } else if (command.function == 'I') {
-        printError(line);
 
     } else if (!command.fourthArgument.empty || !g) {
         printError(line);

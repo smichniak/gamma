@@ -1,99 +1,64 @@
 #define _XOPEN_SOURCE 700
 
 #include <stdio.h>
-#include <unistd.h>
-#include <termios.h>
+
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include "gamma.h"
+#include "display.h"
 #include "inputParser.h"
 
 size_t INITIAL_BUFFER_SIZE = 0;
 
-void clear() {
-    printf("\033[2J");
-    printf("\033[H");
-    printf("\033[1;1H");
-    //  printf("\e[1;1H\e[2J");
+gamma_t* g = NULL;
+char* line = NULL;
+
+void exit_gamma() {
+   gamma_delete(g);
+   free(line);
 }
 
+
 int main() {
-//    char* line = NULL;
-//    gamma_t* g = NULL;
-//    int lineNum = 1;
+    atexit(exit_gamma);
+
+    int lineNum = 1;
+
+    while (getline(&line, &INITIAL_BUFFER_SIZE, stdin) > 0) {
+        command_t command = getCommand(line);
+        g = executeCommand(command, g, lineNum);
+        lineNum++;
+        free(line);
+        line = NULL;
+    }
+
+
+
+//    int i, j, n;
 //
-//    while (getline(&line, &INITIAL_BUFFER_SIZE, stdin) > 0) {
-//        command_t command = getCommand(line);
-//        g = executeCommand(command, g, lineNum);
-//        lineNum++;
-//        free(line);
-//        line = NULL;
+//    for (i = 0; i < 11; i++) {
+//        for (j = 0; j < 10; j++) {
+//            n = 10 * i + j;
+//            if (n > 108) break;
+//            printf("\033[%dm %3d\033[m", n, n);
+//        }
+//        printf("\n");
 //    }
-//    free(line);
+//    printf("\033[%dm HELLO \033[m\n", 7);
+//    printf("HELLO\n");
+//
+//    gamma_t* g = gamma_new(3, 3, 30, 3);
+//    gamma_move(g, 12, 1, 1);
+//    char* board =  boardWithHighlight(g, true, 1, 1);
+//    printf("%s",board);
+//    free(board);
 //
 //    gamma_delete(g);
 
-    struct termios original, raw;
 
-    // Save original serial communication configuration for stdin
-    int a = tcgetattr(STDIN_FILENO, &original);
-    if (a != 0) {
-        exit(1);
-    }
-
-    raw = original;
-
-    raw.c_lflag &= ~(ICANON | ECHO);
-    a = tcsetattr(STDIN_FILENO, TCSANOW, &raw);
-    if (a != 0) {
-        exit(1);
-    }
-
-    clear();
-    char k = '\0';
-
-    while (1) {
-
-        if (k == 'g') {
-            printf("GOLDEN MOVE\n");
-        }
-        // clear();
-        k = getchar();
-        if (k == 'k') {
-            break;
-        }
-
-        if (k == '\033') { // if the first value is esc
-            if (getchar() == '[') {
-                switch (getchar()) { // the real value
-                    case 'A':
-                        // code for arrow up
-                        printf("UP\n");
-                        break;
-                    case 'B':
-                        // code for arrow down
-                        printf("Down\n");
-                        break;
-                    case 'C':
-                        // code for arrow right
-                        printf("right\n");
-                        break;
-                    case 'D':
-                        // code for arrow left
-                        printf("left\n");
-                        break;
-                }
-            }
-        }
-
-    }
-
-    a = tcsetattr(STDIN_FILENO, TCSANOW, &original);
-    if (a != 0) {
-        exit(1);
-    }
 
     return 0;
 

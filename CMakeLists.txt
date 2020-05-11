@@ -27,7 +27,7 @@ set(SOURCE_FILES
         src/stack.c src/stack.h
         src/utilities.c src/utilities.h
         src/inputParser.c src/inputParser.h
-        src/gamma_main.c)
+        src/gamma_main.c src/display.c src/display.h)
 
 # Wskazujemy plik wykonywalny.
 add_executable(gamma ${SOURCE_FILES})
