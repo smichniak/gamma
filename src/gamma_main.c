@@ -17,8 +17,8 @@ gamma_t* g = NULL;
 char* line = NULL;
 
 void exit_gamma() {
-   gamma_delete(g);
-   free(line);
+    gamma_delete(g);
+    free(line);
 }
 
 
@@ -29,7 +29,7 @@ int main() {
 
     while (getline(&line, &INITIAL_BUFFER_SIZE, stdin) > 0) {
         command_t command = getCommand(line);
-        g = executeCommand(command, g, lineNum);
+        executeCommand(command, &g, lineNum);
         lineNum++;
         free(line);
         line = NULL;

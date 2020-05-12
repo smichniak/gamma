@@ -28,6 +28,8 @@ uint32_t get_players(gamma_t* g);
 
 uint64_t get_busy_fields(gamma_t* g, uint32_t player);
 
+uint64_t get_free_fields(gamma_t* g);
+
 findUnionNode_t* get_field(gamma_t* g, uint32_t x, uint32_t y);
 
 /** @brief Tworzy strukturę przechowującą stan gry.

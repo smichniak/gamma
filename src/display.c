@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
-const char BEGIN_HIGHLIGHT[] = "\033[7m";
-const char END_HIGHLIGHT[] = "\033[m";
+const char* BEGIN_HIGHLIGHT = "\033[7m";
+const char* END_HIGHLIGHT = "\033[m";
 const int CODE_LENGTH = 8;
 
 void clear() {
@@ -27,6 +27,14 @@ uint32_t maxPlayerOnBoard(gamma_t* g) {
         }
     }
     return 0;
+}
+
+size_t addHighlight(char* boardString, size_t stringIndex, const char* highlight) {
+    for (uint32_t k = 0; k < strlen(highlight); ++k) {
+        boardString[stringIndex] = highlight[k];
+        stringIndex++;
+    }
+    return stringIndex;
 }
 
 /** @brief Dodaje gracza do napisu planszy.
@@ -54,24 +62,22 @@ size_t addToBoard(gamma_t* g, uint32_t column, uint32_t row, int maxPlayerDigits
     player == 0 ? playerString[0] = '.' : sprintf(playerString, "%u", player);
 
     if (highlight) {
-        for (uint32_t k = 0; k < strlen(BEGIN_HIGHLIGHT); ++k) {
-            boardString[stringIndex] = BEGIN_HIGHLIGHT[k];
-            stringIndex++;
-        }
+        stringIndex = addHighlight(boardString, stringIndex, BEGIN_HIGHLIGHT);
     }
 
+    //TODO
+    //Make addPlayer function
     for (int digitIndex = 0; digitIndex < playerDigits; ++digitIndex) {
         boardString[stringIndex] = playerString[digitIndex];
         stringIndex++;
         maxPlayerDigits--;
     }
     if (highlight) {
-        for (uint32_t k = 0; k < strlen(END_HIGHLIGHT); ++k) {
-            boardString[stringIndex] = END_HIGHLIGHT[k];
-            stringIndex++;
-        }
+        stringIndex = addHighlight(boardString, stringIndex, END_HIGHLIGHT);
     }
 
+    //TODO
+    //Same as above
     for (int spaceIndex = 0; spaceIndex < maxPlayerDigits; ++spaceIndex) {
         //Pozostale znaki uzupełniamy spacjami
         boardString[stringIndex] = ' ';

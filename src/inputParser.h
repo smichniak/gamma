@@ -23,6 +23,6 @@ typedef struct {
 
 command_t getCommand(char* line);
 
-gamma_t* executeCommand(command_t command, gamma_t* g, int line);
+void executeCommand(command_t command, gamma_t** g, int line);
 
 #endif //GAMMA_INPUTPARSER_H

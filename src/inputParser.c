@@ -13,6 +13,10 @@
 const char WHITE_CHARS[] = " \t\v\f\r";
 const char VALID_FUNCTIONS[] = "BImgbfqp ";
 
+typedef struct result {
+    uint64_t resultValue;
+    bool valid;
+} result_t;
 
 bool isWhite(char character) {
     for (uint32_t i = 0; i < strlen(WHITE_CHARS); ++i) {
@@ -68,12 +72,7 @@ argument_t validArgument(char* string) {
     return argument;
 }
 
-void interactiveInput(gamma_t* g) {
-    uint32_t x = 0;
-    uint32_t y = 0;
-    uint32_t maxX = get_width(g) - 1;
-    uint32_t maxY = get_height(g) - 1;
-
+struct termios changeTerminalToRaw() {
     struct termios original, raw;
 
     // Save original serial communication configuration for stdin
@@ -81,7 +80,6 @@ void interactiveInput(gamma_t* g) {
     if (a != 0) {
         exit(1);
     }
-
     raw = original;
 
     raw.c_lflag &= ~(ICANON | ECHO);
@@ -89,21 +87,41 @@ void interactiveInput(gamma_t* g) {
     if (a != 0) {
         exit(1);
     }
+    return original;
+}
+
+uint32_t nextPlayer(gamma_t* g, uint32_t currentPlayer, uint32_t startPlayer) {
+    uint32_t maxPlayer = get_players(g);
+    currentPlayer = (currentPlayer % maxPlayer) + 1;
+    if (currentPlayer == startPlayer) {
+        return 0;
+    }
+    if (gamma_free_fields(g, currentPlayer) == 0 && !gamma_golden_possible(g, currentPlayer)) {
+        return nextPlayer(g, currentPlayer, startPlayer);
+    }
+    return currentPlayer;
+
+}
+
+void interactiveInput(gamma_t* g) {
+    uint32_t x = 0;
+    uint32_t y = 0;
+    uint32_t maxX = get_width(g) - 1;
+    uint32_t maxY = get_height(g) - 1;
+    uint32_t currentPlayer = 1;
+    bool result;
+
+    struct termios originalTerminal = changeTerminalToRaw();
 
     clear();
     char k = '\0';
 
-    while (1) {
-
-        if (k == 'g' || k == 'G') {
-            printf("GOLDEN MOVE\n");
-        }
-        // clear();
+    while (currentPlayer != 0) {
+        result = false;
+        clear();
+        printf("%s", boardWithHighlight(g, true, x, y));
+        printf("PLAYER %u %llu %llu\n", currentPlayer, get_busy_fields(g, currentPlayer), get_free_fields(g));
         k = getchar();
-        if (k == 'k') {
-            printResults(g);
-            break;
-        }
 
         if (k == '\033') { // if the first value is esc
             if (getchar() == '[') {
@@ -133,14 +151,25 @@ void interactiveInput(gamma_t* g) {
                         }
                         break;
                 }
-                clear();
-                printf("%s", boardWithHighlight(g, true, x, y));
+                //clear();
+                //printf("%s", boardWithHighlight(g, true, x, y));
             }
+        } else if (k == ' ') {
+            result = gamma_move(g, currentPlayer, x, y);
+        } else if (k == 'g' || k == 'G') {
+            result = gamma_golden_move(g, currentPlayer, x, y);
+        } else if (k == 4) {
+            break;
         }
-
+        if (result || k == 'c' || k == 'C') {
+            currentPlayer = nextPlayer(g, currentPlayer, currentPlayer);
+        }
     }
+    clear();
+    printf("%s", boardWithHighlight(g, false, 0, 0));
+    printResults(g);
 
-    a = tcsetattr(STDIN_FILENO, TCSANOW, &original);
+    int a = tcsetattr(STDIN_FILENO, TCSANOW, &originalTerminal);
     if (a != 0) {
         exit(1);
     }
@@ -210,16 +239,52 @@ command_t getCommand(char* line) {
     return command;
 }
 
+result_t functionResult(gamma_t** g, command_t command) {
+    result_t result;
+    result.valid = true;
+
+    if (!command.fourthArgument.empty || !*g) {
+        result.valid = false;
+
+    } else if (command.function == 'm') {
+        if (command.thirdArgument.empty) {
+            result.valid = false;
+        } else {
+            result.resultValue = gamma_move(*g, command.firstArgument.value, command.secondArgument.value,
+                                            command.thirdArgument.value);
+        }
+
+    } else if (command.function == 'g') {
+        if (command.thirdArgument.empty) {
+            result.valid = false;
+        } else {
+            result.resultValue =
+                    gamma_golden_move(*g, command.firstArgument.value, command.secondArgument.value,
+                                      command.thirdArgument.value);
+        }
+    } else if (!command.secondArgument.empty || command.firstArgument.empty) {
+        result.valid = false;
+    } else if (command.function == 'b') {
+        result.resultValue = gamma_busy_fields(*g, command.firstArgument.value);
+    } else if (command.function == 'f') {
+        result.resultValue = gamma_free_fields(*g, command.firstArgument.value);
+    } else if (command.function == 'q') {
+        result.resultValue = gamma_golden_possible(*g, command.firstArgument.value);
+    }
+
+    return result;
+}
+
 void printError(int line) {
     fprintf(stderr, "ERROR %d\n", line);
 }
 
-gamma_t* executeCommand(command_t command, gamma_t* g, int line) {
+void executeCommand(command_t command, gamma_t** g, int line) {
     if (!command.isValid) {
         printError(line);
     } else if (command.function == ' ') { //Do nothing
     } else if (command.function == 'B' || command.function == 'I') {
-        if (g) {
+        if (*g) {
             printError(line);
         } else {
             gamma_t* new_gamma = gamma_new(command.firstArgument.value, command.secondArgument.value,
@@ -227,62 +292,18 @@ gamma_t* executeCommand(command_t command, gamma_t* g, int line) {
             if (!new_gamma) {
                 printError(line);
             } else if (command.function == 'B') {
-                g = new_gamma;
+                *g = new_gamma;
                 printf("OK %d\n", line);
             } else {
                 interactiveInput(new_gamma);
             }
         }
 
-    } else if (!command.fourthArgument.empty || !g) {
-        printError(line);
-
-    } else if (command.function == 'm') {
-        if (command.thirdArgument.empty) {
-            printError(line);
-        } else {
-            printf("%d\n", gamma_move(g, command.firstArgument.value, command.secondArgument.value,
-                                      command.thirdArgument.value));
-        }
-
-    } else if (command.function == 'g') {
-        if (command.thirdArgument.empty) {
-            printError(line);
-        } else {
-            printf("%d\n",
-                   gamma_golden_move(g, command.firstArgument.value, command.secondArgument.value,
-                                     command.thirdArgument.value));
-        }
-
-    } else if (!command.secondArgument.empty) {
-        printError(line);
-
-    } else if (command.function == 'b') {
-        if (command.firstArgument.empty) {
-            printError(line);
-        } else {
-            printf("%llu\n", gamma_busy_fields(g, command.firstArgument.value));
-        }
-
-    } else if (command.function == 'f') {
-        if (command.firstArgument.empty) {
-            printError(line);
-        } else {
-            printf("%llu\n", gamma_free_fields(g, command.firstArgument.value));
-        }
-
-    } else if (command.function == 'q') {
-        if (command.firstArgument.empty) {
-            printError(line);
-        } else {
-            printf("%d\n", gamma_golden_possible(g, command.firstArgument.value));
-        }
-
     } else if (command.function == 'p') {
         if (!command.firstArgument.empty) {
             printError(line);
         } else {
-            char* board = gamma_board(g);
+            char* board = gamma_board(*g);
             if (!board) {
                 printError(line);
             } else {
@@ -291,7 +312,13 @@ gamma_t* executeCommand(command_t command, gamma_t* g, int line) {
             }
         }
 
+    } else {
+        result_t result = functionResult(g, command);
+        if (!result.valid) {
+            printError(line);
+        } else {
+            printf("%llu\n", result.resultValue);
+        }
     }
 
-    return g;
 }

@@ -40,6 +40,9 @@ uint32_t get_players(gamma_t* g) {
 uint64_t get_busy_fields(gamma_t* g, uint32_t player) {
     return g->busyFields[player];
 }
+uint64_t get_free_fields(gamma_t* g) {
+    return g->freeFields;
+}
 findUnionNode_t* get_field(gamma_t* g, uint32_t x, uint32_t y) {
     return g->board[x][y];
 }
