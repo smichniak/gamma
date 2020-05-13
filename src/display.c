@@ -6,7 +6,7 @@
 
 const char* BEGIN_HIGHLIGHT = "\033[7m";
 const char* END_HIGHLIGHT = "\033[m";
-const int CODE_LENGTH = 8;
+const int CODE_LENGTH = 7;
 
 void clear() {
     printf("\033[2J");
@@ -22,7 +22,7 @@ void clear() {
  */
 uint32_t maxPlayerOnBoard(gamma_t* g) {
     for (uint32_t player = get_players(g); player > 0; --player) {
-        if (get_busy_fields(g, player) > 0) {
+        if (gamma_busy_fields(g, player) > 0) {
             return player;
         }
     }
@@ -137,8 +137,6 @@ char* boardWithHighlight(gamma_t* g, bool highlight, uint32_t x, uint32_t y) {
 void printResults(gamma_t* g) {
     uint32_t players = get_players(g);
     for (uint32_t player = 1; player <= players; ++player) {
-        printf("PLAYER %u %llu\n", player, get_busy_fields(g, player));
+        printf("PLAYER %u %llu\n", player, gamma_busy_fields(g, player));
     }
-
-
 }

@@ -49,6 +49,7 @@ bool validFunction(char* function) {
     return false;
 }
 
+
 argument_t validArgument(char* string) {
     argument_t argument;
     argument.value = 0;
@@ -87,20 +88,23 @@ struct termios changeTerminalToRaw() {
     if (a != 0) {
         exit(1);
     }
+    //Hide cursor
+    printf("\e[?25l");
     return original;
 }
 
-uint32_t nextPlayer(gamma_t* g, uint32_t currentPlayer, uint32_t startPlayer) {
-    uint32_t maxPlayer = get_players(g);
-    currentPlayer = (currentPlayer % maxPlayer) + 1;
-    if (currentPlayer == startPlayer) {
+
+uint32_t getNextPlayer(gamma_t* g, uint32_t currentPlayer, uint64_t playersSkipped) {
+    if (playersSkipped > get_players(g)) {
         return 0;
     }
-    if (gamma_free_fields(g, currentPlayer) == 0 && !gamma_golden_possible(g, currentPlayer)) {
-        return nextPlayer(g, currentPlayer, startPlayer);
-    }
-    return currentPlayer;
+    uint32_t maxPlayer = get_players(g);
+    uint32_t nextPlayer = (currentPlayer % maxPlayer) + 1;
 
+    if (gamma_free_fields(g, nextPlayer) == 0 && !gamma_golden_possible(g, nextPlayer)) {
+        return getNextPlayer(g, nextPlayer, playersSkipped + 1);
+    }
+    return nextPlayer;
 }
 
 void interactiveInput(gamma_t* g) {
@@ -109,71 +113,92 @@ void interactiveInput(gamma_t* g) {
     uint32_t maxX = get_width(g) - 1;
     uint32_t maxY = get_height(g) - 1;
     uint32_t currentPlayer = 1;
-    bool result;
+    bool successfulMove;
 
     struct termios originalTerminal = changeTerminalToRaw();
 
-    clear();
-    char k = '\0';
+    int k = 0;
+    bool skip;
 
     while (currentPlayer != 0) {
-        result = false;
         clear();
+        successfulMove = false;
         printf("%s", boardWithHighlight(g, true, x, y));
-        printf("PLAYER %u %llu %llu\n", currentPlayer, get_busy_fields(g, currentPlayer), get_free_fields(g));
-        k = getchar();
+        printf("PLAYER %u %llu %llu %c\n", currentPlayer, gamma_busy_fields(g, currentPlayer),
+               gamma_free_fields(g, currentPlayer), 'G' * gamma_golden_possible(g, currentPlayer));
+
+        skip = false;
+        if (k == 0) {
+            k = getchar();
+        }
 
         if (k == '\033') { // if the first value is esc
-            if (getchar() == '[') {
-                switch (getchar()) { // the real value
+            k = getchar();
+            if (k == '[') {
+                k = getchar();
+                switch (k) { // the real value
                     case 'A':
                         // code for arrow up
                         if (y != maxY) {
                             y++;
                         }
-                        break;
+                        k = 0;
+                        continue;
                     case 'B':
                         // code for arrow down
                         if (y != 0) {
                             y--;
                         }
-                        break;
+                        k = 0;
+                        continue;
                     case 'C':
                         // code for arrow right
                         if (x != maxX) {
                             x++;
                         }
-                        break;
+                        k = 0;
+                        continue;
                     case 'D':
                         // code for arrow left
                         if (x != 0) {
                             x--;
                         }
-                        break;
+                        k = 0;
+                        continue;
                 }
-                //clear();
-                //printf("%s", boardWithHighlight(g, true, x, y));
             }
         } else if (k == ' ') {
-            result = gamma_move(g, currentPlayer, x, y);
+            successfulMove = gamma_move(g, currentPlayer, x, y);
+            k = 0;
         } else if (k == 'g' || k == 'G') {
-            result = gamma_golden_move(g, currentPlayer, x, y);
+            successfulMove = gamma_golden_move(g, currentPlayer, x, y);
+            k = 0;
+        } else if (k == 'c' || k == 'C') {
+            k = 0;
+            skip = true;
         } else if (k == 4) {
             break;
+        } else {
+            k = 0;
         }
-        if (result || k == 'c' || k == 'C') {
-            currentPlayer = nextPlayer(g, currentPlayer, currentPlayer);
+
+        if (successfulMove || skip) {
+            currentPlayer = getNextPlayer(g, currentPlayer, 0);
         }
     }
+
     clear();
+
     printf("%s", boardWithHighlight(g, false, 0, 0));
     printResults(g);
 
     int a = tcsetattr(STDIN_FILENO, TCSANOW, &originalTerminal);
     if (a != 0) {
+        printf("\e[?25h", stdout);
         exit(1);
     }
 
+    printf("\e[?25h", stdout);
     exit(0);
 }
 
@@ -275,11 +300,11 @@ result_t functionResult(gamma_t** g, command_t command) {
     return result;
 }
 
-void printError(int line) {
-    fprintf(stderr, "ERROR %d\n", line);
+void printError(unsigned long line) {
+    fprintf(stderr, "ERROR %lu\n", line);
 }
 
-void executeCommand(command_t command, gamma_t** g, int line) {
+void executeCommand(command_t command, gamma_t** g, unsigned long line) {
     if (!command.isValid) {
         printError(line);
     } else if (command.function == ' ') { //Do nothing
@@ -293,7 +318,7 @@ void executeCommand(command_t command, gamma_t** g, int line) {
                 printError(line);
             } else if (command.function == 'B') {
                 *g = new_gamma;
-                printf("OK %d\n", line);
+                printf("OK %lu\n", line);
             } else {
                 interactiveInput(new_gamma);
             }

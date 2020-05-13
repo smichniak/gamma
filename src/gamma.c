@@ -31,18 +31,15 @@ struct gamma {
 uint32_t get_width(gamma_t* g) {
     return g->width;
 }
+
 uint32_t get_height(gamma_t* g) {
     return g->height;
 }
+
 uint32_t get_players(gamma_t* g) {
     return g->players;
 }
-uint64_t get_busy_fields(gamma_t* g, uint32_t player) {
-    return g->busyFields[player];
-}
-uint64_t get_free_fields(gamma_t* g) {
-    return g->freeFields;
-}
+
 findUnionNode_t* get_field(gamma_t* g, uint32_t x, uint32_t y) {
     return g->board[x][y];
 }
