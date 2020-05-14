@@ -194,11 +194,11 @@ void interactiveInput(gamma_t* g) {
 
     int a = tcsetattr(STDIN_FILENO, TCSANOW, &originalTerminal);
     if (a != 0) {
-        printf("\e[?25h", stdout);
+        printf("\e[?25h");
         exit(1);
     }
 
-    printf("\e[?25h", stdout);
+    printf("\e[?25h");
     exit(0);
 }
 
@@ -342,7 +342,7 @@ void executeCommand(command_t command, gamma_t** g, unsigned long line) {
         if (!result.valid) {
             printError(line);
         } else {
-            printf("%llu\n", result.resultValue);
+            printf("%lu\n", result.resultValue);
         }
     }
 

@@ -137,6 +137,6 @@ char* boardWithHighlight(gamma_t* g, bool highlight, uint32_t x, uint32_t y) {
 void printResults(gamma_t* g) {
     uint32_t players = get_players(g);
     for (uint32_t player = 1; player <= players; ++player) {
-        printf("PLAYER %u %llu\n", player, gamma_busy_fields(g, player));
+        printf("PLAYER %u %lu\n", player, gamma_busy_fields(g, player));
     }
 }
