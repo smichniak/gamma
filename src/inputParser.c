@@ -124,7 +124,7 @@ void interactiveInput(gamma_t* g) {
         clear();
         successfulMove = false;
         printf("%s", boardWithHighlight(g, true, x, y));
-        printf("PLAYER %u %llu %llu %c\n", currentPlayer, gamma_busy_fields(g, currentPlayer),
+        printf("PLAYER %u %lu %lu %c\n", currentPlayer, gamma_busy_fields(g, currentPlayer),
                gamma_free_fields(g, currentPlayer), 'G' * gamma_golden_possible(g, currentPlayer));
 
         skip = false;
