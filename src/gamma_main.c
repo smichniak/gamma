@@ -6,6 +6,7 @@
 #include "gamma.h"
 #include "inputParser.h"
 
+//Line buffer is dynamically allocated
 size_t INITIAL_BUFFER_SIZE = 0;
 
 gamma_t* g = NULL;
@@ -14,9 +15,7 @@ char* line = NULL;
 void exit_gamma() {
     gamma_delete(g);
     free(line);
-
 }
-
 
 int main() {
     atexit(exit_gamma);

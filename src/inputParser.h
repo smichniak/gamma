@@ -11,7 +11,6 @@ typedef struct {
     bool empty;
 } argument_t;
 
-
 typedef struct {
     char function;
     argument_t firstArgument;

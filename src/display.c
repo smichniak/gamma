@@ -1,6 +1,7 @@
 #include "display.h"
 #include "utilities.h"
 #include "findUnion.h"
+#include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -11,8 +12,32 @@ const int CODE_LENGTH = 7;
 void clear() {
     printf("\033[2J");
     printf("\033[H");
-    printf("\033[1;1H");
-    //  printf("\e[1;1H\e[2J");
+}
+
+void changeTerminalToOriginal(struct termios original) {
+    //Show cursor
+    printf("\e[?25h");
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &original) != 0) {
+
+        exit(1);
+    }
+}
+
+struct termios changeTerminalToRaw() {
+    struct termios original, raw;
+
+    // Save original serial communication configuration for stdin
+    if (tcgetattr(STDIN_FILENO, &original) != 0) {
+        exit(1);
+    }
+    raw = original;
+    raw.c_lflag &= ~(ICANON | ECHO);
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &raw) != 0) {
+        exit(1);
+    }
+    //Hide cursor
+    printf("\e[?25l");
+    return original;
 }
 
 /** @brief Zwraca największego gracza na planszy.
@@ -37,6 +62,15 @@ size_t addHighlight(char* boardString, size_t stringIndex, const char* highlight
     return stringIndex;
 }
 
+size_t addSpaces(char* boardString, size_t stringIndex, int spaces) {
+    for (int spaceIndex = 0; spaceIndex < spaces; ++spaceIndex) {
+        //Pozostale znaki uzupełniamy spacjami
+        boardString[stringIndex] = ' ';
+        stringIndex++;
+    }
+    return stringIndex;
+}
+
 /** @brief Dodaje gracza do napisu planszy.
  * Dodaje numer gracza jako napis na końcu tablicy znaków reprezentującej planszę, napis gracza uzupełnia
  * pustymi znakami, by miał taką długość, jak długość napisu największego gracza na planszy.
@@ -49,12 +83,12 @@ size_t addHighlight(char* boardString, size_t stringIndex, const char* highlight
  */
 size_t addToBoard(gamma_t* g, uint32_t column, uint32_t row, int maxPlayerDigits, size_t stringIndex,
                   char* boardString, bool highlight) {
-    uint32_t player = getPlayer(get_field(g, column, row));
+    uint32_t player = get_player_on_field(g, column, row);
     int playerDigits = digits(player);
 
     char* playerString;
     //+1 dla \0
-    playerString = malloc(sizeof(char) * (playerDigits + highlight * CODE_LENGTH + 1));
+    playerString = calloc(playerDigits + highlight * CODE_LENGTH + 1, sizeof(char));
     if (!playerString) {
         return 0;
     }
@@ -65,8 +99,6 @@ size_t addToBoard(gamma_t* g, uint32_t column, uint32_t row, int maxPlayerDigits
         stringIndex = addHighlight(boardString, stringIndex, BEGIN_HIGHLIGHT);
     }
 
-    //TODO
-    //Make addPlayer function
     for (int digitIndex = 0; digitIndex < playerDigits; ++digitIndex) {
         boardString[stringIndex] = playerString[digitIndex];
         stringIndex++;
@@ -76,22 +108,17 @@ size_t addToBoard(gamma_t* g, uint32_t column, uint32_t row, int maxPlayerDigits
         stringIndex = addHighlight(boardString, stringIndex, END_HIGHLIGHT);
     }
 
-    //TODO
-    //Same as above
-    for (int spaceIndex = 0; spaceIndex < maxPlayerDigits; ++spaceIndex) {
-        //Pozostale znaki uzupełniamy spacjami
-        boardString[stringIndex] = ' ';
-        stringIndex++;
-    }
+    stringIndex = addSpaces(boardString, stringIndex, maxPlayerDigits);
 
     free(playerString);
     return stringIndex;
 }
 
-char* boardWithHighlight(gamma_t* g, bool highlight, uint32_t x, uint32_t y) {
+char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y) {
     if (!g) {
         return NULL;
     }
+    bool highlight = x < UINT32_MAX;
     uint32_t width = get_width(g);
     uint32_t height = get_height(g);
 
@@ -103,8 +130,8 @@ char* boardWithHighlight(gamma_t* g, bool highlight, uint32_t x, uint32_t y) {
 
     char* boardString;
     //+height na \n po każdym rzędzie, +1 na \0
-    boardString = malloc(sizeof(char) * (maxPlayerDigits * width * height + spaces + height +
-                                         highlight * CODE_LENGTH + 1));
+    boardString = calloc(maxPlayerDigits * (uint64_t) width * (uint64_t) height + spaces + height + highlight * CODE_LENGTH + 1,
+                         sizeof(char));
     if (!boardString) {
         return NULL;
     }
@@ -112,19 +139,15 @@ char* boardWithHighlight(gamma_t* g, bool highlight, uint32_t x, uint32_t y) {
     size_t stringIndex = 0;
     for (uint32_t row = height - 1; row < height; --row) {
         for (uint32_t column = 0; column < width; ++column) {
-            bool highlightField = highlight && x == column && y == row;
+            bool highlightField = highlight && column == x && row == y;
 
-            stringIndex = addToBoard(g, column, row, maxPlayerDigits, stringIndex, boardString,
-                                     highlightField);
+            stringIndex = addToBoard(g, column, row, maxPlayerDigits, stringIndex, boardString, highlightField);
             if (stringIndex == 0) {
                 free(boardString);
                 return NULL;
             }
 
-            if (spaces) {
-                boardString[stringIndex] = ' ';
-                stringIndex++;
-            }
+            stringIndex = addSpaces(boardString, stringIndex, spaces > 0);
         }
         //\n po każdym rzędzie
         boardString[stringIndex] = '\n';
@@ -137,6 +160,11 @@ char* boardWithHighlight(gamma_t* g, bool highlight, uint32_t x, uint32_t y) {
 void printResults(gamma_t* g) {
     uint32_t players = get_players(g);
     for (uint32_t player = 1; player <= players; ++player) {
-        printf("PLAYER %u %lu\n", player, gamma_busy_fields(g, player));
+        printf("PLAYER %u %" PRIu64 "\n", player, gamma_busy_fields(g, player));
     }
 }
+
+void printError(unsigned long line) {
+    fprintf(stderr, "ERROR %lu\n", line);
+}
+

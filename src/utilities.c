@@ -15,9 +15,10 @@ Tuple createTuple(uint32_t x, uint32_t y) {
 }
 
 int digits(uint32_t number) {
-    if (number < 10) {
-        return 1;
-    } else {
-        return 1 + digits(number / 10);
-    }
+    int digitCount = 0;
+    do {
+        digitCount++;
+        number /= 10;
+    } while (number != 0);
+    return digitCount;
 }

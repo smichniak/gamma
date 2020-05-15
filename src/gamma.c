@@ -40,8 +40,8 @@ uint32_t get_players(gamma_t* g) {
     return g->players;
 }
 
-findUnionNode_t* get_field(gamma_t* g, uint32_t x, uint32_t y) {
-    return g->board[x][y];
+uint32_t get_player_on_field(gamma_t* g, uint32_t x, uint32_t y) {
+    return getPlayer(g->board[x][y]);
 }
 
 /** @brief Sprawdza poprawność współrzędnych.
@@ -73,7 +73,7 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
     if (width < 1 || height < 1 || players < 1 || areas < 1) {
         return NULL;
     }
-    gamma_t* newGammaPtr = malloc(sizeof(gamma_t));
+    gamma_t* newGammaPtr = calloc(1, sizeof(gamma_t));
     if (!newGammaPtr) {
         return NULL;
     }
@@ -425,7 +425,8 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     }
 
     //Tablica na stare pola, które są połączone z usuwanym polem
-    findUnionNode_t** oldFields = malloc(2 * g->height * g->width * sizeof(findUnionNode_t*));
+    findUnionNode_t** oldFields = calloc(2 * (uint64_t) g->height * (uint64_t) g->width,
+                                         sizeof(findUnionNode_t*));
     if (!oldFields) {
         free(adjacent);
         return false;
@@ -505,6 +506,8 @@ bool gamma_golden_possible(gamma_t* g, uint32_t player) {
     return false;
 }
 
+
 char* gamma_board(gamma_t* g) {
-    return boardWithHighlight(g, false, 0, 0);
+    //Wspłrzędne poza zakresem oznaczają, że nie checmy podświetlać żadnego pola
+    return boardWithHighlight(g, UINT32_MAX, UINT32_MAX);
 }

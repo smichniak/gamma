@@ -4,10 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <inttypes.h>
 #include "display.h"
-
-#include <unistd.h>
-#include <termios.h>
 
 //Whitespace characters that separate command arguments
 const char WHITE_CHARS[] = " \t\v\f\r";
@@ -18,14 +16,6 @@ typedef struct result {
     bool valid;
 } result_t;
 
-bool isWhite(char character) {
-    for (uint32_t i = 0; i < strlen(WHITE_CHARS); ++i) {
-        if (WHITE_CHARS[i] == character) {
-            return true;
-        }
-    }
-    return false;
-}
 
 bool onlyDigits(char* string) {
     for (uint32_t i = 0; i < strlen(string); ++i) {
@@ -48,7 +38,6 @@ bool validFunction(char* function) {
     }
     return false;
 }
-
 
 argument_t validArgument(char* string) {
     argument_t argument;
@@ -73,27 +62,6 @@ argument_t validArgument(char* string) {
     return argument;
 }
 
-struct termios changeTerminalToRaw() {
-    struct termios original, raw;
-
-    // Save original serial communication configuration for stdin
-    int a = tcgetattr(STDIN_FILENO, &original);
-    if (a != 0) {
-        exit(1);
-    }
-    raw = original;
-
-    raw.c_lflag &= ~(ICANON | ECHO);
-    a = tcsetattr(STDIN_FILENO, TCSANOW, &raw);
-    if (a != 0) {
-        exit(1);
-    }
-    //Hide cursor
-    printf("\e[?25l");
-    return original;
-}
-
-
 uint32_t getNextPlayer(gamma_t* g, uint32_t currentPlayer, uint64_t playersSkipped) {
     if (playersSkipped > get_players(g)) {
         return 0;
@@ -108,8 +76,8 @@ uint32_t getNextPlayer(gamma_t* g, uint32_t currentPlayer, uint64_t playersSkipp
 }
 
 void interactiveInput(gamma_t* g) {
-    uint32_t x = 0;
-    uint32_t y = 0;
+    uint32_t cursorX = 0;
+    uint32_t cursorY = 0;
     uint32_t maxX = get_width(g) - 1;
     uint32_t maxY = get_height(g) - 1;
     uint32_t currentPlayer = 1;
@@ -117,88 +85,85 @@ void interactiveInput(gamma_t* g) {
 
     struct termios originalTerminal = changeTerminalToRaw();
 
-    int k = 0;
+    int character = 0;
     bool skip;
 
     while (currentPlayer != 0) {
-        clear();
         successfulMove = false;
-        printf("%s", boardWithHighlight(g, true, x, y));
-        printf("PLAYER %u %lu %lu %c\n", currentPlayer, gamma_busy_fields(g, currentPlayer),
+        skip = false;
+
+        clear();
+        char* board = boardWithHighlight(g, cursorX, cursorY);
+        if (!board) {
+            changeTerminalToOriginal(originalTerminal);
+            exit(1);
+        }
+        printf("%s", board);
+        free(board);
+        printf("PLAYER %u %" PRIu64 " %" PRIu64 " %c\n", currentPlayer, gamma_busy_fields(g, currentPlayer),
                gamma_free_fields(g, currentPlayer), 'G' * gamma_golden_possible(g, currentPlayer));
 
-        skip = false;
-        if (k == 0) {
-            k = getchar();
+        if (character == 0) {
+            character = getchar();
         }
 
-        if (k == '\033') { // if the first value is esc
-            k = getchar();
-            if (k == '[') {
-                k = getchar();
-                switch (k) { // the real value
-                    case 'A':
-                        // code for arrow up
-                        if (y != maxY) {
-                            y++;
-                        }
-                        k = 0;
-                        continue;
-                    case 'B':
-                        // code for arrow down
-                        if (y != 0) {
-                            y--;
-                        }
-                        k = 0;
-                        continue;
-                    case 'C':
-                        // code for arrow right
-                        if (x != maxX) {
-                            x++;
-                        }
-                        k = 0;
-                        continue;
-                    case 'D':
-                        // code for arrow left
-                        if (x != 0) {
-                            x--;
-                        }
-                        k = 0;
-                        continue;
+        if (character == '\033') { //Początek kodu strzałek
+            character = getchar();
+            if (character == '[') {
+                character = getchar();
+                if (character == 'A') { //Strzałak w górę
+                    if (cursorY != maxY) {
+                        cursorY++;
+                    }
+                    character = 0;
+                } else if (character == 'B') { //Strzałka w dół
+                    if (cursorY != 0) {
+                        cursorY--;
+                    }
+                    character = 0;
+                } else if (character == 'C') { //Strzałka w prawo
+                    if (cursorX != maxX) {
+                        cursorX++;
+                    }
+                    character = 0;
+                } else if (character == 'D') { //Strzałka w lewo
+                    if (cursorX != 0) {
+                        cursorX--;
+                    }
+                    character = 0;
                 }
+                continue;
+
             }
-        } else if (k == ' ') {
-            successfulMove = gamma_move(g, currentPlayer, x, y);
-            k = 0;
-        } else if (k == 'g' || k == 'G') {
-            successfulMove = gamma_golden_move(g, currentPlayer, x, y);
-            k = 0;
-        } else if (k == 'c' || k == 'C') {
-            k = 0;
+        } else if (character == ' ') {
+            successfulMove = gamma_move(g, currentPlayer, cursorX, cursorY);
+            character = 0;
+        } else if (character == 'g' || character == 'G') {
+            successfulMove = gamma_golden_move(g, currentPlayer, cursorX, cursorY);
+            character = 0;
+        } else if (character == 'c' || character == 'C') {
+            character = 0;
             skip = true;
-        } else if (k == 4) {
+        } else if (character == 4) {
             break;
         } else {
-            k = 0;
+            character = 0;
         }
 
         if (successfulMove || skip) {
             currentPlayer = getNextPlayer(g, currentPlayer, 0);
         }
     }
-
+    changeTerminalToOriginal(originalTerminal);
     clear();
-
-    printf("%s", boardWithHighlight(g, false, 0, 0));
-    printResults(g);
-
-    int a = tcsetattr(STDIN_FILENO, TCSANOW, &originalTerminal);
-    if (a != 0) {
-        printf("\e[?25h");
+    char* board = boardWithHighlight(g, UINT32_MAX, UINT32_MAX);
+    if (!board) {
         exit(1);
     }
+    printf("%s", board);
+    printResults(g);
 
-    printf("\e[?25h");
+    free(board);
     exit(0);
 }
 
@@ -217,13 +182,13 @@ command_t getCommand(char* line) {
     command_t command = defCommand();
 
     if (line != NULL && line[0] != '#' && line[0] != '\n') {
-        if (isWhite(line[0])) {
-            command.isValid = false;
-        } else if (line[strlen(line) - 1] != '\n') {
+        if (line[strlen(line) - 1] != '\n') {
             char* noWhites = strtok(line, WHITE_CHARS);
             if (noWhites != NULL) { //Line with only white characters and no \n is valid
                 command.isValid = false;
             }
+        } else if (isspace(line[0])) {
+            command.isValid = false;
         } else {
             //We remove the \n from the end of the line
             line[strlen(line) - 1] = 0;
@@ -247,8 +212,7 @@ command_t getCommand(char* line) {
 
             if (function != NULL) {
                 if (restOfLine != NULL || !validFunction(function) || !firstArgument.valid ||
-                    !secondArgument.valid || !thirdArgument.valid ||
-                    !fourthArgument.valid) {
+                    !secondArgument.valid || !thirdArgument.valid || !fourthArgument.valid) {
                     //Valid line can't have more thant four arguments and each argument must be valid
                     command.isValid = false;
                 } else {
@@ -270,7 +234,6 @@ result_t functionResult(gamma_t** g, command_t command) {
 
     if (!command.fourthArgument.empty || !*g) {
         result.valid = false;
-
     } else if (command.function == 'm') {
         if (command.thirdArgument.empty) {
             result.valid = false;
@@ -278,14 +241,12 @@ result_t functionResult(gamma_t** g, command_t command) {
             result.resultValue = gamma_move(*g, command.firstArgument.value, command.secondArgument.value,
                                             command.thirdArgument.value);
         }
-
     } else if (command.function == 'g') {
         if (command.thirdArgument.empty) {
             result.valid = false;
         } else {
-            result.resultValue =
-                    gamma_golden_move(*g, command.firstArgument.value, command.secondArgument.value,
-                                      command.thirdArgument.value);
+            result.resultValue = gamma_golden_move(*g, command.firstArgument.value,
+                                                   command.secondArgument.value, command.thirdArgument.value);
         }
     } else if (!command.secondArgument.empty || command.firstArgument.empty) {
         result.valid = false;
@@ -298,10 +259,6 @@ result_t functionResult(gamma_t** g, command_t command) {
     }
 
     return result;
-}
-
-void printError(unsigned long line) {
-    fprintf(stderr, "ERROR %lu\n", line);
 }
 
 void executeCommand(command_t command, gamma_t** g, unsigned long line) {
@@ -342,8 +299,7 @@ void executeCommand(command_t command, gamma_t** g, unsigned long line) {
         if (!result.valid) {
             printError(line);
         } else {
-            printf("%lu\n", result.resultValue);
+            printf("%" PRIu64 "\n", result.resultValue);
         }
     }
-
 }

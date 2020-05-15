@@ -1,7 +1,7 @@
 /** @file
  * Interfejs klasy przechowującej stan gry gamma
  *
- * @author Marcin Peczarski <marpe@mimuw.edu.pl>
+ * @author Marcin Peczarski <marpe@mimuw.edu.pl>, Szymon Michniak <s.michniak@student.uw.edu.pl>
  * @copyright Uniwersytet Warszawski
  * @date 18.03.2020
  */
@@ -26,7 +26,7 @@ uint32_t get_height(gamma_t* g);
 
 uint32_t get_players(gamma_t* g);
 
-findUnionNode_t* get_field(gamma_t* g, uint32_t x, uint32_t y);
+uint32_t get_player_on_field(gamma_t* g, uint32_t x, uint32_t y);
 
 /** @brief Tworzy strukturę przechowującą stan gry.
  * Alokuje pamięć na nową strukturę przechowującą stan gry.
