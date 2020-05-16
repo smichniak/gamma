@@ -166,7 +166,7 @@ command_t defCommand() {
 command_t getCommand(char* line) {
     command_t command = defCommand();
 
-    if (line != NULL && line[0] != '#' && line[0] != '\n') {
+    if (line != NULL && strlen(line) != 0 && line[0] != '#' && line[0] != '\n') {
         if (isspace(line[0]) || line[strlen(line) - 1] != '\n') {
             command.isValid = false;
         } else {
@@ -205,6 +205,8 @@ command_t getCommand(char* line) {
             }
         }
     }
+
+
     return command;
 }
 
