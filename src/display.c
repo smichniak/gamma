@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja modułu display.h
+ *
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
+ * @date 16.05.2020
+ */
+
 #include "display.h"
 #include "utilities.h"
 #include "findUnion.h"
@@ -9,22 +16,32 @@ const char* BEGIN_HIGHLIGHT = "\033[7m";
 const char* END_HIGHLIGHT = "\033[m";
 const int CODE_LENGTH = 7;
 
+struct termios original;
+
+void exitInteractive(int code) {
+    changeTerminalToOriginal(original);
+    if (code == 0) {
+        exit(0);
+    } else {
+        exit(code);
+    }
+}
+
 void clear() {
     printf("\033[2J");
     printf("\033[H");
 }
 
-void changeTerminalToOriginal(struct termios original) {
-    //Show cursor
+void changeTerminalToOriginal() {
+    //Pokaż kursor
     printf("\e[?25h");
     if (tcsetattr(STDIN_FILENO, TCSANOW, &original) != 0) {
-
         exit(1);
     }
 }
 
-struct termios changeTerminalToRaw() {
-    struct termios original, raw;
+void changeTerminalToRaw() {
+    struct termios raw;
 
     // Save original serial communication configuration for stdin
     if (tcgetattr(STDIN_FILENO, &original) != 0) {
@@ -35,9 +52,8 @@ struct termios changeTerminalToRaw() {
     if (tcsetattr(STDIN_FILENO, TCSANOW, &raw) != 0) {
         exit(1);
     }
-    //Hide cursor
+    //Ukryj kursor
     printf("\e[?25l");
-    return original;
 }
 
 /** @brief Zwraca największego gracza na planszy.
@@ -130,8 +146,10 @@ char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y) {
 
     char* boardString;
     //+height na \n po każdym rzędzie, +1 na \0
-    boardString = calloc(maxPlayerDigits * (uint64_t) width * (uint64_t) height + spaces + height + highlight * CODE_LENGTH + 1,
-                         sizeof(char));
+    boardString = calloc(
+            maxPlayerDigits * (uint64_t) width * (uint64_t) height + spaces + height + highlight * CODE_LENGTH +
+            1,
+            sizeof(char));
     if (!boardString) {
         return NULL;
     }
@@ -164,7 +182,21 @@ void printResults(gamma_t* g) {
     }
 }
 
-void printError(unsigned long line) {
-    fprintf(stderr, "ERROR %lu\n", line);
+void printError(unsigned long long line) {
+    fprintf(stderr, "ERROR %llu\n", line);
+}
+
+void printWithHighlight(gamma_t* g, uint32_t x, uint32_t y, unsigned long long line) {
+    char* board = boardWithHighlight(g, x, y);
+    if (!board) {
+        if (line == 0) {
+            exitInteractive(1);
+        } else {
+            printError(line);
+        }
+    }
+
+    printf("%s", board);
+    free(board);
 }
 

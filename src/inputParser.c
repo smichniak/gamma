@@ -82,89 +82,74 @@ void interactiveInput(gamma_t* g) {
     uint32_t maxY = get_height(g) - 1;
     uint32_t currentPlayer = 1;
     bool successfulMove;
-
-    struct termios originalTerminal = changeTerminalToRaw();
-
-    int character = 0;
     bool skip;
+    int inputCharacter = 0;
+
+    changeTerminalToRaw();
 
     while (currentPlayer != 0) {
         successfulMove = false;
         skip = false;
 
         clear();
-        char* board = boardWithHighlight(g, cursorX, cursorY);
-        if (!board) {
-            changeTerminalToOriginal(originalTerminal);
-            exit(1);
-        }
-        printf("%s", board);
-        free(board);
+        printWithHighlight(g, cursorX, cursorY, 0);
         printf("PLAYER %u %" PRIu64 " %" PRIu64 " %c\n", currentPlayer, gamma_busy_fields(g, currentPlayer),
                gamma_free_fields(g, currentPlayer), 'G' * gamma_golden_possible(g, currentPlayer));
 
-        if (character == 0) {
-            character = getchar();
+        if (inputCharacter == 0) {
+            inputCharacter = getchar();
         }
 
-        if (character == '\033') { //Początek kodu strzałek
-            character = getchar();
-            if (character == '[') {
-                character = getchar();
-                if (character == 'A') { //Strzałak w górę
+        if (inputCharacter == '\033') { //Początek kodu strzałek
+            inputCharacter = getchar();
+            if (inputCharacter == '[') {
+                inputCharacter = getchar();
+                if (inputCharacter == 'A') { //Strzałak w górę
                     if (cursorY != maxY) {
                         cursorY++;
                     }
-                    character = 0;
-                } else if (character == 'B') { //Strzałka w dół
+                    inputCharacter = 0;
+                } else if (inputCharacter == 'B') { //Strzałka w dół
                     if (cursorY != 0) {
                         cursorY--;
                     }
-                    character = 0;
-                } else if (character == 'C') { //Strzałka w prawo
+                    inputCharacter = 0;
+                } else if (inputCharacter == 'C') { //Strzałka w prawo
                     if (cursorX != maxX) {
                         cursorX++;
                     }
-                    character = 0;
-                } else if (character == 'D') { //Strzałka w lewo
+                    inputCharacter = 0;
+                } else if (inputCharacter == 'D') { //Strzałka w lewo
                     if (cursorX != 0) {
                         cursorX--;
                     }
-                    character = 0;
+                    inputCharacter = 0;
                 }
-                continue;
-
             }
-        } else if (character == ' ') {
+        } else if (inputCharacter == ' ') {
             successfulMove = gamma_move(g, currentPlayer, cursorX, cursorY);
-            character = 0;
-        } else if (character == 'g' || character == 'G') {
+            inputCharacter = 0;
+        } else if (inputCharacter == 'g' || inputCharacter == 'G') {
             successfulMove = gamma_golden_move(g, currentPlayer, cursorX, cursorY);
-            character = 0;
-        } else if (character == 'c' || character == 'C') {
-            character = 0;
+            inputCharacter = 0;
+        } else if (inputCharacter == 'c' || inputCharacter == 'C') {
+            inputCharacter = 0;
             skip = true;
-        } else if (character == 4) {
+        } else if (inputCharacter == 4) {
             break;
         } else {
-            character = 0;
+            inputCharacter = 0;
         }
 
         if (successfulMove || skip) {
             currentPlayer = getNextPlayer(g, currentPlayer, 0);
         }
     }
-    changeTerminalToOriginal(originalTerminal);
-    clear();
-    char* board = boardWithHighlight(g, UINT32_MAX, UINT32_MAX);
-    if (!board) {
-        exit(1);
-    }
-    printf("%s", board);
-    printResults(g);
 
-    free(board);
-    exit(0);
+    clear();
+    printWithHighlight(g, UINT32_MAX, UINT32_MAX, 0);
+    printResults(g);
+    exitInteractive(0);
 }
 
 command_t defCommand() {
@@ -181,6 +166,8 @@ command_t defCommand() {
 command_t getCommand(char* line) {
     command_t command = defCommand();
 
+    //TODO
+    //Na studentsie error, testy bk
     if (line != NULL && line[0] != '#' && line[0] != '\n') {
         if (line[strlen(line) - 1] != '\n') {
             char* noWhites = strtok(line, WHITE_CHARS);
@@ -261,7 +248,7 @@ result_t functionResult(gamma_t** g, command_t command) {
     return result;
 }
 
-void executeCommand(command_t command, gamma_t** g, unsigned long line) {
+void executeCommand(command_t command, gamma_t** g, unsigned long long line) {
     if (!command.isValid) {
         printError(line);
     } else if (command.function == ' ') { //Do nothing
@@ -275,7 +262,7 @@ void executeCommand(command_t command, gamma_t** g, unsigned long line) {
                 printError(line);
             } else if (command.function == 'B') {
                 *g = new_gamma;
-                printf("OK %lu\n", line);
+                printf("OK %llu\n", line);
             } else {
                 interactiveInput(new_gamma);
             }
@@ -285,13 +272,7 @@ void executeCommand(command_t command, gamma_t** g, unsigned long line) {
         if (!command.firstArgument.empty) {
             printError(line);
         } else {
-            char* board = gamma_board(*g);
-            if (!board) {
-                printError(line);
-            } else {
-                printf("%s", board);
-                free(board);
-            }
+            printWithHighlight(*g, UINT32_MAX, UINT32_MAX, line);
         }
 
     } else {
