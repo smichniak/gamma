@@ -1,11 +1,15 @@
-#include "inputParser.h"
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
+/** @file
+ * Implementacja modułu inputParser.h
+ *
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
+ * @date 16.05.2020
+ */
+
 #include <string.h>
 #include <ctype.h>
 #include <inttypes.h>
 #include "display.h"
+#include "inputParser.h"
 
 //Whitespace characters that separate command arguments
 const char WHITE_CHARS[] = " \t\v\f\r";
@@ -15,7 +19,6 @@ typedef struct result {
     uint64_t resultValue;
     bool valid;
 } result_t;
-
 
 bool onlyDigits(char* string) {
     for (uint32_t i = 0; i < strlen(string); ++i) {

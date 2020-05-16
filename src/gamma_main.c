@@ -1,13 +1,8 @@
+//TODO
+//Check on students if necessary
 #define _XOPEN_SOURCE 700
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include "gamma.h"
 #include "inputParser.h"
-
-#include "display.h"
-
 
 //Line buffer is dynamically allocated
 size_t INITIAL_BUFFER_SIZE = 0;

@@ -5,12 +5,9 @@
  * @date 16.05.2020
  */
 
-#include "display.h"
-#include "utilities.h"
-#include "findUnion.h"
 #include <inttypes.h>
-#include <stdio.h>
 #include <string.h>
+#include "display.h"
 
 const char* BEGIN_HIGHLIGHT = "\033[7m";
 const char* END_HIGHLIGHT = "\033[m";

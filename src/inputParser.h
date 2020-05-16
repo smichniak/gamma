@@ -1,9 +1,14 @@
+/** @file
+ * Interfejs modułu, który odpowiada za interpretację wejścia programu.
+ *
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
+ * @date 16.05.2020
+ */
+
 #ifndef GAMMA_INPUTPARSER_H
 #define GAMMA_INPUTPARSER_H
 
 #include "gamma.h"
-#include <stdbool.h>
-#include <stdint.h>
 
 typedef struct {
     uint32_t value;
