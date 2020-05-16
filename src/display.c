@@ -18,26 +18,9 @@ const int CODE_LENGTH = 7;
 
 struct termios original;
 
-void exitInteractive(int code) {
-    changeTerminalToOriginal(original);
-    if (code == 0) {
-        exit(0);
-    } else {
-        exit(code);
-    }
-}
-
 void clear() {
     printf("\033[2J");
     printf("\033[H");
-}
-
-void changeTerminalToOriginal() {
-    //Pokaż kursor
-    printf("\e[?25h");
-    if (tcsetattr(STDIN_FILENO, TCSANOW, &original) != 0) {
-        exit(1);
-    }
 }
 
 void changeTerminalToRaw() {
@@ -56,6 +39,23 @@ void changeTerminalToRaw() {
     printf("\e[?25l");
 }
 
+void changeTerminalToOriginal() {
+    //Pokaż kursor
+    printf("\e[?25h");
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &original) != 0) {
+        exit(1);
+    }
+}
+
+void exitInteractive(int code) {
+    changeTerminalToOriginal();
+    if (code == 0) {
+        exit(0);
+    } else {
+        exit(code);
+    }
+}
+
 /** @brief Zwraca największego gracza na planszy.
  * Przeszukuje tablice zajętych pól i zwraca największego gracza z niezerową liczbą zajętych pól.
  * @param[in] g       – wskaźnik na strukturę przechowującą stan gry.
@@ -70,6 +70,13 @@ uint32_t maxPlayerOnBoard(gamma_t* g) {
     return 0;
 }
 
+/** @brief Dodaje kod podświetlenie do napisu planszy.
+ * Dodaje kod podświetlenie jako napis na końcu tablicy znaków reprezentującej planszę.
+ * @param[in, out] boardString - tablica znaków, napis reprezentujący planszę.
+ * @param[in, out] stringIndex - indeks ostatniego wolnego miejsca w tablicy znaków,
+ * @param[in] highlight        – ANSI escape code, który odpowiada za zmianę koloru tła.
+ * @return Indeks ostatniego wolnego miejsca w tablicy znaków, po dodaniu napisu.
+ */
 size_t addHighlight(char* boardString, size_t stringIndex, const char* highlight) {
     for (uint32_t k = 0; k < strlen(highlight); ++k) {
         boardString[stringIndex] = highlight[k];
@@ -78,6 +85,13 @@ size_t addHighlight(char* boardString, size_t stringIndex, const char* highlight
     return stringIndex;
 }
 
+/** @brief Dodaje spacje do napisu planszy.
+ * Dodaje spacje na końcu tablicy znaków reprezentującej planszę.
+ * @param[in, out] boardString - tablica znaków, napis reprezentujący planszę.
+ * @param[in, out] stringIndex - indeks ostatniego wolnego miejsca w tablicy znaków,
+ * @param[in] spaces           – liczba spacji do dodania.
+ * @return Indeks ostatniego wolnego miejsca w tablicy znaków, po dodaniu napisu.
+ */
 size_t addSpaces(char* boardString, size_t stringIndex, int spaces) {
     for (int spaceIndex = 0; spaceIndex < spaces; ++spaceIndex) {
         //Pozostale znaki uzupełniamy spacjami
@@ -95,7 +109,7 @@ size_t addSpaces(char* boardString, size_t stringIndex, int spaces) {
  * @param[in] maxPlayerDigits  - liczba cyfr największego gracza,
  * @param[in, out] stringIndex - indeks ostatniego wolnego miejsca w tablicy znaków,
  * @param[in, out] boardString - tablica znaków, napis reprezentujący planszę.
- * @return Numer największego gracza, który ma pionek na planszy.
+ * @return Indeks ostatniego wolnego miejsca w tablicy znaków, po dodaniu napisu.
  */
 size_t addToBoard(gamma_t* g, uint32_t column, uint32_t row, int maxPlayerDigits, size_t stringIndex,
                   char* boardString, bool highlight) {
@@ -175,6 +189,20 @@ char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y) {
     return boardString;
 }
 
+void printWithHighlight(gamma_t* g, uint32_t x, uint32_t y, unsigned long long line) {
+    char* board = boardWithHighlight(g, x, y);
+    if (!board) {
+        if (line == 0) {
+            exitInteractive(1);
+        } else {
+            printError(line);
+        }
+    } else {
+        printf("%s", board);
+        free(board);
+    }
+}
+
 void printResults(gamma_t* g) {
     uint32_t players = get_players(g);
     for (uint32_t player = 1; player <= players; ++player) {
@@ -184,19 +212,5 @@ void printResults(gamma_t* g) {
 
 void printError(unsigned long long line) {
     fprintf(stderr, "ERROR %llu\n", line);
-}
-
-void printWithHighlight(gamma_t* g, uint32_t x, uint32_t y, unsigned long long line) {
-    char* board = boardWithHighlight(g, x, y);
-    if (!board) {
-        if (line == 0) {
-            exitInteractive(1);
-        } else {
-            printError(line);
-        }
-    }
-
-    printf("%s", board);
-    free(board);
 }
 

@@ -12,8 +12,6 @@
 #include <unistd.h>
 #include <termios.h>
 
-char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y);
-
 /** @brief Czyści terminal.
  * Czyści wyjście terminala.
  */
@@ -30,18 +28,26 @@ void changeTerminalToRaw();
  */
 void changeTerminalToOriginal();
 
-/** @brief Wypisuje wyniki gry.
- * Wypisuje wyniki gry na jej koniec. W każdej linii zostają wypisane: numer gracza
- * i ile pól zajął w tej grze.
- * @param[in] g – wskaźnik na grę, której wyniki wypisujemy.
+/** @brief Wychodzi z trybu interaktywnego.
+ * Opuszcza tryb interaktywny. Przywraca terminal do oryginalnych ustawień. Opuszcza program z danym kodem
+ * wyjścia.
+ * @param[in] code - kod wyjścia, którym ma być zakończony program
  */
-void printResults(gamma_t* g);
+void exitInteractive(int code);
 
-/** @brief Wypisuje linijkę błędu.
- * Wypisuje numer linii, w której pojawił się błąd w interpretacji poleceń.
- * @param[in] linie – numer linii do wypisania.
+/** @brief Daje napis opisujący stan planszy z opcjonalnym podświetleniem.
+ * Alokuje w pamięci bufor, w którym umieszcza napis zawierający tekstowy opis aktualnego stanu planszy.
+ * Funkcja wywołująca musi zwolnić ten bufor.
+ * Jeśli @p x < UINT32_MAX, zaznacza podświetleniem pole o współrzeędnych (@p x, @p y).
+ * @param[in] g       – wskaźnik na strukturę przechowującą stan gry.
+ * @param[in] x       – numer kolumny pola do podświetlenia, liczba nieujemna mniejsza od wartości
+ *                      @p width z funkcji @ref gamma_new,
+ * @param[in] y       – numer wiersza pola do podświetlenia, liczba nieujemna mniejsza od wartości
+ *                      @p height z funkcji @ref gamma_new.
+ * @return Wskaźnik na zaalokowany bufor zawierający napis opisujący stan
+planszy lub NULL, jeśli nie udało się zaalokować pamięci.
  */
-void printError(unsigned long long line);
+char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y);
 
 /** @brief Wypisuje napis opisujący stan planszy.
  * Wypisuje napis opisujący aktualny stan planszy.
@@ -59,12 +65,18 @@ void printError(unsigned long long line);
  */
 void printWithHighlight(gamma_t* g, uint32_t x, uint32_t y, unsigned long long line);
 
-/** @brief Wychodzi z trybu interaktywnego.
- * Opuszcza tryb interaktywny. Przywraca terminal do oryginalnych ustawień. Opuszcza program z danym kodem
- * wyjścia.
- * @param[in] code - kod wyjścia, którym ma być zakończony program
+/** @brief Wypisuje wyniki gry.
+ * Wypisuje wyniki gry na jej koniec. W każdej linii zostają wypisane: numer gracza
+ * i ile pól zajął w tej grze.
+ * @param[in] g – wskaźnik na grę, której wyniki wypisujemy.
  */
-void exitInteractive(int code);
+void printResults(gamma_t* g);
+
+/** @brief Wypisuje linijkę błędu.
+ * Wypisuje numer linii, w której pojawił się błąd w interpretacji poleceń.
+ * @param[in] linie – numer linii do wypisania.
+ */
+void printError(unsigned long long line);
 
 
 #endif //GAMMA_DISPLAY_H
