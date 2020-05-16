@@ -166,15 +166,8 @@ command_t defCommand() {
 command_t getCommand(char* line) {
     command_t command = defCommand();
 
-    //TODO
-    //Na studentsie error, testy bk
     if (line != NULL && line[0] != '#' && line[0] != '\n') {
-        if (line[strlen(line) - 1] != '\n') {
-            char* noWhites = strtok(line, WHITE_CHARS);
-            if (noWhites != NULL) { //Line with only white characters and no \n is valid
-                command.isValid = false;
-            }
-        } else if (isspace(line[0])) {
+        if (isspace(line[0]) || line[strlen(line) - 1] != '\n') {
             command.isValid = false;
         } else {
             //We remove the \n from the end of the line
