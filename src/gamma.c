@@ -87,17 +87,20 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
     //Rzutowanie na uint64_t, ponieważ dla players = UINT32_MAX, players + 1 = 0
     uint64_t* busyFields = calloc((uint64_t) players + 1, sizeof(uint64_t));
     if (!busyFields) {
+        free(newGammaPtr);
         return NULL;
     }
 
     uint64_t* freeAdjacentFields = calloc((uint64_t) players + 1, sizeof(uint64_t));
     if (!freeAdjacentFields) {
+        free(newGammaPtr);
         free(busyFields);
         return NULL;
     }
 
     uint32_t* playerAreas = calloc((uint64_t) players + 1, sizeof(uint32_t));
     if (!playerAreas) {
+        free(newGammaPtr);
         free(busyFields);
         free(freeAdjacentFields);
         return NULL;
@@ -105,6 +108,7 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
 
     bool* goldenMoves = calloc((uint64_t) players + 1, sizeof(bool));
     if (!goldenMoves) {
+        free(newGammaPtr);
         free(busyFields);
         free(freeAdjacentFields);
         free(playerAreas);
@@ -112,6 +116,7 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
     }
     findUnionNode_t*** board = calloc((uint64_t) width * ((uint64_t) height + 1), sizeof(findUnionNode_t*));
     if (!board) {
+        free(newGammaPtr);
         free(busyFields);
         free(freeAdjacentFields);
         free(playerAreas);

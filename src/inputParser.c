@@ -15,9 +15,13 @@
 const char WHITE_CHARS[] = " \t\v\f\r";
 const char VALID_FUNCTIONS[] = "BImgbfqp ";
 
+/**
+ * @typedef result
+ * Struktura przechowująca informacje o wyniku funkcji, która zwraca @p uint64_t.
+*/
 typedef struct result {
-    uint64_t resultValue;
-    bool valid;
+    uint64_t resultValue; ///< Wartość, którą funckja zwróciła
+    bool valid; ///< @p false, jeśli wywołanie funckji było nieprawidłowe, @p true w przeciwnym przypadku
 } result_t;
 
 bool onlyDigits(char* string) {
@@ -246,12 +250,12 @@ result_t functionResult(gamma_t** g, command_t command) {
     return result;
 }
 
-void executeCommand(command_t command, gamma_t** g, unsigned long long line) {
+void executeCommand(command_t command, gamma_t** gPtr, unsigned long long line) {
     if (!command.isValid) {
         printError(line);
     } else if (command.function == ' ') { //Do nothing
     } else if (command.function == 'B' || command.function == 'I') {
-        if (*g) {
+        if (*gPtr) {
             printError(line);
         } else {
             gamma_t* new_gamma = gamma_new(command.firstArgument.value, command.secondArgument.value,
@@ -259,7 +263,7 @@ void executeCommand(command_t command, gamma_t** g, unsigned long long line) {
             if (!new_gamma) {
                 printError(line);
             } else if (command.function == 'B') {
-                *g = new_gamma;
+                *gPtr = new_gamma;
                 printf("OK %llu\n", line);
             } else {
                 interactiveInput(new_gamma);
@@ -270,11 +274,11 @@ void executeCommand(command_t command, gamma_t** g, unsigned long long line) {
         if (!command.firstArgument.empty) {
             printError(line);
         } else {
-            printWithHighlight(*g, UINT32_MAX, UINT32_MAX, line);
+            printWithHighlight(*gPtr, UINT32_MAX, UINT32_MAX, line);
         }
 
     } else {
-        result_t result = functionResult(g, command);
+        result_t result = functionResult(gPtr, command);
         if (!result.valid) {
             printError(line);
         } else {
