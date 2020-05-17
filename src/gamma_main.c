@@ -4,9 +4,11 @@
  * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
  * @date 16.05.2020
  */
+/** Makro naprawia "implicit declaration of function ‘getline’"
+ */
+#define _XOPEN_SOURCE 700
 
 #include "inputParser.h"
-#define _XOPEN_SOURCE 700
 
 
 //Globalne zmienne, by można było je zwolnić w exit_gamma

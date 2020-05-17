@@ -11,21 +11,21 @@
 
 /** Początek kodu, który zmienia podświetlenie tła na białe i tekst na czarny.
  */
-const char* BEGIN_HIGHLIGHT = "\033[7m";
+static const char* BEGIN_HIGHLIGHT = "\033[7m";
 
 /** Koniec kodu podświetlenia.
  */
-const char* END_HIGHLIGHT = "\033[m";
+static const char* END_HIGHLIGHT = "\033[m";
 
 /** Łączna liczba znaków w kodach podświetlenia.
  */
-const int CODE_LENGTH = 7;
+static const int CODE_LENGTH = 7;
 
 //Zmienna globalna, by można było z niej korzystać w razie potrzeby w changeTerminalToOriginal, które jest
 //wywoływana w exitInteractive
 /** Struktura przechowująca informacje o ustawieniach terminala.
  */
-struct termios original;
+static struct termios original;
 
 inline void clear() {
     printf("\033[2J");

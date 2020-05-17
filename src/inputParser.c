@@ -13,11 +13,11 @@
 
 /** Białe znaki, które oddzialają parametry funckji.
  */
-const char WHITE_CHARS[] = " \t\v\f\r";
+static const char WHITE_CHARS[] = " \t\v\f\r";
 
 /** Ciąg znaków, które oznaczją poprawne funkcje i funkcję pustą.
  */
-const char VALID_FUNCTIONS[] = "BImgbfqp ";
+static const char VALID_FUNCTIONS[] = "BImgbfqp ";
 
 /**
  * @typedef result_t
