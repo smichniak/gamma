@@ -15,7 +15,7 @@
 /** @brief Czyści terminal.
  * Czyści wyjście terminala.
  */
-inline void clear();
+void clear();
 
 /** @brief Zmienia tryb wejścia.
  * Zmienia tryb wejścia terminala na "raw", wejścia nie trzeba potwierdzać znakiem nowej linii.
@@ -76,7 +76,7 @@ void printResults(gamma_t* g);
  * Wypisuje numer linii, w której pojawił się błąd w interpretacji poleceń.
  * @param[in] line – numer linii do wypisania.
  */
-inline void printError(unsigned long long line);
+void printError(unsigned long long line);
 
 
 #endif //GAMMA_DISPLAY_H
