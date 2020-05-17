@@ -28,7 +28,7 @@ stackNode_t* createStack(uint32_t x, uint32_t y) {
     return node;
 }
 
-bool isStackEmpty(stackNode_t* stackPtr) {
+inline bool isStackEmpty(stackNode_t* stackPtr) {
     return !stackPtr;
 }
 
@@ -47,7 +47,7 @@ stackNode_t* removeLast(stackNode_t* stackPtr) {
     return toReturn;
 }
 
-Tuple getLast(stackNode_t* stackPtr) {
+inline Tuple getLast(stackNode_t* stackPtr) {
     return createTuple(stackPtr->x, stackPtr->y);
 }
 

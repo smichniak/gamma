@@ -27,7 +27,7 @@ findUnionNode_t* makeSet(uint32_t player) {
     return nodePtr;
 }
 
-uint32_t getPlayer(findUnionNode_t* nodePtr) {
+inline uint32_t getPlayer(findUnionNode_t* nodePtr) {
     if (!nodePtr) {
         return 0;
     }
@@ -40,7 +40,7 @@ uint32_t getPlayer(findUnionNode_t* nodePtr) {
  * @param[in, out] nodePtr  – wskaźnik na wierzchołek drzewa.
  * @return Wskaźnik na korzeń drzewa, do którego należy wejściowy wierzchołek.
  */
-findUnionNode_t* find(findUnionNode_t* nodePtr) {
+static findUnionNode_t* find(findUnionNode_t* nodePtr) {
     if (nodePtr->parent != nodePtr) {
         //Kompresja ścieżek
         nodePtr->parent = find(nodePtr->parent);
@@ -64,6 +64,6 @@ void unite(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2) {
     }
 }
 
-bool connected(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2) {
+inline bool connected(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2) {
     return nodePtr1 && nodePtr2 && find(nodePtr1) == find(nodePtr2);
 }

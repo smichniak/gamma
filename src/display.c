@@ -9,13 +9,25 @@
 #include <string.h>
 #include "display.h"
 
+/** Początek kodu, który zmienia podświetlenie tła na białe i tekst na czarny.
+ */
 const char* BEGIN_HIGHLIGHT = "\033[7m";
+
+/** Koniec kodu podświetlenia.
+ */
 const char* END_HIGHLIGHT = "\033[m";
+
+/** Łączna liczba znaków w kodach podświetlenia.
+ */
 const int CODE_LENGTH = 7;
 
+//Zmienna globalna, by można było z niej korzystać w razie potrzeby w changeTerminalToOriginal, które jest
+//wywoływana w exitInteractive
+/** Struktura przechowująca informacje o ustawieniach terminala.
+ */
 struct termios original;
 
-void clear() {
+inline void clear() {
     printf("\033[2J");
     printf("\033[H");
 }
@@ -59,7 +71,7 @@ void exitInteractive(int code) {
  * an gry.
  * @return Numer największego gracza, który ma pionek na planszy.
  */
-uint32_t maxPlayerOnBoard(gamma_t* g) {
+static uint32_t maxPlayerOnBoard(gamma_t* g) {
     for (uint32_t player = get_players(g); player > 0; --player) {
         if (gamma_busy_fields(g, player) > 0) {
             return player;
@@ -75,7 +87,7 @@ uint32_t maxPlayerOnBoard(gamma_t* g) {
  * @param[in] highlight        – ANSI escape code, który odpowiada za zmianę koloru tła.
  * @return Indeks ostatniego wolnego miejsca w tablicy znaków, po dodaniu napisu.
  */
-size_t addHighlight(char* boardString, size_t stringIndex, const char* highlight) {
+static size_t addHighlight(char* boardString, size_t stringIndex, const char* highlight) {
     for (uint32_t k = 0; k < strlen(highlight); ++k) {
         boardString[stringIndex] = highlight[k];
         stringIndex++;
@@ -90,7 +102,7 @@ size_t addHighlight(char* boardString, size_t stringIndex, const char* highlight
  * @param[in] spaces           – liczba spacji do dodania.
  * @return Indeks ostatniego wolnego miejsca w tablicy znaków, po dodaniu napisu.
  */
-size_t addSpaces(char* boardString, size_t stringIndex, int spaces) {
+static size_t addSpaces(char* boardString, size_t stringIndex, int spaces) {
     for (int spaceIndex = 0; spaceIndex < spaces; ++spaceIndex) {
         //Pozostale znaki uzupełniamy spacjami
         boardString[stringIndex] = ' ';
@@ -101,16 +113,21 @@ size_t addSpaces(char* boardString, size_t stringIndex, int spaces) {
 
 /** @brief Dodaje gracza do napisu planszy.
  * Dodaje numer gracza jako napis na końcu tablicy znaków reprezentującej planszę, napis gracza uzupełnia
- * pustymi znakami, by miał taką długość, jak długość napisu największego gracza na planszy.
- * @param[in] player           – numer gracza, liczba dodatnia niewiększa od wartości
- *                               @p players z funkcji @ref gamma_new,
+ * pustymi znakami, by miał taką długość, jak długość napisu największego gracza na planszy. Opcjonalnie
+ * podświetla tło danego pola, na którym znajduje się dodawany gracz.
+ * @param[in] g                – wskaźnik na strukturę przechowującą stan gry,
+ * @param[in] column           – numer kolumny, liczba nieujemna mniejsza od wartości @p width z funkcji
+ *                               @ref gamma_new,
+ * @param[in] row              – numer wiersza, liczba nieujemna mniejsza od wartości @p height z funkcji
+ *                               @ref gamma_new.
  * @param[in] maxPlayerDigits  - liczba cyfr największego gracza,
  * @param[in, out] stringIndex - indeks ostatniego wolnego miejsca w tablicy znaków,
  * @param[in, out] boardString - tablica znaków, napis reprezentujący planszę.
+ * param[in] highlight         - @p true jeśli pole ma być podświetlone, @p false w przeciwnym przypadku
  * @return Indeks ostatniego wolnego miejsca w tablicy znaków, po dodaniu napisu.
  */
-size_t addToBoard(gamma_t* g, uint32_t column, uint32_t row, int maxPlayerDigits, size_t stringIndex,
-                  char* boardString, bool highlight) {
+static size_t addToBoard(gamma_t* g, uint32_t column, uint32_t row, int maxPlayerDigits, size_t stringIndex,
+                         char* boardString, bool highlight) {
     uint32_t player = get_player_on_field(g, column, row);
     int playerDigits = digits(player);
 
@@ -159,9 +176,8 @@ char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y) {
     char* boardString;
     //+height na \n po każdym rzędzie, +1 na \0
     boardString = calloc(
-            maxPlayerDigits * (uint64_t) width * (uint64_t) height + spaces + height + highlight * CODE_LENGTH +
-            1,
-            sizeof(char));
+            maxPlayerDigits * (uint64_t) width * (uint64_t) height + spaces + height +
+            highlight * CODE_LENGTH + 1, sizeof(char));
     if (!boardString) {
         return NULL;
     }
@@ -208,7 +224,7 @@ void printResults(gamma_t* g) {
     }
 }
 
-void printError(unsigned long long line) {
+inline void printError(unsigned long long line) {
     fprintf(stderr, "ERROR %llu\n", line);
 }
 

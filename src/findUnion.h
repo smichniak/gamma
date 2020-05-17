@@ -29,7 +29,7 @@ findUnionNode_t* makeSet(uint32_t player);
  * @param[in] nodePtr  – wskaźnik na wierzchołek drzewa lub NULL.
  * @return Wartość @p player z funkcji @ref makeSet lub @p 0, jeśli nodePtr jest NULL.
  */
-uint32_t getPlayer(findUnionNode_t* nodePtr);
+inline uint32_t getPlayer(findUnionNode_t* nodePtr);
 
 /** @brief Łączy dwa drzewa Find-Union.
  * Łączy dwa drzewa wykorzystując rangi drzew do optymalizacji. Drzewo z mniejszą rangą podczepiamy pod to, z
@@ -46,7 +46,7 @@ void unite(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2);
  * @param[in, out] nodePtr2  – wskaźnik na wierzchołek drugiego drzewa.
  * @return Wartość @p true, jeśli są połączone, @p false jeśli dowolny z nich jest NULL lub nie są połączone.
  */
-bool connected(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2);
+inline bool connected(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2);
 
 
 #endif //GAMMA_FINDUNION_H

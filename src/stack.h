@@ -31,7 +31,7 @@ stackNode_t* createStack(uint32_t x, uint32_t y);
  * @param[in] stackPtr  – wskaźnik na stos.
  * @return Wartość @p true, jeśli stos jest pusty,a @p false w przeciwnym przypadku.
  */
-bool isStackEmpty(stackNode_t* stackPtr);
+inline bool isStackEmpty(stackNode_t* stackPtr);
 
 /** @brief Ustawia nowy element na koniec stosu.
  * Alokuje pamięć na nowy element stosu z wartościami @p x i @p y. Ustawia nowy element na koniec wejściowego
@@ -57,7 +57,7 @@ stackNode_t* removeLast(stackNode_t* stackPtr);
  * @param[in] stackPtr  – wskaźnik na stos.
  * @return Krotka @ref Tuple z wartościami z ostatniego elementu stosu.
  */
-Tuple getLast(stackNode_t* stackPtr);
+inline Tuple getLast(stackNode_t* stackPtr);
 
 /** @brief Usuwa stos.
  * Zwalnia zaalokowaną pamięć na wszystkie elementy w stosie.

@@ -15,7 +15,7 @@
 /** @brief Czyści terminal.
  * Czyści wyjście terminala.
  */
-void clear();
+inline void clear();
 
 /** @brief Zmienia tryb wejścia.
  * Zmienia tryb wejścia terminala na "raw", wejścia nie trzeba potwierdzać znakiem nowej linii.
@@ -44,8 +44,8 @@ void exitInteractive(int code);
  *                      @p width z funkcji @ref gamma_new,
  * @param[in] y       – numer wiersza pola do podświetlenia, liczba nieujemna mniejsza od wartości
  *                      @p height z funkcji @ref gamma_new.
- * @return Wskaźnik na zaalokowany bufor zawierający napis opisujący stan
-planszy lub NULL, jeśli nie udało się zaalokować pamięci.
+ * @return Wskaźnik na zaalokowany bufor zawierający napis opisujący stan planszy lub NULL, jeśli nie
+ * udało się zaalokować pamięci.
  */
 char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y);
 
@@ -60,7 +60,7 @@ char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y);
  *                      @p width z funkcji @ref gamma_new,
  * @param[in] y       – numer wiersza pola do podświetlenia, liczba nieujemna mniejsza od wartości
  *                      @p height z funkcji @ref gamma_new.
- * @param[in] linie   – numer linii, z której zostało wywołane polecenie lub @p 0, jeśli program jest w
+ * @param[in] line   – numer linii, z której zostało wywołane polecenie lub @p 0, jeśli program jest w
  *                      interactive mode.
  */
 void printWithHighlight(gamma_t* g, uint32_t x, uint32_t y, unsigned long long line);
@@ -74,9 +74,9 @@ void printResults(gamma_t* g);
 
 /** @brief Wypisuje linijkę błędu.
  * Wypisuje numer linii, w której pojawił się błąd w interpretacji poleceń.
- * @param[in] linie – numer linii do wypisania.
+ * @param[in] line – numer linii do wypisania.
  */
-void printError(unsigned long long line);
+inline void printError(unsigned long long line);
 
 
 #endif //GAMMA_DISPLAY_H

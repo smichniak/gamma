@@ -4,11 +4,15 @@
 
 #include "inputParser.h"
 
-//Line buffer is dynamically allocated
-size_t INITIAL_BUFFER_SIZE = 0;
 
 //Globalne zmienne, by można było je zwolnić w exit_gamma
+
+/** Wskaźnik na strukturę przechowującą stan gry.
+ */
 gamma_t* g = NULL;
+
+/** Ciąg znaków, które są zawarte w jednej linii wejścia.
+ */
 char* line = NULL;
 
 
@@ -21,11 +25,14 @@ void exit_gamma() {
 }
 
 int main() {
+    //Początkowy rozmiar bufora na wejście
+    size_t initialBufferSize = 0;
+
     atexit(exit_gamma);
 
     unsigned long long lineNum = 1;
 
-    while (getline(&line, &INITIAL_BUFFER_SIZE, stdin) > 0) {
+    while (getline(&line, &initialBufferSize, stdin) > 0) {
         command_t command = getCommand(line);
         executeCommand(command, &g, lineNum);
         lineNum++;

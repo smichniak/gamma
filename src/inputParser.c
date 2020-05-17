@@ -17,7 +17,7 @@ const char WHITE_CHARS[] = " \t\v\f\r";
 const char VALID_FUNCTIONS[] = "BImgbfqp ";
 
 /**
- * @typedef result
+ * @typedef result_t
  * Struktura przechowująca informacje o wyniku funkcji, która zwraca @p uint64_t.
 */
 typedef struct result {
@@ -30,7 +30,7 @@ typedef struct result {
  * @param[in] string   – ciąg znaków do sprawdzenia.
  * @return @p true, jeśli wszystkie znaki są cyframi, @p false w przeciwnym przypadku
  */
-bool onlyDigits(char* string) {
+static bool onlyDigits(char* string) {
     for (uint32_t i = 0; i < strlen(string); ++i) {
         if (!isdigit(string[i])) {
             return false;
@@ -42,10 +42,10 @@ bool onlyDigits(char* string) {
 /** @brief Sprawdza, czy ciąg znaków oznacza poprawną funckję.
  * Sprawdza, czy ciąg znaków jest poprwaną funckją gry @p gamma. Funkcja musi być jednoznakowa, i znak
  * ten musi być jednym z ustalonych w @p VALID_FUNCTIONS.
- * @param[in] string   – ciąg znaków do sprawdzenia.
+ * @param[in] function   – ciąg znaków do sprawdzenia.
  * @return @p true, jeśli funckja jest prawidłowa, @p false w przeciwnym przypadku
  */
-bool validFunction(char* function) {
+static bool validFunction(char* function) {
     if (strlen(function) > 1) {
         return false;
     }
@@ -65,7 +65,7 @@ bool validFunction(char* function) {
  * @param[in] string   – ciąg znaków do sprawdzenia.
  * @return Struktura opisująca argument funkcji.
  */
-argument_t validArgument(char* string) {
+static argument_t validArgument(char* string) {
     argument_t argument;
     argument.value = 0;
     argument.valid = true;
@@ -99,7 +99,7 @@ argument_t validArgument(char* string) {
  * @return Numer następnego gracza, który może wykonać ruch, lub @p 0 jeśli żaden gracz nie może już
  * wykonać ruchu.
  */
-uint32_t getNextPlayer(gamma_t* g, uint32_t currentPlayer, uint64_t playersSkipped) {
+static uint32_t getNextPlayer(gamma_t* g, uint32_t currentPlayer, uint64_t playersSkipped) {
     if (playersSkipped > get_players(g)) {
         return 0;
     }
@@ -119,7 +119,7 @@ uint32_t getNextPlayer(gamma_t* g, uint32_t currentPlayer, uint64_t playersSkipp
  * przywraca oryginalne ustawienia terminala.
  * @param[in,out] g – wskaźnik na strukturę przechowującą stan gry.
  */
-void interactiveInput(gamma_t* g) {
+static void interactiveInput(gamma_t* g) {
     uint32_t cursorX = 0;
     uint32_t cursorY = 0;
     uint32_t maxX = get_width(g) - 1;
@@ -200,7 +200,7 @@ void interactiveInput(gamma_t* g) {
  * Zwraca strukturę domyślnej komendy. Jest ona poprawna, ma puste argumenty i nie powoduje żadnego działania.
  * @return Struktura opisująca domyślną komendę.
  */
-command_t defCommand() {
+static command_t defCommand() {
     command_t command;
     command.function = ' ';
     command.isValid = true;
@@ -266,7 +266,7 @@ command_t getCommand(char* line) {
  * @return Struktura opisująca wynik wywołania. Parametr poprawności ustawiony na @p true, jeśli udało się
  * wyowałać funkcję, @p false w przeciwnym przypadku.
  */
-result_t functionResult(gamma_t** g, command_t command) {
+static result_t functionResult(gamma_t** g, command_t command) {
     result_t result;
     result.valid = true;
 
