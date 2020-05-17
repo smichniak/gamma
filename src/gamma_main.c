@@ -1,6 +1,9 @@
-//TODO
-//Check on students if necessary
-#define _XOPEN_SOURCE 700
+/** @file
+ * Główny plik obsługujący grę gamma.
+ *
+ * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
+ * @date 16.05.2020
+ */
 
 #include "inputParser.h"
 
