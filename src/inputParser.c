@@ -77,10 +77,12 @@ static argument_t validArgument(char* string) {
     if (string == NULL) {
         argument.empty = true;
     } else if (!onlyDigits(string)) {
+        //Argument może zawierać tylko cyfry, żeby był poprawny
         argument.valid = false;
     } else {
         uint64_t conversion = strtoul(string, NULL, 10);
         if (conversion > UINT32_MAX) {
+            //Wynik większy od UINT32_MAX nie jest poprawny
             argument.valid = false;
         } else {
             argument.value = conversion;
@@ -103,12 +105,15 @@ static argument_t validArgument(char* string) {
  * wykonać ruchu.
  */
 static uint32_t getNextPlayer(gamma_t* g, uint32_t currentPlayer, uint64_t playersSkipped) {
+    //Jeśli sprawdziliśmy wszytskich graczy i żaden nie może wykonać ruchu, to zwracamy 0
     if (playersSkipped > get_players(g)) {
         return 0;
     }
     uint32_t maxPlayer = get_players(g);
+    //Po ostatnim graczu wracamy do nr 1
     uint32_t nextPlayer = (currentPlayer % maxPlayer) + 1;
 
+    //Jeśli aktualny gracz nie może wykonać ruchu, sprawdzamy następnego
     if (gamma_free_fields(g, nextPlayer) == 0 && !gamma_golden_possible(g, nextPlayer)) {
         return getNextPlayer(g, nextPlayer, playersSkipped + 1);
     }
@@ -128,21 +133,19 @@ static void interactiveInput(gamma_t* g) {
     uint32_t maxX = get_width(g) - 1;
     uint32_t maxY = get_height(g) - 1;
     uint32_t currentPlayer = 1;
-    bool successfulMove;
-    bool skip;
+    bool nextPlayer;
     int inputCharacter = 0;
 
     changeTerminalToRaw();
 
     while (currentPlayer != 0) {
-        successfulMove = false;
-        skip = false;
+        nextPlayer = false;
 
         clear();
         printWithHighlight(g, cursorX, cursorY, 0);
-        printf("PLAYER %u %" PRIu64 " %" PRIu64 " %c\n", currentPlayer, gamma_busy_fields(g, currentPlayer),
-               gamma_free_fields(g, currentPlayer), 'G' * gamma_golden_possible(g, currentPlayer));
+        printPlayerInfo(g, currentPlayer);
 
+        //inputCharacter == 0 wtedy, gdy poprzedni wczytany znak został już zinterpretowany
         if (inputCharacter == 0) {
             inputCharacter = getchar();
         }
@@ -174,25 +177,26 @@ static void interactiveInput(gamma_t* g) {
                 }
             }
         } else if (inputCharacter == ' ') {
-            successfulMove = gamma_move(g, currentPlayer, cursorX, cursorY);
+            nextPlayer = gamma_move(g, currentPlayer, cursorX, cursorY);
             inputCharacter = 0;
         } else if (inputCharacter == 'g' || inputCharacter == 'G') {
-            successfulMove = gamma_golden_move(g, currentPlayer, cursorX, cursorY);
+            nextPlayer = gamma_golden_move(g, currentPlayer, cursorX, cursorY);
             inputCharacter = 0;
         } else if (inputCharacter == 'c' || inputCharacter == 'C') {
             inputCharacter = 0;
-            skip = true;
-        } else if (inputCharacter == 4) {
+            nextPlayer = true;
+        } else if (inputCharacter == 4) { //Koniec transmisji, gracz = 0 kończy tryb interaktywny
             currentPlayer = 0;
-        } else {
+        } else { //Znak, który nie odpowiada żadnaje komendzie
             inputCharacter = 0;
         }
 
-        if (successfulMove || skip) {
+        if (nextPlayer) {
             currentPlayer = getNextPlayer(g, currentPlayer, 0);
         }
     }
 
+    //Na koniec gry wypisujemy planszę i podsumowanie wyników
     clear();
     printWithHighlight(g, UINT32_MAX, UINT32_MAX, 0);
     printResults(g);
@@ -217,14 +221,16 @@ static command_t defCommand() {
 command_t getCommand(char* line) {
     command_t command = defCommand();
 
+    //Pomijamy linie puste i zaczynajace się od #
     if (line != NULL && line[0] != '#' && line[0] != '\n') {
         if (strlen(line) == 0 || isspace(line[0]) || line[strlen(line) - 1] != '\n') {
+            //Błędne są linie nie kończące się znakiem nowej linii i rozpoczynające się białym znakiem
             command.isValid = false;
         } else {
-            //We remove the \n from the end of the line
+            //Usuwamy '\n' z końca linii
             line[strlen(line) - 1] = 0;
 
-            //We get every part separated by white characters
+            //Rozdzielamy części miedzy białymi znakami
             char* function = strtok(line, WHITE_CHARS);
 
             char* firstArg = strtok(NULL, WHITE_CHARS);
@@ -244,7 +250,7 @@ command_t getCommand(char* line) {
             if (function != NULL) {
                 if (restOfLine != NULL || !validFunction(function) || !firstArgument.valid ||
                     !secondArgument.valid || !thirdArgument.valid || !fourthArgument.valid) {
-                    //Valid line can't have more thant four arguments and each argument must be valid
+                    //Prawidłowa linia nie może mieć więcej niż 4 argumenty i każdy musi być poprawny
                     command.isValid = false;
                 } else {
                     command.function = function[0];
@@ -275,14 +281,14 @@ static result_t functionResult(gamma_t** gPtr, command_t command) {
 
     if (!command.fourthArgument.empty || !*gPtr) {
         result.valid = false;
-    } else if (command.function == 'm') {
+    } else if (command.function == 'm') { //Zwykly ruch, trzy argumenty
         if (command.thirdArgument.empty) {
             result.valid = false;
         } else {
             result.resultValue = gamma_move(*gPtr, command.firstArgument.value, command.secondArgument.value,
                                             command.thirdArgument.value);
         }
-    } else if (command.function == 'g') {
+    } else if (command.function == 'g') { //Złoty ruch, trzy argumenty
         if (command.thirdArgument.empty) {
             result.valid = false;
         } else {
@@ -291,11 +297,11 @@ static result_t functionResult(gamma_t** gPtr, command_t command) {
         }
     } else if (!command.secondArgument.empty || command.firstArgument.empty) {
         result.valid = false;
-    } else if (command.function == 'b') {
+    } else if (command.function == 'b') { //Zajęte pola, jeden argument
         result.resultValue = gamma_busy_fields(*gPtr, command.firstArgument.value);
-    } else if (command.function == 'f') {
+    } else if (command.function == 'f') { //Wolne pola, jeden argument
         result.resultValue = gamma_free_fields(*gPtr, command.firstArgument.value);
-    } else if (command.function == 'q') {
+    } else if (command.function == 'q') { //Czy możliwy złoty ruch, jeden argument
         result.resultValue = gamma_golden_possible(*gPtr, command.firstArgument.value);
     }
 
@@ -305,14 +311,14 @@ static result_t functionResult(gamma_t** gPtr, command_t command) {
 void executeCommand(command_t command, gamma_t** gPtr, unsigned long long line) {
     if (!command.isValid) {
         printError(line);
-    } else if (command.function == ' ') { //Do nothing
+    } else if (command.function == ' ') { //Pusta komenda, nic nie robi
     } else if (command.function == 'B' || command.function == 'I') {
-        if (*gPtr) {
+        if (*gPtr) { //Nie możemy zacząć nowej gry, jeśli już jakaś trwa
             printError(line);
         } else {
             gamma_t* new_gamma = gamma_new(command.firstArgument.value, command.secondArgument.value,
                                            command.thirdArgument.value, command.fourthArgument.value);
-            if (!new_gamma) {
+            if (!new_gamma) { //Błędne argumenty lub problemy z alokacją nowej gry
                 printError(line);
             } else if (command.function == 'B') {
                 *gPtr = new_gamma;
@@ -322,10 +328,11 @@ void executeCommand(command_t command, gamma_t** gPtr, unsigned long long line) 
             }
         }
 
-    } else if (command.function == 'p') {
+    } else if (command.function == 'p') { //Ciąg znaków opisujący planszę, zero argumentów
         if (!command.firstArgument.empty) {
             printError(line);
         } else {
+            //x i y = UINT32_MAX oznaczają string planszy bez podświetlonych pól
             printWithHighlight(*gPtr, UINT32_MAX, UINT32_MAX, line);
         }
 

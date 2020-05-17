@@ -78,5 +78,12 @@ void printResults(gamma_t* g);
  */
 void printError(unsigned long long line);
 
+/** @brief Wypisuje informacje o graczu.
+ * Wypisuje informacje o danym graczu - liczba zajętych obszarów, pól, wolnych pól i czy może wykonać złoty ruch.
+ * @param[in] g       – wskaźnik na strukturę przechowującą stan gry,
+ * @param[in] player  – numer gracza, liczba dodatnia niewiększa od wartości @p players z funkcji @ref gamma_new.
+ */
+void printPlayerInfo(gamma_t* g, uint32_t player);
+
 
 #endif //GAMMA_DISPLAY_H

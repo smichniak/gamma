@@ -35,21 +35,22 @@ inline void clear() {
 void changeTerminalToRaw() {
     struct termios raw;
 
-    // Save original serial communication configuration for stdin
+    //Zachowuje oryginalne ustawienia terminala
     if (tcgetattr(STDIN_FILENO, &original) != 0) {
         exit(1);
     }
+    //Tworzy kopię ustawień i zmienia je na wejscie "raw"
     raw = original;
     raw.c_lflag &= ~(ICANON | ECHO);
     if (tcsetattr(STDIN_FILENO, TCSANOW, &raw) != 0) {
         exit(1);
     }
-    //Ukryj kursor
+    //Ukrywa kursor
     printf("\e[?25l");
 }
 
 void changeTerminalToOriginal() {
-    //Pokaż kursor
+    //Pokazuje kursor
     printf("\e[?25h");
     if (tcsetattr(STDIN_FILENO, TCSANOW, &original) != 0) {
         exit(1);
@@ -58,11 +59,7 @@ void changeTerminalToOriginal() {
 
 void exitInteractive(int code) {
     changeTerminalToOriginal();
-    if (code == 0) {
-        exit(0);
-    } else {
-        exit(code);
-    }
+    exit(code);
 }
 
 /** @brief Zwraca największego gracza na planszy.
@@ -104,7 +101,6 @@ static size_t addHighlight(char* boardString, size_t stringIndex, const char* hi
  */
 static size_t addSpaces(char* boardString, size_t stringIndex, int spaces) {
     for (int spaceIndex = 0; spaceIndex < spaces; ++spaceIndex) {
-        //Pozostale znaki uzupełniamy spacjami
         boardString[stringIndex] = ' ';
         stringIndex++;
     }
@@ -144,6 +140,7 @@ static size_t addToBoard(gamma_t* g, uint32_t column, uint32_t row, int maxPlaye
         stringIndex = addHighlight(boardString, stringIndex, BEGIN_HIGHLIGHT);
     }
 
+    //Dodajemy napis numeru gracza
     for (int digitIndex = 0; digitIndex < playerDigits; ++digitIndex) {
         boardString[stringIndex] = playerString[digitIndex];
         stringIndex++;
@@ -153,6 +150,7 @@ static size_t addToBoard(gamma_t* g, uint32_t column, uint32_t row, int maxPlaye
         stringIndex = addHighlight(boardString, stringIndex, END_HIGHLIGHT);
     }
 
+    //Pozostale znaki uzupełniamy spacjami
     stringIndex = addSpaces(boardString, stringIndex, maxPlayerDigits);
 
     free(playerString);
@@ -163,6 +161,7 @@ char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y) {
     if (!g) {
         return NULL;
     }
+    //Dla x == UINT32_MAX nie podświetlamy żadnego pola
     bool highlight = x < UINT32_MAX;
     uint32_t width = get_width(g);
     uint32_t height = get_height(g);
@@ -175,8 +174,7 @@ char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y) {
 
     char* boardString;
     //+height na \n po każdym rzędzie, +1 na \0
-    boardString = calloc(
-            maxPlayerDigits * (uint64_t) width * (uint64_t) height + spaces + height +
+    boardString = calloc(maxPlayerDigits * (uint64_t) width * (uint64_t) height + spaces + height +
             highlight * CODE_LENGTH + 1, sizeof(char));
     if (!boardString) {
         return NULL;
@@ -185,8 +183,8 @@ char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y) {
     size_t stringIndex = 0;
     for (uint32_t row = height - 1; row < height; --row) {
         for (uint32_t column = 0; column < width; ++column) {
+            //Decydujemy, czy jesteśmy w polu, które należy podświetlić
             bool highlightField = highlight && column == x && row == y;
-
             stringIndex = addToBoard(g, column, row, maxPlayerDigits, stringIndex, boardString, highlightField);
             if (stringIndex == 0) {
                 free(boardString);
@@ -207,8 +205,10 @@ void printWithHighlight(gamma_t* g, uint32_t x, uint32_t y, unsigned long long l
     char* board = boardWithHighlight(g, x, y);
     if (!board) {
         if (line == 0) {
+            //Jesteśmy w trybie interaktywnym i chcemy z niego wyjść
             exitInteractive(1);
         } else {
+            //Jesteśmy w trybie wsadowym, wypisujemy ERROR i dalej przyjmujemy wejście
             printError(line);
         }
     } else {
@@ -219,8 +219,9 @@ void printWithHighlight(gamma_t* g, uint32_t x, uint32_t y, unsigned long long l
 
 void printResults(gamma_t* g) {
     uint32_t players = get_players(g);
+    printf("\nPLAYER NUMBER - OCCUPIED FILEDS\n");
     for (uint32_t player = 1; player <= players; ++player) {
-        printf("PLAYER %u %" PRIu64 "\n", player, gamma_busy_fields(g, player));
+        printf("PLAYER %u - %" PRIu64 "\n", player, gamma_busy_fields(g, player));
     }
 }
 
@@ -228,3 +229,10 @@ inline void printError(unsigned long long line) {
     fprintf(stderr, "ERROR %llu\n", line);
 }
 
+void printPlayerInfo(gamma_t* g, uint32_t player) {
+    printf("PLAYER %u - ", player);
+    printf("AREAS: %u/%u - ", get_player_areas(g, player), get_areas(g));
+    printf("OCCUPIED FIELDS: %" PRIu64, gamma_busy_fields(g, player));
+    printf(" - FREE FIELDS: %" PRIu64,  gamma_free_fields(g, player));
+    printf(" - GOLDEN MOVE AVAILABLE: %s\n", gamma_golden_possible(g, player) ? "true" : "false");
+}

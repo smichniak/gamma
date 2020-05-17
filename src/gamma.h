@@ -40,6 +40,13 @@ uint32_t get_height(gamma_t* g);
  */
 uint32_t get_players(gamma_t* g);
 
+/** @brief Zwraca maksymalna liczbę obszarów.
+ * Maksymalna liczbę obszarów, które może zająć gracz w grze opsianej w @p g.
+ * @param[in] g   – wskaźnik na strukturę przechowującą stan gry,
+ * @return Wartość liczbowa @p uint32_t odpowiadająca liczbie obszarów.
+ */
+uint32_t get_areas(gamma_t* g);
+
 /** @brief Zwraca gracza w wierzchołku o danych współrzędnych.
  * Zwraca gracza w wierzchołku o współrzędnych (@p x, @p y) w grze opsianej w @p g.
  * @param[in] g       – wskaźnik na strukturę przechowującą stan gry,
@@ -50,6 +57,14 @@ uint32_t get_players(gamma_t* g);
  * @return Wartość liczbowa @p uint32_t odpowiadająca numerowi gracza.
  */
 uint32_t get_player_on_field(gamma_t* g, uint32_t x, uint32_t y);
+
+/** @brief Zwraca liczbę zajętych obszarów.
+ * Zwraca liczbę obszarów zajętych przez danego gracza.
+ * @param[in] g       – wskaźnik na strukturę przechowującą stan gry,
+ * @param[in] player  – numer gracza.
+ * @return Wartość liczbowa @p uint32_t odpowiadająca liczbie obszarów.
+ */
+uint32_t get_player_areas(gamma_t* g, uint32_t player);
 
 /** @brief Tworzy strukturę przechowującą stan gry.
  * Alokuje pamięć na nową strukturę przechowującą stan gry.
@@ -62,8 +77,7 @@ uint32_t get_player_on_field(gamma_t* g, uint32_t x, uint32_t y);
  * @return Wskaźnik na utworzoną strukturę lub NULL, gdy nie udało się
  * zaalokować pamięci lub któryś z parametrów jest niepoprawny.
  */
-gamma_t* gamma_new(uint32_t width, uint32_t height,
-                   uint32_t players, uint32_t areas);
+gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t areas);
 
 /** @brief Usuwa strukturę przechowującą stan gry.
  * Usuwa z pamięci strukturę wskazywaną przez @p g.

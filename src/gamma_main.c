@@ -4,12 +4,12 @@
  * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
  * @date 16.05.2020
  */
+
 /** Makro naprawia "implicit declaration of function ‘getline’"
  */
 #define _XOPEN_SOURCE 700
 
 #include "inputParser.h"
-
 
 //Globalne zmienne, by można było je zwolnić w exit_gamma
 /** Wskaźnik na strukturę przechowującą stan gry.
@@ -34,7 +34,7 @@ void exit_gamma() {
  * i je wywołuje.
  */
 int main() {
-    //Początkowy rozmiar bufora na wejście
+    //Początkowy rozmiar bufora na wejście, bufor na linię będzie dynamicznie zmieniany
     size_t initialBufferSize = 0;
 
     atexit(exit_gamma);

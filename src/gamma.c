@@ -40,6 +40,14 @@ uint32_t get_players(gamma_t* g) {
     return g->players;
 }
 
+uint32_t get_areas(gamma_t* g) {
+    return g->areas;
+}
+
+uint32_t get_player_areas(gamma_t* g, uint32_t player) {
+    return g->playerAreas[player];
+}
+
 uint32_t get_player_on_field(gamma_t* g, uint32_t x, uint32_t y) {
     return getPlayer(g->board[x][y]);
 }
@@ -217,7 +225,8 @@ static int adjacentWithPLayer(gamma_t* g, uint32_t player, Tuple* adjacent) {
  * @param[in] player  – numer gracza, liczba dodatnia niewiększa od wartości
  *                      @p players z funkcji @ref gamma_new,
  * @param[in] adjacent - maksymalnie czteroelementowa tablica par współrzędnych @p x i @p y
- * @return Liczba ze zbioru {0, 1, 2, 3, 4}, liczba sąsiednich pól z danym graczem.
+ * @return Liczba ze zbioru {0, 1, 2, 3, 4}, liczba wolnych sąsiednich pól z danym graczem lub -1 gdy
+ * wystąpił błąd alokacji pamięci.
  */
 static int newFreeAdjacent(gamma_t* g, uint32_t player, Tuple* adjacent) {
     int freeAdjacent = 0;
@@ -398,7 +407,7 @@ static bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields,
  * @param[in, out] oldFields - wskaźnik na pierwszy element tablicy wskaźników na pola,
  * @param[in, out] oldFieldsIndexPtr - wskaźnik na indeks pierwszego wolnego miejsca w tablicy
  * @p oldFields.
- * @return Liczba nowych obszarów w przypadku sukcjesu, -2 jeśli wystąpiły problemy z pamięcią.
+ * @return Liczba nowych obszarów w przypadku sukcesu, -2 jeśli wystąpiły problemy z pamięcią.
  */
 static int dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNode_t** oldFields,
                          uint64_t* oldFieldsIndexPtr) {
@@ -435,18 +444,38 @@ static int dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findU
     return newAreas;
 }
 
-bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
+/** @brief Przygotowanie do złotego ruchu.
+ * Sprawdza poprwaność argumentów, alokuje pamięć na tablicę sąsiednich pól.
+ * @param[in] g   – wskaźnik na strukturę przechowującą stan gry,
+ * @param[in] player  – numer gracza, liczba dodatnia niewiększa od wartości
+ *                      @p players z funkcji @ref gamma_new,
+ * @param[in] x       – numer kolumny, liczba nieujemna mniejsza od wartości
+ *                      @p width z funkcji @ref gamma_new,
+ * @param[in] y       – numer wiersza, liczba nieujemna mniejsza od wartości
+ *                      @p height z funkcji @ref gamma_new.
+ * @return Tablica sąsiednich pól, @p NULL jeśli arugmenty są nieprawidłowe lub wystąpiły
+ * problemy z alokacją pamięci.
+ */
+static Tuple* goldenPrep(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     if (!g || !validPlayer(g, player) || !validCoordinates(g, x, y) || g->goldenMoves[player] ||
         !g->board[x][y] || getPlayer(g->board[x][y]) == player) {
-        return false;
+        return NULL;
     }
     Tuple* adjacent = getAdjacent(g, x, y);
     if (!adjacent) {
-        return false;
+        return NULL;
     }
 
     if (g->playerAreas[player] == g->areas && !adjacentWithPLayer(g, player, adjacent)) {
         free(adjacent);
+        return NULL;
+    }
+    return adjacent;
+}
+
+bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
+    Tuple* adjacent = goldenPrep(g, player, x, y);
+    if (!adjacent) {
         return false;
     }
 
@@ -470,7 +499,7 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
         return false;
     }
 
-    //Usuwamy pionek, zwiększamy wolne pole o 1
+    //Usuwamy pionek, zwiększamy wolne pola o 1
     updateAdjacentFree(g, adjacent, 1);
 
     int freeAdjacentFields = newFreeAdjacent(g, busyPlayer, adjacent);
