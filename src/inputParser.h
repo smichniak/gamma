@@ -38,7 +38,7 @@ typedef struct {
  * do kolejnych argumentów funckji, decyduje o zgodności komendy ze specyfikacją, ignoruje linie puste
  * i zaczynające się na @p #
  * @param[in,out] line   – ciąg znaków, który zawiera komendę do przetworzenia.
- * @return @ref command_t - struktura opisująca koemdę do wywołania
+ * @return Struktura opisująca koemdę do wywołania.
  */
 command_t getCommand(char* line);
 
@@ -48,7 +48,7 @@ command_t getCommand(char* line);
  * @param[in] command    – ciąg znaków, który zawiera komendę do przetworzenia,
  * @param[in,out] gPtr   – wskaźnik na wskaźnik na strukturę przechowującą stan gry,
  * @param[in] line       – numer linii wejścia, z której została wywołana koemnda
- * @return @ref command_t - struktura opisująca koemdę do wywołania
+ * @return Struktura opisująca komendę do wywołania.
  */
 void executeCommand(command_t command, gamma_t** gPtr, unsigned long long line);
 

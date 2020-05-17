@@ -2,7 +2,7 @@
  * Implementacja modułu inputParser.h
  *
  * @author Szymon Michniak <s.michniak@student.uw.edu.pl>
- * @date 16.05.2020
+ * @date 17.05.2020
  */
 
 #include <string.h>
@@ -13,6 +13,7 @@
 
 //Whitespace characters that separate command arguments
 const char WHITE_CHARS[] = " \t\v\f\r";
+//Znaki poprawnych funkcji i funcji pustej
 const char VALID_FUNCTIONS[] = "BImgbfqp ";
 
 /**
@@ -24,6 +25,11 @@ typedef struct result {
     bool valid; ///< @p false, jeśli wywołanie funckji było nieprawidłowe, @p true w przeciwnym przypadku
 } result_t;
 
+/** @brief Sprawdza, czy ciąg znaków jest samymi cyframi.
+ * Sprawdza, czy każdy znak w ciągu jest cyfrą.
+ * @param[in] string   – ciąg znaków do sprawdzenia.
+ * @return @p true, jeśli wszystkie znaki są cyframi, @p false w przeciwnym przypadku
+ */
 bool onlyDigits(char* string) {
     for (uint32_t i = 0; i < strlen(string); ++i) {
         if (!isdigit(string[i])) {
@@ -33,6 +39,12 @@ bool onlyDigits(char* string) {
     return true;
 }
 
+/** @brief Sprawdza, czy ciąg znaków oznacza poprawną funckję.
+ * Sprawdza, czy ciąg znaków jest poprwaną funckją gry @p gamma. Funkcja musi być jednoznakowa, i znak
+ * ten musi być jednym z ustalonych w @p VALID_FUNCTIONS.
+ * @param[in] string   – ciąg znaków do sprawdzenia.
+ * @return @p true, jeśli funckja jest prawidłowa, @p false w przeciwnym przypadku
+ */
 bool validFunction(char* function) {
     if (strlen(function) > 1) {
         return false;
@@ -46,6 +58,13 @@ bool validFunction(char* function) {
     return false;
 }
 
+/** @brief Sprawdza, czy ciąg znaków oznacza poprawnym argumentem funkcji.
+ * Sprawdza, czy ciąg znaków jest argumentem funkcji gry @p gamma. Argument musi zawierać jednynie
+ * cryfry i dać się poprawnie skonwertować na typ @p uint32_t. Jeśli @p string jest równy @p NULL,
+ * to argument jest pusty.
+ * @param[in] string   – ciąg znaków do sprawdzenia.
+ * @return Struktura opisująca argument funkcji.
+ */
 argument_t validArgument(char* string) {
     argument_t argument;
     argument.value = 0;
@@ -69,6 +88,17 @@ argument_t validArgument(char* string) {
     return argument;
 }
 
+/** @brief Wskazuje następnego gracza, który może wykonać ruch.
+ * Sprawdza kolejych gracz po @p currentPlayer. Zwraca następnego, który może wykonać ruch. Jeśli
+ * liczba pominiętych graczy jest większa, niż liczba wszystkich graczy, to nikt nie może już wykonać
+ * ruchu.
+ * @param[in] g              – wskaźnik na strukturę przechowującą stan gry,
+ * @param[in] currentPlayer  – numer gracza, którego tura się skończyła, liczba dodatnia niewiększa od wartości
+ *                              @p players z funkcji @ref gamma_new,
+ * @param[in] playersSkipped – liczba pominiętych graczy, przy pierwszym wywołaniu zawsze wynosi 0
+ * @return Numer następnego gracza, który może wykonać ruch, lub @p 0 jeśli żaden gracz nie może już
+ * wykonać ruchu.
+ */
 uint32_t getNextPlayer(gamma_t* g, uint32_t currentPlayer, uint64_t playersSkipped) {
     if (playersSkipped > get_players(g)) {
         return 0;
@@ -82,6 +112,13 @@ uint32_t getNextPlayer(gamma_t* g, uint32_t currentPlayer, uint64_t playersSkipp
     return nextPlayer;
 }
 
+/** @brief Interpretuje wejście trybu interaktywnego.
+ * Ustawia tryb wejścia na "raw", zaczyna od gracza nr 1 i ustawia wskaźnik na pole (0, 0). Wywołuje
+ * funkcje w zależności od wejścia zgodnie ze specyfikacją gry gamma. Przerywa po wykryciu na wejściu
+ * znaku o kodzie 4 (ctrl + D) lub gdy żaden gracz nie może wykonać ruchu. Wypisuje podsumowanie gry i
+ * przywraca oryginalne ustawienia terminala.
+ * @param[in,out] g – wskaźnik na strukturę przechowującą stan gry.
+ */
 void interactiveInput(gamma_t* g) {
     uint32_t cursorX = 0;
     uint32_t cursorY = 0;
@@ -143,7 +180,7 @@ void interactiveInput(gamma_t* g) {
             inputCharacter = 0;
             skip = true;
         } else if (inputCharacter == 4) {
-            break;
+            currentPlayer = 0;
         } else {
             inputCharacter = 0;
         }
@@ -159,6 +196,10 @@ void interactiveInput(gamma_t* g) {
     exitInteractive(0);
 }
 
+/** @brief Zwraca domyślną komendę.
+ * Zwraca strukturę domyślnej komendy. Jest ona poprawna, ma puste argumenty i nie powoduje żadnego działania.
+ * @return Struktura opisująca domyślną komendę.
+ */
 command_t defCommand() {
     command_t command;
     command.function = ' ';
@@ -217,6 +258,14 @@ command_t getCommand(char* line) {
     return command;
 }
 
+/** @brief Wywołuje daną komendę w grze danej wskaźnikiem.
+ * Wywołuje jedną z funkcji {@p m, @p g, @p b, @p f, @p q} i wynik wywołania zapisuje w strukturze, która
+ * jest zwracana.
+ * @param[in,out] gPtr   – wskaźnik na wskaźnik na strukturę przechowującą stan gry,
+ * @param[in] command    – struktura opisująca komendę do wywoałnia.
+ * @return Struktura opisująca wynik wywołania. Parametr poprawności ustawiony na @p true, jeśli udało się
+ * wyowałać funkcję, @p false w przeciwnym przypadku.
+ */
 result_t functionResult(gamma_t** g, command_t command) {
     result_t result;
     result.valid = true;

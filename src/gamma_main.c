@@ -12,6 +12,9 @@ gamma_t* g = NULL;
 char* line = NULL;
 
 
+/** @brief Funkcja wywoływana przy zakończeniu programu.
+ *  Zwalnia pamięć zaalokowaną na wskaźnikach @ref g i @ref line.
+ */
 void exit_gamma() {
     gamma_delete(g);
     free(line);
