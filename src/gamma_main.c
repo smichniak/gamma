@@ -6,10 +6,10 @@
  */
 
 #include "inputParser.h"
+#define _XOPEN_SOURCE 700
 
 
 //Globalne zmienne, by można było je zwolnić w exit_gamma
-
 /** Wskaźnik na strukturę przechowującą stan gry.
  */
 gamma_t* g = NULL;
@@ -27,6 +27,10 @@ void exit_gamma() {
     free(line);
 }
 
+/** @brief Uruchamia pareser wejścia.
+ * Uruchamia parser wejścia do programu, wczytuje wejście linia po linii, interpretuje te linie jako komendy
+ * i je wywołuje.
+ */
 int main() {
     //Początkowy rozmiar bufora na wejście
     size_t initialBufferSize = 0;
