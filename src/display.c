@@ -27,7 +27,7 @@ const int CODE_LENGTH = 7;
  */
 struct termios original;
 
-inline void clear() {
+void clear() {
     printf("\033[2J");
     printf("\033[H");
 }
@@ -224,7 +224,7 @@ void printResults(gamma_t* g) {
     }
 }
 
-inline void printError(unsigned long long line) {
+void printError(unsigned long long line) {
     fprintf(stderr, "ERROR %llu\n", line);
 }
 

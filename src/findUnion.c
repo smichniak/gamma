@@ -27,7 +27,7 @@ findUnionNode_t* makeSet(uint32_t player) {
     return nodePtr;
 }
 
-inline uint32_t getPlayer(findUnionNode_t* nodePtr) {
+uint32_t getPlayer(findUnionNode_t* nodePtr) {
     if (!nodePtr) {
         return 0;
     }
@@ -64,6 +64,6 @@ void unite(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2) {
     }
 }
 
-inline bool connected(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2) {
+bool connected(findUnionNode_t* nodePtr1, findUnionNode_t* nodePtr2) {
     return nodePtr1 && nodePtr2 && find(nodePtr1) == find(nodePtr2);
 }

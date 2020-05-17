@@ -28,19 +28,19 @@ struct gamma {
                                    drzewa Find-Union obszaru, indeksowana współrzędnymi pola */
 };
 
-inline uint32_t get_width(gamma_t* g) {
+uint32_t get_width(gamma_t* g) {
     return g->width;
 }
 
-inline uint32_t get_height(gamma_t* g) {
+uint32_t get_height(gamma_t* g) {
     return g->height;
 }
 
-inline uint32_t get_players(gamma_t* g) {
+uint32_t get_players(gamma_t* g) {
     return g->players;
 }
 
-inline uint32_t get_player_on_field(gamma_t* g, uint32_t x, uint32_t y) {
+uint32_t get_player_on_field(gamma_t* g, uint32_t x, uint32_t y) {
     return getPlayer(g->board[x][y]);
 }
 
