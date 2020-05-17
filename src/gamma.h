@@ -19,12 +19,36 @@
  */
 typedef struct gamma gamma_t;
 
+/** @brief Zwraca szerokość planszy.
+ * Zwraca szerokość planszy w grze opsianej w @p g.
+ * @param[in] g   – wskaźnik na strukturę przechowującą stan gry,
+ * @return Wartość liczbowa @p uint32_t odpowiadająca szerokości planszy.
+ */
 uint32_t get_width(gamma_t* g);
 
+/** @brief Zwraca wysokość planszy.
+ * Zwraca wysokość planszy w grze opsianej w @p g.
+ * @param[in] g   – wskaźnik na strukturę przechowującą stan gry,
+ * @return Wartość liczbowa @p uint32_t odpowiadająca wysokości planszy.
+ */
 uint32_t get_height(gamma_t* g);
 
+/** @brief Zwraca liczbę graczy w grze.
+ * Zwraca liczbę graczy w grze opsianej w @p g.
+ * @param[in] g   – wskaźnik na strukturę przechowującą stan gry,
+ * @return Wartość liczbowa @p uint32_t odpowiadająca liczbie graczy.
+ */
 uint32_t get_players(gamma_t* g);
 
+/** @brief Zwraca gracza w wierzchołku o danych współrzędnych.
+ * Zwraca gracza w wierzchołku o współrzędnych (@p x, @p y) w grze opsianej w @p g.
+ * @param[in] g       – wskaźnik na strukturę przechowującą stan gry,
+ * @param[in] x       – numer kolumny, liczba nieujemna mniejsza od wartości
+ *                      @p width z funkcji @ref gamma_new,
+ * @param[in] y       – numer wiersza, liczba nieujemna mniejsza od wartości
+ *                      @p height z funkcji @ref gamma_new.
+ * @return Wartość liczbowa @p uint32_t odpowiadająca numerowi gracza.
+ */
 uint32_t get_player_on_field(gamma_t* g, uint32_t x, uint32_t y);
 
 /** @brief Tworzy strukturę przechowującą stan gry.

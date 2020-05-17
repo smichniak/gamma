@@ -55,7 +55,8 @@ void exitInteractive(int code) {
 
 /** @brief Zwraca największego gracza na planszy.
  * Przeszukuje tablice zajętych pól i zwraca największego gracza z niezerową liczbą zajętych pól.
- * @param[in] g       – wskaźnik na strukturę przechowującą stan gry.
+ * @param[in] g       – wskaźnik na strukturę przechowującą st
+ * an gry.
  * @return Numer największego gracza, który ma pionek na planszy.
  */
 uint32_t maxPlayerOnBoard(gamma_t* g) {
