@@ -86,16 +86,36 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
 
     //Rzutowanie na uint64_t, ponieważ dla players = UINT32_MAX, players + 1 = 0
     uint64_t* busyFields = calloc((uint64_t) players + 1, sizeof(uint64_t));
-    uint64_t* freeAdjacentFields = calloc((uint64_t) players + 1, sizeof(uint64_t));
-    uint32_t* playerAreas = calloc((uint64_t) players + 1, sizeof(uint32_t));
-    bool* goldenMoves = calloc((uint64_t) players + 1, sizeof(bool));
-    findUnionNode_t*** board = calloc((uint64_t) width * ((uint64_t) height + 1), sizeof(findUnionNode_t*));
+    if (!busyFields) {
+        return NULL;
+    }
 
-    //TODO
-    //Zwolnić pamięć jeśli alokacja, która się nie powiodła nie była pierwsza.
-    //TODO
-    //Przenieć alokacje stosu tutaj
-    if (!busyFields || !freeAdjacentFields || !playerAreas || !goldenMoves || !board) {
+    uint64_t* freeAdjacentFields = calloc((uint64_t) players + 1, sizeof(uint64_t));
+    if (!freeAdjacentFields) {
+        free(busyFields);
+        return NULL;
+    }
+
+    uint32_t* playerAreas = calloc((uint64_t) players + 1, sizeof(uint32_t));
+    if (!playerAreas) {
+        free(busyFields);
+        free(freeAdjacentFields);
+        return NULL;
+    }
+
+    bool* goldenMoves = calloc((uint64_t) players + 1, sizeof(bool));
+    if (!goldenMoves) {
+        free(busyFields);
+        free(freeAdjacentFields);
+        free(playerAreas);
+        return NULL;
+    }
+    findUnionNode_t*** board = calloc((uint64_t) width * ((uint64_t) height + 1), sizeof(findUnionNode_t*));
+    if (!board) {
+        free(busyFields);
+        free(freeAdjacentFields);
+        free(playerAreas);
+        free(goldenMoves);
         return NULL;
     }
     newGammaPtr->busyFields = busyFields;
