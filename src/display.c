@@ -123,7 +123,7 @@ static size_t addSpaces(char* boardString, size_t stringIndex, int spaces) {
  * @param[in] maxPlayerDigits  - liczba cyfr największego gracza,
  * @param[in, out] stringIndex - indeks ostatniego wolnego miejsca w tablicy znaków,
  * @param[in, out] boardString - tablica znaków, napis reprezentujący planszę.
- * param[in] highlight         - @p true jeśli pole ma być podświetlone, @p false w przeciwnym przypadku
+ * @param[in] highlight         - @p true jeśli pole ma być podświetlone, @p false w przeciwnym przypadku
  * @return Indeks ostatniego wolnego miejsca w tablicy znaków, po dodaniu napisu.
  */
 static size_t addToBoard(gamma_t* g, uint32_t column, uint32_t row, int maxPlayerDigits, size_t stringIndex,

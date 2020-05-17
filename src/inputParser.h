@@ -21,7 +21,7 @@ typedef struct {
 } argument_t;
 
 /**
- * @typedef argument_t
+ * @typedef command_t
  * Struktura przechowująca informacje o poleceniu otrzymanym z wejścia
 */
 typedef struct {
@@ -44,7 +44,7 @@ command_t getCommand(char* line);
 
 /** @brief Wywołuje komendę.
  * Interpretuje komendę i w zależności od funckji, wypisuje jej wynik, przechodzi do trybu interaktywnego
- * lub wypisuje @p ERROR @ref line jeśli wyowałnie jest błędne.
+ * lub wypisuje @p ERROR @p line jeśli wyowałnie jest błędne.
  * @param[in] command    – ciąg znaków, który zawiera komendę do przetworzenia,
  * @param[in,out] gPtr   – wskaźnik na wskaźnik na strukturę przechowującą stan gry,
  * @param[in] line       – numer linii wejścia, z której została wywołana koemnda

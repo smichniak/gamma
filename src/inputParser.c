@@ -11,9 +11,12 @@
 #include "display.h"
 #include "inputParser.h"
 
-//Whitespace characters that separate command arguments
+/** Białe znaki, które oddzialają parametry funckji.
+ */
 const char WHITE_CHARS[] = " \t\v\f\r";
-//Znaki poprawnych funkcji i funcji pustej
+
+/** Ciąg znaków, które oznaczją poprawne funkcje i funkcję pustą.
+ */
 const char VALID_FUNCTIONS[] = "BImgbfqp ";
 
 /**
@@ -266,34 +269,34 @@ command_t getCommand(char* line) {
  * @return Struktura opisująca wynik wywołania. Parametr poprawności ustawiony na @p true, jeśli udało się
  * wyowałać funkcję, @p false w przeciwnym przypadku.
  */
-static result_t functionResult(gamma_t** g, command_t command) {
+static result_t functionResult(gamma_t** gPtr, command_t command) {
     result_t result;
     result.valid = true;
 
-    if (!command.fourthArgument.empty || !*g) {
+    if (!command.fourthArgument.empty || !*gPtr) {
         result.valid = false;
     } else if (command.function == 'm') {
         if (command.thirdArgument.empty) {
             result.valid = false;
         } else {
-            result.resultValue = gamma_move(*g, command.firstArgument.value, command.secondArgument.value,
+            result.resultValue = gamma_move(*gPtr, command.firstArgument.value, command.secondArgument.value,
                                             command.thirdArgument.value);
         }
     } else if (command.function == 'g') {
         if (command.thirdArgument.empty) {
             result.valid = false;
         } else {
-            result.resultValue = gamma_golden_move(*g, command.firstArgument.value,
+            result.resultValue = gamma_golden_move(*gPtr, command.firstArgument.value,
                                                    command.secondArgument.value, command.thirdArgument.value);
         }
     } else if (!command.secondArgument.empty || command.firstArgument.empty) {
         result.valid = false;
     } else if (command.function == 'b') {
-        result.resultValue = gamma_busy_fields(*g, command.firstArgument.value);
+        result.resultValue = gamma_busy_fields(*gPtr, command.firstArgument.value);
     } else if (command.function == 'f') {
-        result.resultValue = gamma_free_fields(*g, command.firstArgument.value);
+        result.resultValue = gamma_free_fields(*gPtr, command.firstArgument.value);
     } else if (command.function == 'q') {
-        result.resultValue = gamma_golden_possible(*g, command.firstArgument.value);
+        result.resultValue = gamma_golden_possible(*gPtr, command.firstArgument.value);
     }
 
     return result;
