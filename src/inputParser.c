@@ -20,10 +20,10 @@ static const char WHITE_CHARS[] = " \t\v\f\r";
 static const char VALID_FUNCTIONS[] = "BImgbfqp ";
 
 /**
- * @typedef result_t
+ * @struct result_t
  * Struktura przechowująca informacje o wyniku funkcji, która zwraca @p uint64_t.
 */
-typedef struct result {
+typedef struct {
     uint64_t resultValue; ///< Wartość, którą funckja zwróciła
     bool valid; ///< @p false, jeśli wywołanie funckji było nieprawidłowe, @p true w przeciwnym przypadku
 } result_t;

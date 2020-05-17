@@ -11,7 +11,7 @@
 #include "gamma.h"
 
 /**
- * @typedef argument_t
+ * @struct argument_t
  * Struktura przechowująca informacje o argumencie funckji uzuskanym z wejścia programu.
 */
 typedef struct {
@@ -21,7 +21,7 @@ typedef struct {
 } argument_t;
 
 /**
- * @typedef command_t
+ * @struct command_t
  * Struktura przechowująca informacje o poleceniu otrzymanym z wejścia
 */
 typedef struct {
