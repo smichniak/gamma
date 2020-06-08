@@ -21,8 +21,8 @@ static const char* END_HIGHLIGHT = "\033[m";
  */
 static const int CODE_LENGTH = 7;
 
-//Zmienna globalna, by można było z niej korzystać w razie potrzeby w changeTerminalToOriginal, które jest
-//wywoływana w exitInteractive
+// Zmienna globalna, by można było z niej korzystać w razie potrzeby w change_terminal_to_original, które jest
+// wywoływana w exit_interactive
 /** Struktura przechowująca informacje o ustawieniach terminala.
  */
 static struct termios original;
@@ -32,33 +32,33 @@ inline void clear() {
     printf("\033[H");
 }
 
-void changeTerminalToRaw() {
+void change_terminal_to_raw() {
     struct termios raw;
 
-    //Zachowuje oryginalne ustawienia terminala
+    // Zachowuje oryginalne ustawienia terminala
     if (tcgetattr(STDIN_FILENO, &original) != 0) {
         exit(1);
     }
-    //Tworzy kopię ustawień i zmienia je na wejscie "raw"
+    // Tworzy kopię ustawień i zmienia je na wejscie "raw"
     raw = original;
     raw.c_lflag &= ~(ICANON | ECHO);
     if (tcsetattr(STDIN_FILENO, TCSANOW, &raw) != 0) {
         exit(1);
     }
-    //Ukrywa kursor
+    // Ukrywa kursor
     printf("\e[?25l");
 }
 
-void changeTerminalToOriginal() {
-    //Pokazuje kursor
+void change_terminal_to_original() {
+    // Pokazuje kursor
     printf("\e[?25h");
     if (tcsetattr(STDIN_FILENO, TCSANOW, &original) != 0) {
         exit(1);
     }
 }
 
-void exitInteractive(int code) {
-    changeTerminalToOriginal();
+void exit_interactive(int code) {
+    change_terminal_to_original();
     exit(code);
 }
 
@@ -68,7 +68,7 @@ void exitInteractive(int code) {
  * an gry.
  * @return Numer największego gracza, który ma pionek na planszy.
  */
-static uint32_t maxPlayerOnBoard(gamma_t* g) {
+static uint32_t max_player_on_board(gamma_t* g) {
     for (uint32_t player = get_players(g); player > 0; --player) {
         if (gamma_busy_fields(g, player) > 0) {
             return player;
@@ -84,7 +84,7 @@ static uint32_t maxPlayerOnBoard(gamma_t* g) {
  * @param[in] highlight        – ANSI escape code, który odpowiada za zmianę koloru tła.
  * @return Indeks ostatniego wolnego miejsca w tablicy znaków, po dodaniu napisu.
  */
-static size_t addHighlight(char* boardString, size_t stringIndex, const char* highlight) {
+static size_t add_highlight(char* boardString, size_t stringIndex, const char* highlight) {
     for (uint32_t k = 0; k < strlen(highlight); ++k) {
         boardString[stringIndex] = highlight[k];
         stringIndex++;
@@ -99,7 +99,7 @@ static size_t addHighlight(char* boardString, size_t stringIndex, const char* hi
  * @param[in] spaces           – liczba spacji do dodania.
  * @return Indeks ostatniego wolnego miejsca w tablicy znaków, po dodaniu napisu.
  */
-static size_t addSpaces(char* boardString, size_t stringIndex, int spaces) {
+static size_t add_spaces(char* boardString, size_t stringIndex, int spaces) {
     for (int spaceIndex = 0; spaceIndex < spaces; ++spaceIndex) {
         boardString[stringIndex] = ' ';
         stringIndex++;
@@ -122,13 +122,13 @@ static size_t addSpaces(char* boardString, size_t stringIndex, int spaces) {
  * @param[in] highlight         - @p true jeśli pole ma być podświetlone, @p false w przeciwnym przypadku
  * @return Indeks ostatniego wolnego miejsca w tablicy znaków, po dodaniu napisu.
  */
-static size_t addToBoard(gamma_t* g, uint32_t column, uint32_t row, int maxPlayerDigits, size_t stringIndex,
-                         char* boardString, bool highlight) {
+static size_t add_to_board(gamma_t* g, uint32_t column, uint32_t row, int maxPlayerDigits, size_t stringIndex,
+                           char* boardString, bool highlight) {
     uint32_t player = get_player_on_field(g, column, row);
     int playerDigits = digits(player);
 
     char* playerString;
-    //+1 dla \0
+    // +1 dla \0
     playerString = calloc(playerDigits + highlight * CODE_LENGTH + 1, sizeof(char));
     if (!playerString) {
         return 0;
@@ -137,43 +137,43 @@ static size_t addToBoard(gamma_t* g, uint32_t column, uint32_t row, int maxPlaye
     player == 0 ? playerString[0] = '.' : sprintf(playerString, "%u", player);
 
     if (highlight) {
-        stringIndex = addHighlight(boardString, stringIndex, BEGIN_HIGHLIGHT);
+        stringIndex = add_highlight(boardString, stringIndex, BEGIN_HIGHLIGHT);
     }
 
-    //Dodajemy napis numeru gracza
+    // Dodajemy napis numeru gracza
     for (int digitIndex = 0; digitIndex < playerDigits; ++digitIndex) {
         boardString[stringIndex] = playerString[digitIndex];
         stringIndex++;
         maxPlayerDigits--;
     }
     if (highlight) {
-        stringIndex = addHighlight(boardString, stringIndex, END_HIGHLIGHT);
+        stringIndex = add_highlight(boardString, stringIndex, END_HIGHLIGHT);
     }
 
-    //Pozostale znaki uzupełniamy spacjami
-    stringIndex = addSpaces(boardString, stringIndex, maxPlayerDigits);
+    // Pozostale znaki uzupełniamy spacjami
+    stringIndex = add_spaces(boardString, stringIndex, maxPlayerDigits);
 
     free(playerString);
     return stringIndex;
 }
 
-char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y) {
+char* board_with_highlight(gamma_t* g, uint32_t x, uint32_t y) {
     if (!g) {
         return NULL;
     }
-    //Dla x == UINT32_MAX nie podświetlamy żadnego pola
+    // Dla x == UINT32_MAX nie podświetlamy żadnego pola
     bool highlight = x < UINT32_MAX;
     uint32_t width = get_width(g);
     uint32_t height = get_height(g);
 
-    uint32_t maxPlayer = maxPlayerOnBoard(g);
+    uint32_t maxPlayer = max_player_on_board(g);
     int maxPlayerDigits = digits(maxPlayer);
 
-    //Jeśli na planszy są gracze co najmniej dwucyfrowi, to między każdym gracze robię odstęp
+    // Jeśli na planszy są gracze co najmniej dwucyfrowi, to między każdym gracze robię odstęp
     uint64_t spaces = maxPlayerDigits == 1 ? 0 : width * height;
 
     char* boardString;
-    //+height na \n po każdym rzędzie, +1 na \0
+    // +height na \n po każdym rzędzie, +1 na \0
     boardString = calloc(maxPlayerDigits * (uint64_t) width * (uint64_t) height + spaces + height +
             highlight * CODE_LENGTH + 1, sizeof(char));
     if (!boardString) {
@@ -183,17 +183,18 @@ char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y) {
     size_t stringIndex = 0;
     for (uint32_t row = height - 1; row < height; --row) {
         for (uint32_t column = 0; column < width; ++column) {
-            //Decydujemy, czy jesteśmy w polu, które należy podświetlić
+            // Decydujemy, czy jesteśmy w polu, które należy podświetlić
             bool highlightField = highlight && column == x && row == y;
-            stringIndex = addToBoard(g, column, row, maxPlayerDigits, stringIndex, boardString, highlightField);
+            stringIndex = add_to_board(g, column, row, maxPlayerDigits, stringIndex, boardString,
+                                       highlightField);
             if (stringIndex == 0) {
                 free(boardString);
                 return NULL;
             }
 
-            stringIndex = addSpaces(boardString, stringIndex, spaces > 0);
+            stringIndex = add_spaces(boardString, stringIndex, spaces > 0);
         }
-        //\n po każdym rzędzie
+        // \n po każdym rzędzie
         boardString[stringIndex] = '\n';
         stringIndex++;
     }
@@ -201,15 +202,15 @@ char* boardWithHighlight(gamma_t* g, uint32_t x, uint32_t y) {
     return boardString;
 }
 
-void printWithHighlight(gamma_t* g, uint32_t x, uint32_t y, unsigned long long line) {
-    char* board = boardWithHighlight(g, x, y);
+void print_with_highlight(gamma_t* g, uint32_t x, uint32_t y, unsigned long long line) {
+    char* board = board_with_highlight(g, x, y);
     if (!board) {
         if (line == 0) {
-            //Jesteśmy w trybie interaktywnym i chcemy z niego wyjść
-            exitInteractive(1);
+            // Jesteśmy w trybie interaktywnym i chcemy z niego wyjść
+            exit_interactive(1);
         } else {
-            //Jesteśmy w trybie wsadowym, wypisujemy ERROR i dalej przyjmujemy wejście
-            printError(line);
+            // Jesteśmy w trybie wsadowym, wypisujemy ERROR i dalej przyjmujemy wejście
+            print_error(line);
         }
     } else {
         printf("%s", board);
@@ -217,7 +218,7 @@ void printWithHighlight(gamma_t* g, uint32_t x, uint32_t y, unsigned long long l
     }
 }
 
-void printResults(gamma_t* g) {
+void print_results(gamma_t* g) {
     uint32_t players = get_players(g);
     printf("\nPLAYER NUMBER - OCCUPIED FILEDS\n");
     for (uint32_t player = 1; player <= players; ++player) {
@@ -225,11 +226,11 @@ void printResults(gamma_t* g) {
     }
 }
 
-inline void printError(unsigned long long line) {
+inline void print_error(unsigned long long line) {
     fprintf(stderr, "ERROR %llu\n", line);
 }
 
-void printPlayerInfo(gamma_t* g, uint32_t player) {
+void print_player_info(gamma_t* g, uint32_t player) {
     printf("PLAYER %u - ", player);
     printf("AREAS: %u/%u - ", get_player_areas(g, player), get_areas(g));
     printf("OCCUPIED FIELDS: %" PRIu64, gamma_busy_fields(g, player));

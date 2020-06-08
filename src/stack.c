@@ -8,17 +8,17 @@
 #include "stack.h"
 #include <stdlib.h>
 
-/** @struct stackNode
+/** @struct stack_node
  * Struktura stosu. Przechowuje dwie wartości i wskaźnik na następny element stosu.
  */
-struct stackNode {
+struct stack_node {
     uint32_t x; ///< Pierwsza pamiętana wartość elementu stosu
     uint32_t y; ///< Druga pamiętana wartość elementu stosu
-    stackNode_t* next; ///< Wskaźnik na nastepny element stosu
+    stack_node_t* next; ///< Wskaźnik na nastepny element stosu
 };
 
-stackNode_t* createStack(uint32_t x, uint32_t y) {
-    stackNode_t* node = malloc(sizeof(stackNode_t));
+stack_node_t* create_stack(uint32_t x, uint32_t y) {
+    stack_node_t* node = malloc(sizeof(stack_node_t));
     if (!node) {
         return NULL;
     }
@@ -28,12 +28,12 @@ stackNode_t* createStack(uint32_t x, uint32_t y) {
     return node;
 }
 
-inline bool isStackEmpty(stackNode_t* stackPtr) {
+inline bool is_stack_empty(stack_node_t* stackPtr) {
     return !stackPtr;
 }
 
-stackNode_t* putLast(stackNode_t* stackPtr, uint32_t x, uint32_t y) {
-    stackNode_t* nodePtr = createStack(x, y);
+stack_node_t* put_last(stack_node_t* stackPtr, uint32_t x, uint32_t y) {
+    stack_node_t* nodePtr = create_stack(x, y);
     if (!nodePtr) {
         return NULL;
     }
@@ -41,19 +41,19 @@ stackNode_t* putLast(stackNode_t* stackPtr, uint32_t x, uint32_t y) {
     return nodePtr;
 }
 
-stackNode_t* removeLast(stackNode_t* stackPtr) {
-    stackNode_t* toReturn = stackPtr->next;
+stack_node_t* remove_last(stack_node_t* stackPtr) {
+    stack_node_t* toReturn = stackPtr->next;
     free(stackPtr);
     return toReturn;
 }
 
-inline Tuple getLast(stackNode_t* stackPtr) {
-    return createTuple(stackPtr->x, stackPtr->y);
+inline tuple get_last(stack_node_t* stackPtr) {
+    return create_tuple(stackPtr->x, stackPtr->y);
 }
 
-void removeStack(stackNode_t* stackPtr) {
+void remove_stack(stack_node_t* stackPtr) {
     if (stackPtr) {
-        removeStack(stackPtr->next);
+        remove_stack(stackPtr->next);
         free(stackPtr);
     }
 }

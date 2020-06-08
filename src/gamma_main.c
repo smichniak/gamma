@@ -11,7 +11,7 @@
 
 #include "inputParser.h"
 
-//Globalne zmienne, by można było je zwolnić w exit_gamma
+// Globalne zmienne, by można było je zwolnić w exit_gamma
 /** Wskaźnik na strukturę przechowującą stan gry.
  */
 gamma_t* g = NULL;
@@ -34,7 +34,7 @@ void exit_gamma() {
  * i je wywołuje.
  */
 int main() {
-    //Początkowy rozmiar bufora na wejście, bufor na linię będzie dynamicznie zmieniany
+    // Początkowy rozmiar bufora na wejście, bufor na linię będzie dynamicznie zmieniany
     size_t initialBufferSize = 0;
 
     atexit(exit_gamma);
@@ -42,8 +42,8 @@ int main() {
     unsigned long long lineNum = 1;
 
     while (getline(&line, &initialBufferSize, stdin) > 0) {
-        command_t command = getCommand(line);
-        executeCommand(command, &g, lineNum);
+        command_t command = get_command(line);
+        execute_command(command, &g, lineNum);
         lineNum++;
         free(line);
         line = NULL;

@@ -10,13 +10,13 @@
 
 #include <stdint.h>
 
-/** @struct Tuple
+/** @struct tuple
  * Struktura pary uporządkowanej. Zawiera dwie liczby nieujemne.
  */
 typedef struct {
     uint32_t x; ///< Pierwszy element pary
     uint32_t y; ///< Drugi element pary
-} Tuple;
+} tuple;
 
 /** @brief Tworzy nową parę.
  * Tworzy i zwraca parę z wejściowymi wartościami.
@@ -27,7 +27,7 @@ typedef struct {
  * @return Para z wejściowymi wartościami
  */
 
-Tuple createTuple(uint32_t x, uint32_t y);
+tuple create_tuple(uint32_t x, uint32_t y);
 
 /** @brief Zwraca liczbę cyfr liczby.
  * Zwraca liczbę cyfr liczby nieujemnej w zapisie dziesiętnym.
@@ -36,4 +36,4 @@ Tuple createTuple(uint32_t x, uint32_t y);
  */
 int digits(uint32_t number);
 
-#endif //GAMMA_UTILITIES_H
+#endif /* GAMMA_UTILITIES_H */

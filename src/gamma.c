@@ -24,7 +24,7 @@ struct gamma {
     uint32_t* playerAreas; ///< Tablica zajętych obszarów przez danego gracza, indeksowana numerami graczy
     bool* goldenMoves; /**< Tablica wartości logicznych, @p false dla gracza, który jeszcze nie wykonał złotego
                             ruchu, @p true w przeciwnym przyapdku, indeksowana numerami graczy */
-    findUnionNode_t*** board; /**< Dwuwymiarowa tablica planszy, w każdym zajętym polu wskaźnik na wierzchołek
+    find_union_node_t*** board; /**< Dwuwymiarowa tablica planszy, w każdym zajętym polu wskaźnik na wierzchołek
                                    drzewa Find-Union obszaru, indeksowana współrzędnymi pola */
 };
 
@@ -49,7 +49,7 @@ uint32_t get_player_areas(gamma_t* g, uint32_t player) {
 }
 
 uint32_t get_player_on_field(gamma_t* g, uint32_t x, uint32_t y) {
-    return getPlayer(g->board[x][y]);
+    return get_player(g->board[x][y]);
 }
 
 /** @brief Sprawdza poprawność współrzędnych.
@@ -62,7 +62,7 @@ uint32_t get_player_on_field(gamma_t* g, uint32_t x, uint32_t y) {
  * @return Wartość @p true, dla poprawnych współrzędnych, a @p false
  * w przeciwnym przypadku.
  */
-static inline bool validCoordinates(gamma_t* g, uint32_t x, uint32_t y) {
+static inline bool valid_coordinates(gamma_t* g, uint32_t x, uint32_t y) {
     return x < g->width && y < g->height;
 }
 
@@ -74,7 +74,7 @@ static inline bool validCoordinates(gamma_t* g, uint32_t x, uint32_t y) {
  * @return Wartość @p true, dla poprawnego gracza, a @p false
  * w przeciwnym przypadku.
  */
-static inline bool validPlayer(gamma_t* g, uint32_t player) {
+static inline bool valid_player(gamma_t* g, uint32_t player) {
     return player >= 1 && player <= g->players;
 }
 
@@ -93,7 +93,7 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
     newGammaPtr->areas = areas;
     newGammaPtr->freeFields = width * height;
 
-    //Rzutowanie na uint64_t, ponieważ dla players = UINT32_MAX, players + 1 = 0
+    // Rzutowanie na uint64_t, ponieważ dla players = UINT32_MAX, players + 1 = 0
     uint64_t* busyFields = calloc((uint64_t) players + 1, sizeof(uint64_t));
     if (!busyFields) {
         free(newGammaPtr);
@@ -123,7 +123,7 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
         free(playerAreas);
         return NULL;
     }
-    findUnionNode_t*** board = calloc((uint64_t) width * ((uint64_t) height + 1), sizeof(findUnionNode_t*));
+    find_union_node_t*** board = calloc((uint64_t) width * ((uint64_t) height + 1), sizeof(find_union_node_t*));
     if (!board) {
         free(newGammaPtr);
         free(busyFields);
@@ -137,10 +137,10 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
     newGammaPtr->playerAreas = playerAreas;
     newGammaPtr->goldenMoves = goldenMoves;
 
-    //Wskaźnik kolumny wskazuje na pierwszy element w tablicy 2D
-    findUnionNode_t** columnPtr = (findUnionNode_t**) (board + width);
+    // Wskaźnik kolumny wskazuje na pierwszy element w tablicy 2D
+    find_union_node_t** columnPtr = (find_union_node_t**) (board + width);
 
-    //Dla każdej kolumny ustawiamy jej wskaźnik na prawidłowe miejsce
+    // Dla każdej kolumny ustawiamy jej wskaźnik na prawidłowe miejsce
     for (uint32_t i = 0; i < width; ++i) {
         board[i] = (columnPtr + height * i);
     }
@@ -174,10 +174,10 @@ void gamma_delete(gamma_t* g) {
  * @return Wskaźnik na pierwszy element tablicy lub NULL, gdy nie udało się
  * zaalokować pamięci.
  */
-static Tuple* getAdjacent(gamma_t* g, uint32_t x, uint32_t y) {
-    Tuple* adjacent;
-    //Są 4 sąsiedznie pola
-    adjacent = calloc(4, sizeof(Tuple));
+static tuple* get_adjacent(gamma_t* g, uint32_t x, uint32_t y) {
+    tuple* adjacent;
+    // Są 4 sąsiedznie pola
+    adjacent = calloc(4, sizeof(tuple));
     if (!adjacent) {
         return NULL;
     }
@@ -186,12 +186,12 @@ static Tuple* getAdjacent(gamma_t* g, uint32_t x, uint32_t y) {
     for (int dx = -1; dx <= 1; ++dx) {
         for (int dy = -1; dy <= 1; ++dy) {
             if ((dx + dy) % 2 != 0) {
-                if (validCoordinates(g, x + dx, y + dy)) {
-                    adjacent[index] = createTuple(x + dx, y + dy);
+                if (valid_coordinates(g, x + dx, y + dy)) {
+                    adjacent[index] = create_tuple(x + dx, y + dy);
                 } else {
-                    //Pole poza granicami planszy oznaczamy przez UINT32_MAX
-                    //Normalnie pole nigdy nie ma takich współrzędnych
-                    adjacent[index] = createTuple(UINT32_MAX, UINT32_MAX);
+                    // Pole poza granicami planszy oznaczamy przez UINT32_MAX
+                    // Normalnie pole nigdy nie ma takich współrzędnych
+                    adjacent[index] = create_tuple(UINT32_MAX, UINT32_MAX);
                 }
                 index++;
             }
@@ -208,12 +208,12 @@ static Tuple* getAdjacent(gamma_t* g, uint32_t x, uint32_t y) {
  * @param[in] adjacent - maksymalnie czteroelementowa tablica par współrzędnych @p x i @p y
  * @return Liczba ze zbioru {0, 1, 2, 3, 4}, liczba sąsiednich pól z danym graczem.
  */
-static int adjacentWithPLayer(gamma_t* g, uint32_t player, Tuple* adjacent) {
+static int adjacent_with_pLayer(gamma_t* g, uint32_t player, tuple* adjacent) {
     int samePlayerAdjacent = 0;
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
-        samePlayerAdjacent += validCoordinates(g, x2, y2) && getPlayer(g->board[x2][y2]) == player;
+        samePlayerAdjacent += valid_coordinates(g, x2, y2) && get_player(g->board[x2][y2]) == player;
     }
     return samePlayerAdjacent;
 }
@@ -228,19 +228,19 @@ static int adjacentWithPLayer(gamma_t* g, uint32_t player, Tuple* adjacent) {
  * @return Liczba ze zbioru {0, 1, 2, 3, 4}, liczba wolnych sąsiednich pól z danym graczem lub -1 gdy
  * wystąpił błąd alokacji pamięci.
  */
-static int newFreeAdjacent(gamma_t* g, uint32_t player, Tuple* adjacent) {
+static int new_free_aAdjacent(gamma_t* g, uint32_t player, tuple* adjacent) {
     int freeAdjacent = 0;
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
-        if (validCoordinates(g, x2, y2) && !g->board[x2][y2]) {
+        if (valid_coordinates(g, x2, y2) && !g->board[x2][y2]) {
             freeAdjacent++;
-            Tuple* adjacentTo2 = getAdjacent(g, x2, y2);
+            tuple* adjacentTo2 = get_adjacent(g, x2, y2);
             if (!adjacentTo2) {
                 return -1;
             }
-            if (adjacentWithPLayer(g, player, adjacentTo2)) {
-                //Odejmujemy pola, które już są policzone, jako wolne i sąsiadujące z danym graczem
+            if (adjacent_with_pLayer(g, player, adjacentTo2)) {
+                // Odejmujemy pola, które już są policzone, jako wolne i sąsiadujące z danym graczem
                 freeAdjacent--;
             }
             free(adjacentTo2);
@@ -257,17 +257,17 @@ static int newFreeAdjacent(gamma_t* g, uint32_t player, Tuple* adjacent) {
  * @param[in, out] adjacent  - maksymalnie czteroelementowa tablica par współrzędnych @p x i @p y
  * @return Liczba ze zbioru {-3, -2, -1, 0, 1}, o ile zmienia się liczba obszarów zajętych przez gracza.
  */
-static int newAreasMove(gamma_t* g, findUnionNode_t* field, Tuple* adjacent) {
-    //Nowy pionek może statnowić jeden, nowy obszar
+static int new_areas_move(gamma_t* g, find_union_node_t* field, tuple* adjacent) {
+    // Nowy pionek może statnowić jeden, nowy obszar
     int newArea = 1;
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
-        if (validCoordinates(g, x2, y2) && getPlayer(g->board[x2][y2]) == getPlayer(field) &&
+        if (valid_coordinates(g, x2, y2) && get_player(g->board[x2][y2]) == get_player(field) &&
             !connected(field, g->board[x2][y2])) {
 
             unite(field, g->board[x2][y2]);
-            //Nowych obszarów jest mniej, jeśli dołączamy się do już istniejacych
+            // Nowych obszarów jest mniej, jeśli dołączamy się do już istniejacych
             newArea--;
         }
     }
@@ -282,47 +282,47 @@ static int newAreasMove(gamma_t* g, findUnionNode_t* field, Tuple* adjacent) {
  * @param[in, out] adjacent    - maksymalnie czteroelementowa tablica par współrzędnych @p x i @p y
  * @param[in] toAdd            - @p -1 lub @p 1
  */
-static void updateAdjacentFree(gamma_t* g, Tuple* adjacent, int toAdd) {
+static void update_adjacent_free(gamma_t* g, tuple* adjacent, int toAdd) {
     uint32_t alreadyCounted[4] = {0, 0, 0, 0};
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
-        if (validCoordinates(g, x2, y2)) {
+        if (valid_coordinates(g, x2, y2)) {
             bool counted = false;
             for (int j = 0; j < i; ++j) {
-                counted = counted || getPlayer(g->board[x2][y2]) == alreadyCounted[j];
+                counted = counted || get_player(g->board[x2][y2]) == alreadyCounted[j];
             }
             if (g->board[x2][y2] && !counted) {
-                g->freeAdjacentFields[getPlayer(g->board[x2][y2])] += toAdd;
-                alreadyCounted[i] = getPlayer(g->board[x2][y2]);
+                g->freeAdjacentFields[get_player(g->board[x2][y2])] += toAdd;
+                alreadyCounted[i] = get_player(g->board[x2][y2]);
             }
         }
     }
 }
 
 bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
-    if (!g || !validPlayer(g, player) || !validCoordinates(g, x, y) || g->board[x][y]) {
+    if (!g || !valid_player(g, player) || !valid_coordinates(g, x, y) || g->board[x][y]) {
         return false;
     }
-    Tuple* adjacent = getAdjacent(g, x, y);
-    findUnionNode_t* field = makeSet(player);
+    tuple* adjacent = get_adjacent(g, x, y);
+    find_union_node_t* field = make_set(player);
     if (!adjacent || !field) {
         return false;
     }
 
-    int freeAdjacent = newFreeAdjacent(g, player, adjacent);
-    int samePlayerAdjacent = adjacentWithPLayer(g, player, adjacent);
+    int freeAdjacent = new_free_aAdjacent(g, player, adjacent);
+    int samePlayerAdjacent = adjacent_with_pLayer(g, player, adjacent);
     if (freeAdjacent < 0 || (g->playerAreas[player] == g->areas && !samePlayerAdjacent)) {
         free(adjacent);
         free(field);
         return false;
     }
 
-    //Stawiamy nowy pionek, zmniejszamy o 1 wolne pola
-    updateAdjacentFree(g, adjacent, -1);
+    // Stawiamy nowy pionek, zmniejszamy o 1 wolne pola
+    update_adjacent_free(g, adjacent, -1);
 
     g->busyFields[player]++;
-    g->playerAreas[player] += newAreasMove(g, field, adjacent);
+    g->playerAreas[player] += new_areas_move(g, field, adjacent);
     g->freeAdjacentFields[player] += freeAdjacent;
     g->board[x][y] = field;
     g->freeFields--;
@@ -346,29 +346,30 @@ bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
  * @return Wartość @p true, jeśli pomyślnie wykonano dfs dla wszytskich potrzebnych pól, @p false
  * w przypadku problemów z pamięcią.
  */
-static bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields, uint64_t* oldFieldsIndexPtr) {
+static bool
+dfs(gamma_t* g, uint32_t x, uint32_t y, find_union_node_t** oldFields, uint64_t* oldFieldsIndexPtr) {
     if (!g->board[x][y]) {
         return true;
     }
-    uint32_t player = getPlayer(g->board[x][y]);
-    stackNode_t* stackPtr = createStack(x, y);
+    uint32_t player = get_player(g->board[x][y]);
+    stack_node_t* stackPtr = create_stack(x, y);
 
     if (!stackPtr) {
         return false;
     }
 
-    while (!isStackEmpty(stackPtr)) {
-        uint32_t currentX = getLast(stackPtr).x;
-        uint32_t currentY = getLast(stackPtr).y;
-        stackPtr = removeLast(stackPtr);
+    while (!is_stack_empty(stackPtr)) {
+        uint32_t currentX = get_last(stackPtr).x;
+        uint32_t currentY = get_last(stackPtr).y;
+        stackPtr = remove_last(stackPtr);
 
-        Tuple* adjacent = getAdjacent(g, currentX, currentY);
+        tuple* adjacent = get_adjacent(g, currentX, currentY);
         if (!adjacent) {
-            removeStack(stackPtr);
+            remove_stack(stackPtr);
             return false;
         }
 
-        findUnionNode_t* newField = makeSet(player);
+        find_union_node_t* newField = make_set(player);
         if (!newField) {
             return false;
         }
@@ -381,11 +382,11 @@ static bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields,
         for (int i = 0; i < 4; ++i) {
             uint32_t x2 = adjacent[i].x;
             uint32_t y2 = adjacent[i].y;
-            if (validCoordinates(g, x2, y2) && getPlayer(g->board[x2][y2]) == player &&
+            if (valid_coordinates(g, x2, y2) && get_player(g->board[x2][y2]) == player &&
                 !connected(g->board[x][y], g->board[x2][y2])) {
-                stackNode_t* newLast = putLast(stackPtr, x2, y2);
+                stack_node_t* newLast = put_last(stackPtr, x2, y2);
                 if (!newLast) {
-                    removeStack(stackPtr);
+                    remove_stack(stackPtr);
                     free(adjacent);
                     return false;
                 }
@@ -409,25 +410,25 @@ static bool dfs(gamma_t* g, uint32_t x, uint32_t y, findUnionNode_t** oldFields,
  * @p oldFields.
  * @return Liczba nowych obszarów w przypadku sukcesu, -2 jeśli wystąpiły problemy z pamięcią.
  */
-static int dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findUnionNode_t** oldFields,
-                         uint64_t* oldFieldsIndexPtr) {
-    //Usunięcie pionka może zmniejszyć liczbę obszarów o 1
+static int dfs_on_adjacent(gamma_t* g, uint32_t busyPlayer, tuple* adjacent, find_union_node_t** oldFields,
+                           uint64_t* oldFieldsIndexPtr) {
+    // Usunięcie pionka może zmniejszyć liczbę obszarów o 1
     int newAreas = -1;
 
     for (int i = 0; i < 4; ++i) {
         uint32_t x2 = adjacent[i].x;
         uint32_t y2 = adjacent[i].y;
-        if (validCoordinates(g, x2, y2) && getPlayer(g->board[x2][y2]) == busyPlayer) {
+        if (valid_coordinates(g, x2, y2) && get_player(g->board[x2][y2]) == busyPlayer) {
             bool alreadyDoneDfs = false;
             for (int j = 0; j < i; ++j) {
                 uint32_t xj = adjacent[j].x;
                 uint32_t yj = adjacent[j].y;
-                alreadyDoneDfs = alreadyDoneDfs || (validCoordinates(g, xj, yj) &&
+                alreadyDoneDfs = alreadyDoneDfs || (valid_coordinates(g, xj, yj) &&
                                                     connected(g->board[x2][y2], g->board[xj][yj]));
             }
             if (!alreadyDoneDfs) {
                 bool successfulDfs = dfs(g, x2, y2, oldFields, oldFieldsIndexPtr);
-                //Jeśli pola po usunięciu przestają być połączone, to powstaje więcej obszarów
+                // Jeśli pola po usunięciu przestają być połączone, to powstaje więcej obszarów
                 newAreas++;
                 if (!successfulDfs) {
                     free(adjacent);
@@ -456,17 +457,17 @@ static int dfsOnAdjacent(gamma_t* g, uint32_t busyPlayer, Tuple* adjacent, findU
  * @return Tablica sąsiednich pól, @p NULL jeśli arugmenty są nieprawidłowe lub wystąpiły
  * problemy z alokacją pamięci.
  */
-static Tuple* goldenPrep(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
-    if (!g || !validPlayer(g, player) || !validCoordinates(g, x, y) || g->goldenMoves[player] ||
-        !g->board[x][y] || getPlayer(g->board[x][y]) == player) {
+static tuple* golden_prep(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
+    if (!g || !valid_player(g, player) || !valid_coordinates(g, x, y) || g->goldenMoves[player] ||
+        !g->board[x][y] || get_player(g->board[x][y]) == player) {
         return NULL;
     }
-    Tuple* adjacent = getAdjacent(g, x, y);
+    tuple* adjacent = get_adjacent(g, x, y);
     if (!adjacent) {
         return NULL;
     }
 
-    if (g->playerAreas[player] == g->areas && !adjacentWithPLayer(g, player, adjacent)) {
+    if (g->playerAreas[player] == g->areas && !adjacent_with_pLayer(g, player, adjacent)) {
         free(adjacent);
         return NULL;
     }
@@ -474,35 +475,35 @@ static Tuple* goldenPrep(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
 }
 
 bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
-    Tuple* adjacent = goldenPrep(g, player, x, y);
+    tuple* adjacent = golden_prep(g, player, x, y);
     if (!adjacent) {
         return false;
     }
 
-    //Tablica na stare pola, które są połączone z usuwanym polem
-    findUnionNode_t** oldFields = calloc(2 * (uint64_t) g->height * (uint64_t) g->width,
-                                         sizeof(findUnionNode_t*));
+    // Tablica na stare pola, które są połączone z usuwanym polem
+    find_union_node_t** oldFields = calloc(2 * (uint64_t) g->height * (uint64_t) g->width,
+                                           sizeof(find_union_node_t*));
     if (!oldFields) {
         free(adjacent);
         return false;
     }
-    uint32_t busyPlayer = getPlayer(g->board[x][y]);
+    uint32_t busyPlayer = get_player(g->board[x][y]);
 
     oldFields[0] = g->board[x][y];
     uint64_t oldFieldsIndex = 1;
     uint64_t* oldFieldsIndexPtr = &oldFieldsIndex;
     g->board[x][y] = NULL;
 
-    int newAreas = dfsOnAdjacent(g, busyPlayer, adjacent, oldFields, oldFieldsIndexPtr);
+    int newAreas = dfs_on_adjacent(g, busyPlayer, adjacent, oldFields, oldFieldsIndexPtr);
     if (newAreas == -2) {
         free(adjacent);
         return false;
     }
 
-    //Usuwamy pionek, zwiększamy wolne pola o 1
-    updateAdjacentFree(g, adjacent, 1);
+    // Usuwamy pionek, zwiększamy wolne pola o 1
+    update_adjacent_free(g, adjacent, 1);
 
-    int freeAdjacentFields = newFreeAdjacent(g, busyPlayer, adjacent);
+    int freeAdjacentFields = new_free_aAdjacent(g, busyPlayer, adjacent);
     if (freeAdjacentFields < 0) {
         free(adjacent);
         return false;
@@ -519,7 +520,7 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     g->playerAreas[busyPlayer] += newAreas;
 
     if (g->playerAreas[busyPlayer] > g->areas) {
-        //Jeśli obszarów jest za dużo, to stawiamy stary pionek
+        // Jeśli obszarów jest za dużo, to stawiamy stary pionek
         gamma_move(g, busyPlayer, x, y);
         return false;
     }
@@ -530,7 +531,7 @@ bool gamma_golden_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
 }
 
 uint64_t gamma_busy_fields(gamma_t* g, uint32_t player) {
-    if (!g || !validPlayer(g, player)) {
+    if (!g || !valid_player(g, player)) {
         return 0;
     } else {
         return g->busyFields[player];
@@ -538,24 +539,51 @@ uint64_t gamma_busy_fields(gamma_t* g, uint32_t player) {
 }
 
 uint64_t gamma_free_fields(gamma_t* g, uint32_t player) {
-    if (!g || !validPlayer(g, player)) {
+    if (!g || !valid_player(g, player)) {
         return 0;
     }
     if (g->playerAreas[player] == g->areas) {
-        //Jeśli gracz zajmuje maksymalną liczbę obszarów, to może stawiać pionki
-        //tylko na polach sąsiednich do swoich
+        // Jeśli gracz zajmuje maksymalną liczbę obszarów, to może stawiać pionki
+        // tylko na polach sąsiednich do swoich
         return g->freeAdjacentFields[player];
     }
     return g->freeFields;
 }
 
+/** @brief Wykonuje złoty ruch niezależnie od tego, czy gracz już swój wykorzystał.
+ * Ustawia pionek gracza @p player na polu (@p x, @p y) zajętym przez innego
+ * gracza, usuwając pionek innego gracza, stan określający dla gracza, czy już wykonał
+ * złoty ruch w tej grze pozostaje bez zmian.
+ * @param[in,out] g   – wskaźnik na strukturę przechowującą stan gry,
+ * @param[in] player  – numer gracza, liczba dodatnia niewiększa od wartości
+ *                      @p players z funkcji @ref gamma_new,
+ * @param[in] x       – numer kolumny, liczba nieujemna mniejsza od wartości
+ *                      @p width z funkcji @ref gamma_new,
+ * @param[in] y       – numer wiersza, liczba nieujemna mniejsza od wartości
+ *                      @p height z funkcji @ref gamma_new.
+ * @return Wartość @p true, jeśli ruch został wykonany, a @p false, gdy ruch
+ * jest nielegalny lub któryś z parametrów jest niepoprawny.
+ */
+static bool free_golden(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
+    bool used_move = g->goldenMoves[player];
+    g->goldenMoves[player] = false;
+    bool successful_golden = gamma_golden_move(g, player, x, y);
+    g->goldenMoves[player] = used_move;
+    return successful_golden;
+}
+
 bool gamma_golden_possible(gamma_t* g, uint32_t player) {
-    if (!g || !validPlayer(g, player) || g->goldenMoves[player]) {
+    if (!g || !valid_player(g, player) || g->goldenMoves[player]) {
+        printf("%d", g->goldenMoves[8]);
         return false;
     }
-    for (uint32_t otherPlayer = 1; validPlayer(g, otherPlayer); ++otherPlayer) {
-        if (g->busyFields[otherPlayer] > 0 && player != otherPlayer) {
-            return true;
+    for (uint32_t x = 0; x < g->width; ++x) {
+        for (uint32_t y = 0; y < g->height; ++y) {
+            uint32_t otherPlayer = get_player_on_field(g, x, y);
+            if (free_golden(g, player, x, y)) {
+                free_golden(g, otherPlayer, x, y);
+                return true;
+            }
         }
     }
     return false;
@@ -563,6 +591,6 @@ bool gamma_golden_possible(gamma_t* g, uint32_t player) {
 
 
 char* gamma_board(gamma_t* g) {
-    //Wspłrzędne poza zakresem oznaczają, że nie checmy podświetlać żadnego pola
-    return boardWithHighlight(g, UINT32_MAX, UINT32_MAX);
+    // Wspłrzędne poza zakresem oznaczają, że nie checmy podświetlać żadnego pola
+    return board_with_highlight(g, UINT32_MAX, UINT32_MAX);
 }

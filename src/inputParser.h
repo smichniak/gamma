@@ -40,7 +40,7 @@ typedef struct {
  * @param[in,out] line   – ciąg znaków, który zawiera komendę do przetworzenia.
  * @return Struktura opisująca koemdę do wywołania.
  */
-command_t getCommand(char* line);
+command_t get_command(char* line);
 
 /** @brief Wywołuje komendę.
  * Interpretuje komendę i w zależności od funckji, wypisuje jej wynik, przechodzi do trybu interaktywnego
@@ -50,7 +50,6 @@ command_t getCommand(char* line);
  * @param[in] line       – numer linii wejścia, z której została wywołana koemnda
  * @return Struktura opisująca komendę do wywołania.
  */
-void executeCommand(command_t command, gamma_t** gPtr, unsigned long long line);
+void execute_command(command_t command, gamma_t** gPtr, unsigned long long line);
 
-
-#endif //GAMMA_INPUTPARSER_H
+#endif /* GAMMA_INPUTPARSER_H */

@@ -7,8 +7,8 @@
 
 #include "utilities.h"
 
-Tuple createTuple(uint32_t x, uint32_t y) {
-    Tuple newTuple;
+tuple create_tuple(uint32_t x, uint32_t y) {
+    tuple newTuple;
     newTuple.x = x;
     newTuple.y = y;
     return newTuple;

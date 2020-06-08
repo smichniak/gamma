@@ -24,8 +24,8 @@ static const char VALID_FUNCTIONS[] = "BImgbfqp ";
  * Struktura przechowująca informacje o wyniku funkcji, która zwraca @p uint64_t.
 */
 typedef struct {
-    uint64_t resultValue; ///< Wartość, którą funckja zwróciła
-    bool valid; ///< @p false, jeśli wywołanie funckji było nieprawidłowe, @p true w przeciwnym przypadku
+    uint64_t resultValue; // /< Wartość, którą funckja zwróciła
+    bool valid; // /< @p false, jeśli wywołanie funckji było nieprawidłowe, @p true w przeciwnym przypadku
 } result_t;
 
 /** @brief Sprawdza, czy ciąg znaków jest samymi cyframi.
@@ -33,7 +33,7 @@ typedef struct {
  * @param[in] string   – ciąg znaków do sprawdzenia.
  * @return @p true, jeśli wszystkie znaki są cyframi, @p false w przeciwnym przypadku
  */
-static bool onlyDigits(char* string) {
+static bool only_digits(char* string) {
     for (uint32_t i = 0; i < strlen(string); ++i) {
         if (!isdigit(string[i])) {
             return false;
@@ -48,7 +48,7 @@ static bool onlyDigits(char* string) {
  * @param[in] function   – ciąg znaków do sprawdzenia.
  * @return @p true, jeśli funckja jest prawidłowa, @p false w przeciwnym przypadku
  */
-static bool validFunction(char* function) {
+static bool valid_function(char* function) {
     if (strlen(function) > 1) {
         return false;
     }
@@ -68,7 +68,7 @@ static bool validFunction(char* function) {
  * @param[in] string   – ciąg znaków do sprawdzenia.
  * @return Struktura opisująca argument funkcji.
  */
-static argument_t validArgument(char* string) {
+static argument_t valid_argument(char* string) {
     argument_t argument;
     argument.value = 0;
     argument.valid = true;
@@ -76,13 +76,13 @@ static argument_t validArgument(char* string) {
 
     if (string == NULL) {
         argument.empty = true;
-    } else if (!onlyDigits(string)) {
-        //Argument może zawierać tylko cyfry, żeby był poprawny
+    } else if (!only_digits(string)) {
+        // Argument może zawierać tylko cyfry, żeby był poprawny
         argument.valid = false;
     } else {
         uint64_t conversion = strtoul(string, NULL, 10);
         if (conversion > UINT32_MAX) {
-            //Wynik większy od UINT32_MAX nie jest poprawny
+            // Wynik większy od UINT32_MAX nie jest poprawny
             argument.valid = false;
         } else {
             argument.value = conversion;
@@ -104,18 +104,18 @@ static argument_t validArgument(char* string) {
  * @return Numer następnego gracza, który może wykonać ruch, lub @p 0 jeśli żaden gracz nie może już
  * wykonać ruchu.
  */
-static uint32_t getNextPlayer(gamma_t* g, uint32_t currentPlayer, uint64_t playersSkipped) {
-    //Jeśli sprawdziliśmy wszytskich graczy i żaden nie może wykonać ruchu, to zwracamy 0
+static uint32_t get_next_player(gamma_t* g, uint32_t currentPlayer, uint64_t playersSkipped) {
+    // Jeśli sprawdziliśmy wszytskich graczy i żaden nie może wykonać ruchu, to zwracamy 0
     if (playersSkipped > get_players(g)) {
         return 0;
     }
     uint32_t maxPlayer = get_players(g);
-    //Po ostatnim graczu wracamy do nr 1
+    // Po ostatnim graczu wracamy do nr 1
     uint32_t nextPlayer = (currentPlayer % maxPlayer) + 1;
 
-    //Jeśli aktualny gracz nie może wykonać ruchu, sprawdzamy następnego
+    // Jeśli aktualny gracz nie może wykonać ruchu, sprawdzamy następnego
     if (gamma_free_fields(g, nextPlayer) == 0 && !gamma_golden_possible(g, nextPlayer)) {
-        return getNextPlayer(g, nextPlayer, playersSkipped + 1);
+        return get_next_player(g, nextPlayer, playersSkipped + 1);
     }
     return nextPlayer;
 }
@@ -127,7 +127,7 @@ static uint32_t getNextPlayer(gamma_t* g, uint32_t currentPlayer, uint64_t playe
  * przywraca oryginalne ustawienia terminala.
  * @param[in,out] g – wskaźnik na strukturę przechowującą stan gry.
  */
-static void interactiveInput(gamma_t* g) {
+static void interactive_input(gamma_t* g) {
     uint32_t cursorX = 0;
     uint32_t cursorY = 0;
     uint32_t maxX = get_width(g) - 1;
@@ -136,40 +136,40 @@ static void interactiveInput(gamma_t* g) {
     bool nextPlayer;
     int inputCharacter = 0;
 
-    changeTerminalToRaw();
+    change_terminal_to_raw();
 
     while (currentPlayer != 0) {
         nextPlayer = false;
 
         clear();
-        printWithHighlight(g, cursorX, cursorY, 0);
-        printPlayerInfo(g, currentPlayer);
+        print_with_highlight(g, cursorX, cursorY, 0);
+        print_player_info(g, currentPlayer);
 
-        //inputCharacter == 0 wtedy, gdy poprzedni wczytany znak został już zinterpretowany
+        // inputCharacter == 0 wtedy, gdy poprzedni wczytany znak został już zinterpretowany
         if (inputCharacter == 0) {
             inputCharacter = getchar();
         }
 
-        if (inputCharacter == '\033') { //Początek kodu strzałek
+        if (inputCharacter == '\033') { // Początek kodu strzałek
             inputCharacter = getchar();
             if (inputCharacter == '[') {
                 inputCharacter = getchar();
-                if (inputCharacter == 'A') { //Strzałak w górę
+                if (inputCharacter == 'A') { // Strzałak w górę
                     if (cursorY != maxY) {
                         cursorY++;
                     }
                     inputCharacter = 0;
-                } else if (inputCharacter == 'B') { //Strzałka w dół
+                } else if (inputCharacter == 'B') { // Strzałka w dół
                     if (cursorY != 0) {
                         cursorY--;
                     }
                     inputCharacter = 0;
-                } else if (inputCharacter == 'C') { //Strzałka w prawo
+                } else if (inputCharacter == 'C') { // Strzałka w prawo
                     if (cursorX != maxX) {
                         cursorX++;
                     }
                     inputCharacter = 0;
-                } else if (inputCharacter == 'D') { //Strzałka w lewo
+                } else if (inputCharacter == 'D') { // Strzałka w lewo
                     if (cursorX != 0) {
                         cursorX--;
                     }
@@ -185,72 +185,72 @@ static void interactiveInput(gamma_t* g) {
         } else if (inputCharacter == 'c' || inputCharacter == 'C') {
             inputCharacter = 0;
             nextPlayer = true;
-        } else if (inputCharacter == 4) { //Koniec transmisji, gracz = 0 kończy tryb interaktywny
+        } else if (inputCharacter == 4) { // Koniec transmisji, gracz = 0 kończy tryb interaktywny
             currentPlayer = 0;
-        } else { //Znak, który nie odpowiada żadnaje komendzie
+        } else { // Znak, który nie odpowiada żadnaje komendzie
             inputCharacter = 0;
         }
 
         if (nextPlayer) {
-            currentPlayer = getNextPlayer(g, currentPlayer, 0);
+            currentPlayer = get_next_player(g, currentPlayer, 0);
         }
     }
 
-    //Na koniec gry wypisujemy planszę i podsumowanie wyników
+    // Na koniec gry wypisujemy planszę i podsumowanie wyników
     clear();
-    printWithHighlight(g, UINT32_MAX, UINT32_MAX, 0);
-    printResults(g);
-    exitInteractive(0);
+    print_with_highlight(g, UINT32_MAX, UINT32_MAX, 0);
+    print_results(g);
+    exit_interactive(0);
 }
 
 /** @brief Zwraca domyślną komendę.
  * Zwraca strukturę domyślnej komendy. Jest ona poprawna, ma puste argumenty i nie powoduje żadnego działania.
  * @return Struktura opisująca domyślną komendę.
  */
-static command_t defCommand() {
+static command_t def_command() {
     command_t command;
     command.function = ' ';
     command.isValid = true;
-    command.firstArgument = validArgument("");
-    command.secondArgument = validArgument("");
-    command.thirdArgument = validArgument("");
-    command.fourthArgument = validArgument("");
+    command.firstArgument = valid_argument("");
+    command.secondArgument = valid_argument("");
+    command.thirdArgument = valid_argument("");
+    command.fourthArgument = valid_argument("");
     return command;
 }
 
-command_t getCommand(char* line) {
-    command_t command = defCommand();
+command_t get_command(char* line) {
+    command_t command = def_command();
 
-    //Pomijamy linie puste i zaczynajace się od #
+    // Pomijamy linie puste i zaczynajace się od #
     if (line != NULL && line[0] != '#' && line[0] != '\n') {
         if (strlen(line) == 0 || isspace(line[0]) || line[strlen(line) - 1] != '\n') {
-            //Błędne są linie nie kończące się znakiem nowej linii i rozpoczynające się białym znakiem
+            // Błędne są linie nie kończące się znakiem nowej linii i rozpoczynające się białym znakiem
             command.isValid = false;
         } else {
-            //Usuwamy '\n' z końca linii
+            // Usuwamy '\n' z końca linii
             line[strlen(line) - 1] = 0;
 
-            //Rozdzielamy części miedzy białymi znakami
+            // Rozdzielamy części miedzy białymi znakami
             char* function = strtok(line, WHITE_CHARS);
 
             char* firstArg = strtok(NULL, WHITE_CHARS);
-            argument_t firstArgument = validArgument(firstArg);
+            argument_t firstArgument = valid_argument(firstArg);
 
             char* secondArg = strtok(NULL, WHITE_CHARS);
-            argument_t secondArgument = validArgument(secondArg);
+            argument_t secondArgument = valid_argument(secondArg);
 
             char* thirdArg = strtok(NULL, WHITE_CHARS);
-            argument_t thirdArgument = validArgument(thirdArg);
+            argument_t thirdArgument = valid_argument(thirdArg);
 
             char* fourthArg = strtok(NULL, WHITE_CHARS);
-            argument_t fourthArgument = validArgument(fourthArg);
+            argument_t fourthArgument = valid_argument(fourthArg);
 
             char* restOfLine = strtok(NULL, WHITE_CHARS);
 
             if (function != NULL) {
-                if (restOfLine != NULL || !validFunction(function) || !firstArgument.valid ||
+                if (restOfLine != NULL || !valid_function(function) || !firstArgument.valid ||
                     !secondArgument.valid || !thirdArgument.valid || !fourthArgument.valid) {
-                    //Prawidłowa linia nie może mieć więcej niż 4 argumenty i każdy musi być poprawny
+                    // Prawidłowa linia nie może mieć więcej niż 4 argumenty i każdy musi być poprawny
                     command.isValid = false;
                 } else {
                     command.function = function[0];
@@ -275,20 +275,20 @@ command_t getCommand(char* line) {
  * @return Struktura opisująca wynik wywołania. Parametr poprawności ustawiony na @p true, jeśli udało się
  * wyowałać funkcję, @p false w przeciwnym przypadku.
  */
-static result_t functionResult(gamma_t** gPtr, command_t command) {
+static result_t function_result(gamma_t** gPtr, command_t command) {
     result_t result;
     result.valid = true;
 
     if (!command.fourthArgument.empty || !*gPtr) {
         result.valid = false;
-    } else if (command.function == 'm') { //Zwykly ruch, trzy argumenty
+    } else if (command.function == 'm') { // Zwykly ruch, trzy argumenty
         if (command.thirdArgument.empty) {
             result.valid = false;
         } else {
             result.resultValue = gamma_move(*gPtr, command.firstArgument.value, command.secondArgument.value,
                                             command.thirdArgument.value);
         }
-    } else if (command.function == 'g') { //Złoty ruch, trzy argumenty
+    } else if (command.function == 'g') { // Złoty ruch, trzy argumenty
         if (command.thirdArgument.empty) {
             result.valid = false;
         } else {
@@ -297,49 +297,49 @@ static result_t functionResult(gamma_t** gPtr, command_t command) {
         }
     } else if (!command.secondArgument.empty || command.firstArgument.empty) {
         result.valid = false;
-    } else if (command.function == 'b') { //Zajęte pola, jeden argument
+    } else if (command.function == 'b') { // Zajęte pola, jeden argument
         result.resultValue = gamma_busy_fields(*gPtr, command.firstArgument.value);
-    } else if (command.function == 'f') { //Wolne pola, jeden argument
+    } else if (command.function == 'f') { // Wolne pola, jeden argument
         result.resultValue = gamma_free_fields(*gPtr, command.firstArgument.value);
-    } else if (command.function == 'q') { //Czy możliwy złoty ruch, jeden argument
+    } else if (command.function == 'q') { // Czy możliwy złoty ruch, jeden argument
         result.resultValue = gamma_golden_possible(*gPtr, command.firstArgument.value);
     }
 
     return result;
 }
 
-void executeCommand(command_t command, gamma_t** gPtr, unsigned long long line) {
+void execute_command(command_t command, gamma_t** gPtr, unsigned long long line) {
     if (!command.isValid) {
-        printError(line);
-    } else if (command.function == ' ') { //Pusta komenda, nic nie robi
+        print_error(line);
+    } else if (command.function == ' ') { // Pusta komenda, nic nie robi
     } else if (command.function == 'B' || command.function == 'I') {
-        if (*gPtr) { //Nie możemy zacząć nowej gry, jeśli już jakaś trwa
-            printError(line);
+        if (*gPtr) { // Nie możemy zacząć nowej gry, jeśli już jakaś trwa
+            print_error(line);
         } else {
             gamma_t* new_gamma = gamma_new(command.firstArgument.value, command.secondArgument.value,
                                            command.thirdArgument.value, command.fourthArgument.value);
-            if (!new_gamma) { //Błędne argumenty lub problemy z alokacją nowej gry
-                printError(line);
+            if (!new_gamma) { // Błędne argumenty lub problemy z alokacją nowej gry
+                print_error(line);
             } else if (command.function == 'B') {
                 *gPtr = new_gamma;
                 printf("OK %llu\n", line);
             } else {
-                interactiveInput(new_gamma);
+                interactive_input(new_gamma);
             }
         }
 
-    } else if (command.function == 'p') { //Ciąg znaków opisujący planszę, zero argumentów
+    } else if (command.function == 'p') { // Ciąg znaków opisujący planszę, zero argumentów
         if (!command.firstArgument.empty) {
-            printError(line);
+            print_error(line);
         } else {
-            //x i y = UINT32_MAX oznaczają string planszy bez podświetlonych pól
-            printWithHighlight(*gPtr, UINT32_MAX, UINT32_MAX, line);
+            // x i y = UINT32_MAX oznaczają string planszy bez podświetlonych pól
+            print_with_highlight(*gPtr, UINT32_MAX, UINT32_MAX, line);
         }
 
     } else {
-        result_t result = functionResult(gPtr, command);
+        result_t result = function_result(gPtr, command);
         if (!result.valid) {
-            printError(line);
+            print_error(line);
         } else {
             printf("%" PRIu64 "\n", result.resultValue);
         }
