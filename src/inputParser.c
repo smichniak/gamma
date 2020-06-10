@@ -8,6 +8,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <inttypes.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 #include "display.h"
 #include "inputParser.h"
 
@@ -308,6 +310,25 @@ static result_t function_result(gamma_t** gPtr, command_t command) {
     return result;
 }
 
+/** @brief Sprawdza, czy plansza zmieści się na ekranie.
+ * Sprawdza rozmiary terminala i porównuje je z rozmiarami planszy. Jeśli plansza
+ * jest zbyt duża, to wywołuje @ref gamma_delete, wypisuje stosowny komunikat
+ * o błędzie i kończy program z kodem wyjścia @p 1.
+ * @param[in,out] g – wskaźnik na strukturę przechowującą stan gry.
+ */
+static void checkTerminalSize(gamma_t* g) {
+    struct winsize window;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
+    uint32_t rows = window.ws_row;
+    uint32_t columns =  window.ws_col;
+
+    if (get_height(g) > rows || get_width(g) > columns) {
+        fprintf(stderr, "Terminal to small to display the board.\n");
+        gamma_delete(g);
+        exit(1);
+    }
+}
+
 void execute_command(command_t command, gamma_t** gPtr, unsigned long long line) {
     if (!command.isValid) {
         print_error(line);
@@ -324,6 +345,7 @@ void execute_command(command_t command, gamma_t** gPtr, unsigned long long line)
                 *gPtr = new_gamma;
                 printf("OK %llu\n", line);
             } else {
+                checkTerminalSize(new_gamma);
                 interactive_input(new_gamma);
             }
         }

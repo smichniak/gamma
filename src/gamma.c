@@ -574,7 +574,6 @@ static bool free_golden(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
 
 bool gamma_golden_possible(gamma_t* g, uint32_t player) {
     if (!g || !valid_player(g, player) || g->goldenMoves[player]) {
-        printf("%d", g->goldenMoves[8]);
         return false;
     }
     for (uint32_t x = 0; x < g->width; ++x) {
