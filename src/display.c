@@ -13,6 +13,10 @@
  */
 static const char* BEGIN_HIGHLIGHT = "\033[7m";
 
+#define GREEN "\e[0;32m"
+#define RED "\e[0;31m"
+#define RESET_COLOR "\e[0m"
+
 /** Koniec kodu podświetlenia.
  */
 static const char* END_HIGHLIGHT = "\033[m";
@@ -175,7 +179,7 @@ char* board_with_highlight(gamma_t* g, uint32_t x, uint32_t y) {
     char* boardString;
     // +height na \n po każdym rzędzie, +1 na \0
     boardString = calloc(maxPlayerDigits * (uint64_t) width * (uint64_t) height + spaces + height +
-            highlight * CODE_LENGTH + 1, sizeof(char));
+                         highlight * CODE_LENGTH + 1, sizeof(char));
     if (!boardString) {
         return NULL;
     }
@@ -231,9 +235,22 @@ inline void print_error(unsigned long long line) {
 }
 
 void print_player_info(gamma_t* g, uint32_t player) {
-    printf("PLAYER %u - ", player);
-    printf("AREAS: %u/%u - ", get_player_areas(g, player), get_areas(g));
+    printf("PLAYER: %u\n", player);
+    uint32_t playerAreas = get_player_areas(g, player);
+    uint32_t maxAreas = get_areas(g);
+    printf("AREAS: ");
+    if (playerAreas == maxAreas) {
+        printf(RED);
+    } else {
+        printf(GREEN);
+    }
+    printf("%u/%u" RESET_COLOR "\n", playerAreas, maxAreas);
     printf("OCCUPIED FIELDS: %" PRIu64, gamma_busy_fields(g, player));
-    printf(" - FREE FIELDS: %" PRIu64,  gamma_free_fields(g, player));
-    printf(" - GOLDEN MOVE AVAILABLE: %s\n", gamma_golden_possible(g, player) ? "true" : "false");
+    printf("\nFREE FIELDS: %" PRIu64, gamma_free_fields(g, player));
+    printf("\nGOLDEN MOVE AVAILABLE: ");
+    if (gamma_golden_possible(g, player)) {
+        printf(GREEN "true" RESET_COLOR "\n");
+    } else {
+        printf(RED "false" RESET_COLOR "\n");
+    }
 }
