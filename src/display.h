@@ -44,10 +44,11 @@ void exit_interactive(int code);
  *                      @p width z funkcji @ref gamma_new,
  * @param[in] y       – numer wiersza pola do podświetlenia, liczba nieujemna mniejsza od wartości
  *                      @p height z funkcji @ref gamma_new.
+ * @param[in] player  – numer gracza, liczba dodatnia niewiększa od wartości @p players z funkcji @ref gamma_new.
  * @return Wskaźnik na zaalokowany bufor zawierający napis opisujący stan planszy lub NULL, jeśli nie
  * udało się zaalokować pamięci.
  */
-char* board_with_highlight(gamma_t* g, uint32_t x, uint32_t y);
+char* board_with_highlight(gamma_t* g, uint32_t x, uint32_t y, uint32_t currentPlayer);
 
 /** @brief Wypisuje napis opisujący stan planszy.
  * Wypisuje napis opisujący aktualny stan planszy.
@@ -62,8 +63,9 @@ char* board_with_highlight(gamma_t* g, uint32_t x, uint32_t y);
  *                      @p height z funkcji @ref gamma_new.
  * @param[in] line   – numer linii, z której zostało wywołane polecenie lub @p 0, jeśli program jest w
  *                      interactive mode.
+ * @param[in] player  – numer gracza, liczba dodatnia niewiększa od wartości @p players z funkcji @ref gamma_new.
  */
-void print_with_highlight(gamma_t* g, uint32_t x, uint32_t y, unsigned long long line);
+void print_with_highlight(gamma_t* g, uint32_t x, uint32_t y, unsigned long long line, uint32_t currentPlayer);
 
 /** @brief Wypisuje wyniki gry.
  * Wypisuje wyniki gry na jej koniec. W każdej linii zostają wypisane: numer gracza

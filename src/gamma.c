@@ -284,23 +284,36 @@ static void update_adjacent_free(gamma_t* g, tuple* adjacent, int toAdd) {
     }
 }
 
-bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
+bool move_possible(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
     if (!g || !valid_player(g, player) || !valid_coordinates(g, x, y) || g->board[x][y]) {
         return false;
     }
     tuple* adjacent = get_adjacent(g, x, y);
-    find_union_node_t* field = make_set(player);
-    if (!adjacent || !field) {
+    if (!adjacent) {
         return false;
     }
 
     int freeAdjacent = new_free_aAdjacent(g, player, adjacent);
     int samePlayerAdjacent = adjacent_with_pLayer(g, player, adjacent);
+    free(adjacent);
     if (freeAdjacent < 0 || (g->playerAreas[player] == g->areas && !samePlayerAdjacent)) {
+        return false;
+    }
+    return true;
+}
+
+bool gamma_move(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
+    if (!move_possible(g, player, x, y)) {
+        return false;
+    }
+    tuple* adjacent = get_adjacent(g, x, y);
+    find_union_node_t* field = make_set(player);
+    if (!adjacent || !field) {
         free(adjacent);
         free(field);
         return false;
     }
+    int freeAdjacent = new_free_aAdjacent(g, player, adjacent);
 
     // Stawiamy nowy pionek, zmniejszamy o 1 wolne pola
     update_adjacent_free(g, adjacent, -1);
@@ -534,37 +547,41 @@ uint64_t gamma_free_fields(gamma_t* g, uint32_t player) {
     return g->freeFields;
 }
 
-/** @brief Wykonuje złoty ruch niezależnie od tego, czy gracz już swój wykorzystał.
- * Ustawia pionek gracza @p player na polu (@p x, @p y) zajętym przez innego
- * gracza, usuwając pionek innego gracza, stan określający dla gracza, czy już wykonał
- * złoty ruch w tej grze pozostaje bez zmian.
- * @param[in,out] g   – wskaźnik na strukturę przechowującą stan gry,
- * @param[in] player  – numer gracza, liczba dodatnia niewiększa od wartości
- *                      @p players z funkcji @ref gamma_new,
- * @param[in] x       – numer kolumny, liczba nieujemna mniejsza od wartości
- *                      @p width z funkcji @ref gamma_new,
- * @param[in] y       – numer wiersza, liczba nieujemna mniejsza od wartości
- *                      @p height z funkcji @ref gamma_new.
- * @return Wartość @p true, jeśli ruch został wykonany, a @p false, gdy ruch
- * jest nielegalny lub któryś z parametrów jest niepoprawny.
- */
-static bool free_golden(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
-    bool used_move = g->goldenMoves[player];
-    g->goldenMoves[player] = false;
-    bool successful_golden = gamma_golden_move(g, player, x, y);
-    g->goldenMoves[player] = used_move;
-    return successful_golden;
+bool golden_move_possible(gamma_t* g, uint32_t player, uint32_t x, uint32_t y) {
+    if (g->goldenMoves[player]) {
+        return false;
+    }
+    uint32_t otherPlayer = get_player(g->board[x][y]);
+    bool otherPlayerUsed = g->goldenMoves[otherPlayer];
+
+    if (gamma_golden_move(g, player, x, y)) {
+        g->goldenMoves[otherPlayer] = false;
+        gamma_golden_move(g, otherPlayer, x, y);
+        g->goldenMoves[otherPlayer] = otherPlayerUsed;
+
+        g->goldenMoves[player] = false;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 bool gamma_golden_possible(gamma_t* g, uint32_t player) {
     if (!g || !valid_player(g, player) || g->goldenMoves[player]) {
         return false;
     }
-    for (uint32_t x = 0; x < g->width; ++x) {
-        for (uint32_t y = 0; y < g->height; ++y) {
-            uint32_t otherPlayer = get_player_on_field(g, x, y);
-            if (free_golden(g, player, x, y)) {
-                free_golden(g, otherPlayer, x, y);
+
+    if (g->playerAreas[player] == g->areas) {
+        for (uint32_t x = 0; x < g->width; ++x) {
+            for (uint32_t y = 0; y < g->height; ++y) {
+                if (golden_move_possible(g, player, x, y)) {
+                    return true;
+                }
+            }
+        }
+    } else if (g->playerAreas[player] < g->areas) {
+        for (uint32_t otherPlayer = 1; valid_player(g, otherPlayer); ++otherPlayer) {
+            if (g->busyFields[otherPlayer] > 0 && player != otherPlayer) {
                 return true;
             }
         }
@@ -572,8 +589,7 @@ bool gamma_golden_possible(gamma_t* g, uint32_t player) {
     return false;
 }
 
-
 char* gamma_board(gamma_t* g) {
     // Wspłrzędne poza zakresem oznaczają, że nie checmy podświetlać żadnego pola
-    return board_with_highlight(g, UINT32_MAX, UINT32_MAX);
+    return board_with_highlight(g, UINT32_MAX, UINT32_MAX, 0);
 }

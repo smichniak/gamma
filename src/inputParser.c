@@ -139,12 +139,11 @@ static void interactive_input(gamma_t* g) {
     int inputCharacter = 0;
 
     change_terminal_to_raw();
-
     while (currentPlayer != 0) {
         nextPlayer = false;
 
         clear();
-        print_with_highlight(g, cursorX, cursorY, 0);
+        print_with_highlight(g, cursorX, cursorY, 0, currentPlayer);
         print_player_info(g, currentPlayer);
 
         // inputCharacter == 0 wtedy, gdy poprzedni wczytany znak został już zinterpretowany
@@ -200,7 +199,7 @@ static void interactive_input(gamma_t* g) {
 
     // Na koniec gry wypisujemy planszę i podsumowanie wyników
     clear();
-    print_with_highlight(g, UINT32_MAX, UINT32_MAX, 0);
+    print_with_highlight(g, UINT32_MAX, UINT32_MAX, 0, currentPlayer);
     print_results(g);
     exit_interactive(0);
 }
@@ -355,7 +354,7 @@ void execute_command(command_t command, gamma_t** gPtr, unsigned long long line)
             print_error(line);
         } else {
             // x i y = UINT32_MAX oznaczają string planszy bez podświetlonych pól
-            print_with_highlight(*gPtr, UINT32_MAX, UINT32_MAX, line);
+            print_with_highlight(*gPtr, UINT32_MAX, UINT32_MAX, line, 0);
         }
 
     } else {

@@ -86,6 +86,20 @@ gamma_t* gamma_new(uint32_t width, uint32_t height, uint32_t players, uint32_t a
  */
 void gamma_delete(gamma_t* g);
 
+/** @brief Sprawdza, czy można wykonać ruch na dane pole.
+ * Sprawdza, czy gracz @p player może postawić pionek na polu (@p x, @p y).
+ * @param[in] g       – wskaźnik na strukturę przechowującą stan gry,
+ * @param[in] player  – numer gracza, liczba dodatnia niewiększa od wartości
+ *                      @p players z funkcji @ref gamma_new,
+ * @param[in] x       – numer kolumny, liczba nieujemna mniejsza od wartości
+ *                      @p width z funkcji @ref gamma_new,
+ * @param[in] y       – numer wiersza, liczba nieujemna mniejsza od wartości
+ *                      @p height z funkcji @ref gamma_new.
+ * @return Wartość @p true, jeśli można wykonać ruch, a @p false, gdy ruch
+ * jest nielegalny lub któryś z parametrów jest niepoprawny.
+ */
+bool move_possible(gamma_t* g, uint32_t player, uint32_t x, uint32_t y);
+
 /** @brief Wykonuje ruch.
  * Ustawia pionek gracza @p player na polu (@p x, @p y).
  * @param[in,out] g   – wskaźnik na strukturę przechowującą stan gry,
@@ -136,6 +150,21 @@ uint64_t gamma_busy_fields(gamma_t* g, uint32_t player);
  * jeśli któryś z parametrów jest niepoprawny.
  */
 uint64_t gamma_free_fields(gamma_t* g, uint32_t player);
+
+/** @brief Sprawdza, czy można wykonać ruch na dane pole.
+ * Sprawdza, czy gracz @p player może ustwaić pionek na polu (@p x, @p y)
+ * zajętym przez innego gracza.
+ * @param[in] g   – wskaźnik na strukturę przechowującą stan gry,
+ * @param[in] player  – numer gracza, liczba dodatnia niewiększa od wartości
+ *                      @p players z funkcji @ref gamma_new,
+ * @param[in] x       – numer kolumny, liczba nieujemna mniejsza od wartości
+ *                      @p width z funkcji @ref gamma_new,
+ * @param[in] y       – numer wiersza, liczba nieujemna mniejsza od wartości
+ *                      @p height z funkcji @ref gamma_new.
+ * @return Wartość @p true, jeśli można wykonać złoty ruch, a @p false, gdy ruch
+ * jest nielegalny lub któryś z parametrów jest niepoprawny.
+ */
+bool golden_move_possible(gamma_t* g, uint32_t player, uint32_t x, uint32_t y);
 
 /** @brief Sprawdza, czy gracz może wykonać złoty ruch.
  * Sprawdza, czy gracz @p player jeszcze nie wykonał w tej rozgrywce złotego
