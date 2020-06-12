@@ -317,7 +317,10 @@ static result_t function_result(gamma_t** gPtr, command_t command) {
  */
 static void checkTerminalSize(gamma_t* g) {
     struct winsize window;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &window) == -1) {
+        gamma_delete(g);
+        exit(1);
+    }
     uint32_t rows = window.ws_row;
     uint32_t columns =  window.ws_col;
 

@@ -19,24 +19,24 @@ set(CMAKE_C_FLAGS "-std=c11 -Wall -Wextra")
 # set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")
 # set(CMAKE_C_FLAGS_DEBUG "-g")
 
-# Wskazujemy pliki źródłowe.
-set(SOURCE_FILES
-        src/gamma_main.c
-        src/inputParser.c src/inputParser.h
-        src/display.c src/display.h
+set(ENGINE_FILES src/display.c src/display.h
         src/gamma.c src/gamma.h
         src/findUnion.c src/findUnion.h
         src/stack.c src/stack.h
         src/utilities.c src/utilities.h)
 
+# Wskazujemy pliki źródłowe.
+set(SOURCE_FILES
+        src/gamma_main.c
+        src/inputParser.c src/inputParser.h
+        ${ENGINE_FILES})
+
+
 # Wskazujemy pliki źródłowe dla testów silnika.
+set(TEST_FILE src/gamma_test.c)
 set(TEST_SOURCE_FILES
-        src/gamma_test.c
-        src/display.c src/display.h
-        src/gamma.c src/gamma.h
-        src/findUnion.c src/findUnion.h
-        src/stack.c src/stack.h
-        src/utilities.c src/utilities.h)
+        ${TEST_FILE}
+        ${ENGINE_FILES})
 
 # Wskazujemy plik wykonywalny.
 add_executable(gamma ${SOURCE_FILES})
