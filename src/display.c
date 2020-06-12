@@ -15,17 +15,13 @@ static const char* GREEN_BACKGROUND = "\e[42m";
 static const char* RED_BACKGROUND = "\e[41m";
 static const char* YELLOW_BACKGROUND = "\e[43m";
 
-/** Początek kodu, który zmienia podświetlenie tła na białe i tekst na czarny.
- */
-static const char* BEGIN_HIGHLIGHT = "\033[7m";
-
 /** Koniec kodu podświetlenia.
  */
 static const char* END_HIGHLIGHT = "\033[m";
 
 /** Łączna liczba znaków w kodach podświetlenia.
  */
-static const int CODE_LENGTH = 7;
+static const int CODE_LENGTH = 10;
 
 // Zmienna globalna, by można było z niej korzystać w razie potrzeby w change_terminal_to_original, które jest
 // wywoływana w exit_interactive

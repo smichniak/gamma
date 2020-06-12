@@ -49,13 +49,5 @@ int main() {
         line = NULL;
     }
 
-//    gamma_t* g = gamma_new(5, 5, 5, 5);
-//    printf("%d", move_possible(g, 1, 0, 0));
-//    printf("%d", move_possible(g, 1, 0, 1));
-//    printf("%d", move_possible(g, 1, 0, 2));
-//    printf("%d", move_possible(g, 1, 0, 3));
-//    printf("%d", move_possible(g, 1, 0, 4));
-//    printf("%d", move_possible(g, 1, 1, 2));
-
     return 0;
 }
