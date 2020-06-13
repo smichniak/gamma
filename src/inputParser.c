@@ -347,6 +347,7 @@ void execute_command(command_t command, gamma_t** gPtr, unsigned long long line)
                 *gPtr = new_gamma;
                 printf("OK %llu\n", line);
             } else {
+                *gPtr = new_gamma;
                 checkTerminalSize(new_gamma);
                 interactive_input(new_gamma);
             }
