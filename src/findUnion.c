@@ -17,53 +17,53 @@ struct find_union_node {
 };
 
 find_union_node_t* make_set(uint32_t player) {
-    find_union_node_t* nodePtr = malloc(sizeof(find_union_node_t));
-    if (!nodePtr) {
+    find_union_node_t* node_ptr = malloc(sizeof(find_union_node_t));
+    if (!node_ptr) {
         return NULL;
     }
-    nodePtr->player = player;
-    nodePtr->parent = nodePtr;
-    nodePtr->rank = 0;
-    return nodePtr;
+    node_ptr->player = player;
+    node_ptr->parent = node_ptr;
+    node_ptr->rank = 0;
+    return node_ptr;
 }
 
-inline uint32_t get_player(find_union_node_t* nodePtr) {
-    if (!nodePtr) {
+inline uint32_t get_player(find_union_node_t* node_ptr) {
+    if (!node_ptr) {
         return 0;
     }
-    return nodePtr->player;
+    return node_ptr->player;
 }
 
 /** @brief Znajduje korzeń wejściowego drzewa.
  * Znajduje korzeń wejściowego drzewa Find-Union. Wykorzystuje kompresje ścieżek, by zmniejszać wysokość drzewa
  * i optymalizować kolejne wyszukania.
- * @param[in, out] nodePtr  – wskaźnik na wierzchołek drzewa.
+ * @param[in, out] node_ptr  – wskaźnik na wierzchołek drzewa.
  * @return Wskaźnik na korzeń drzewa, do którego należy wejściowy wierzchołek.
  */
-static find_union_node_t* find(find_union_node_t* nodePtr) {
-    if (nodePtr->parent != nodePtr) {
+static find_union_node_t* find(find_union_node_t* node_ptr) {
+    if (node_ptr->parent != node_ptr) {
         // Kompresja ścieżek
-        nodePtr->parent = find(nodePtr->parent);
+        node_ptr->parent = find(node_ptr->parent);
     }
-    return nodePtr->parent;
+    return node_ptr->parent;
 }
 
-void unite(find_union_node_t* nodePtr1, find_union_node_t* nodePtr2) {
-    find_union_node_t* nodePtrRoot1 = find(nodePtr1);
-    find_union_node_t* nodePtrRoot2 = find(nodePtr2);
+void unite(find_union_node_t* node_ptr1, find_union_node_t* node_ptr2) {
+    find_union_node_t* node_ptr_root1 = find(node_ptr1);
+    find_union_node_t* node_ptr_root2 = find(node_ptr2);
 
-    if (nodePtrRoot1 != nodePtrRoot2) {
-        if (nodePtrRoot1->rank < nodePtrRoot2->rank) {
+    if (node_ptr_root1 != node_ptr_root2) {
+        if (node_ptr_root1->rank < node_ptr_root2->rank) {
             // Mniejsze drzewo podczepiamy pod większe, zapewnia dobrą złożoność
-            nodePtrRoot1->parent = nodePtrRoot2;
-            nodePtrRoot2->rank++;
+            node_ptr_root1->parent = node_ptr_root2;
+            node_ptr_root2->rank++;
         } else {
-            nodePtrRoot2->parent = nodePtrRoot1;
-            nodePtrRoot1->rank++;
+            node_ptr_root2->parent = node_ptr_root1;
+            node_ptr_root1->rank++;
         }
     }
 }
 
-inline bool connected(find_union_node_t* nodePtr1, find_union_node_t* nodePtr2) {
-    return nodePtr1 && nodePtr2 && find(nodePtr1) == find(nodePtr2);
+inline bool connected(find_union_node_t* node_ptr1, find_union_node_t* node_ptr2) {
+    return node_ptr1 && node_ptr2 && find(node_ptr1) == find(node_ptr2);
 }

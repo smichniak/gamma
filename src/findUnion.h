@@ -26,26 +26,26 @@ find_union_node_t* make_set(uint32_t player);
 
 /** @brief Zwraca gracza w danym wierzchołku.
  * Zwraca gracza w danym wierzchołku lub 0 dla pustego wierzchołka.
- * @param[in] nodePtr  – wskaźnik na wierzchołek drzewa lub NULL.
- * @return Wartość @p player z funkcji @ref make_set lub @p 0, jeśli nodePtr jest NULL.
- */ uint32_t get_player(find_union_node_t* nodePtr);
+ * @param[in] node_ptr  – wskaźnik na wierzchołek drzewa lub NULL.
+ * @return Wartość @p player z funkcji @ref make_set lub @p 0, jeśli node_ptr jest NULL.
+ */ uint32_t get_player(find_union_node_t* node_ptr);
 
 /** @brief Łączy dwa drzewa Find-Union.
  * Łączy dwa drzewa wykorzystując rangi drzew do optymalizacji. Drzewo z mniejszą rangą podczepiamy pod to, z
  * większą.
- * @param[in, out] nodePtr1  – wskaźnik na wierzchołek pierwszego drzewa,
- * @param[in, out] nodePtr2  – wskaźnik na wierzchołek drugiego drzewa.
+ * @param[in, out] node_ptr_1  – wskaźnik na wierzchołek pierwszego drzewa,
+ * @param[in, out] node_ptr_2  – wskaźnik na wierzchołek drugiego drzewa.
  */
-void unite(find_union_node_t* nodePtr1, find_union_node_t* nodePtr2);
+void unite(find_union_node_t* node_ptr1, find_union_node_t* node_ptr2);
 
 /** @brief Sprawdza, czy dwa wierzchołki są w jednym drzewie.
  * Sprawdza, czy wierzchołki są w jednym drzewie wykorzystując strukturę Find-Union. Wierzchołki są połączone,
  * jeśli są w drzewie z tym samym korzeniem.
- * @param[in, out] nodePtr1  – wskaźnik na wierzchołek pierwszego drzewa,
- * @param[in, out] nodePtr2  – wskaźnik na wierzchołek drugiego drzewa.
+ * @param[in, out] node_ptr_1  – wskaźnik na wierzchołek pierwszego drzewa,
+ * @param[in, out] node_ptr_2  – wskaźnik na wierzchołek drugiego drzewa.
  * @return Wartość @p true, jeśli są połączone, @p false jeśli dowolny z nich jest NULL lub nie są połączone.
  */
-bool connected(find_union_node_t* nodePtr1, find_union_node_t* nodePtr2);
+bool connected(find_union_node_t* node_ptr1, find_union_node_t* node_ptr2);
 
 
 #endif /* GAMMA_FINDUNION_H */

@@ -8,7 +8,10 @@
 #ifndef GAMMA_UTILITIES_H
 #define GAMMA_UTILITIES_H
 
+#include <string.h>
+#include <ctype.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 /** @struct tuple
  * Struktura pary uporządkowanej. Zawiera dwie liczby nieujemne.
@@ -35,5 +38,12 @@ tuple create_tuple(uint32_t x, uint32_t y);
  * @return Liczba całkowita dodatnia, liczba cyfr liczby wejściowej,
  */
 int digits(uint32_t number);
+
+/** @brief Sprawdza, czy ciąg znaków jest samymi cyframi.
+ * Sprawdza, czy każdy znak w ciągu jest cyfrą.
+ * @param[in] string   – ciąg znaków do sprawdzenia.
+ * @return @p true, jeśli wszystkie znaki są cyframi, @p false w przeciwnym przypadku
+ */
+bool only_digits(char* string);
 
 #endif /* GAMMA_UTILITIES_H */

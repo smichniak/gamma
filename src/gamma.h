@@ -9,9 +9,7 @@
 #ifndef GAMMA_H
 #define GAMMA_H
 
-#include <stdbool.h>
 #include "findUnion.h"
-
 
 /**
  * @typedef gamma_t
@@ -164,7 +162,7 @@ uint64_t gamma_free_fields(gamma_t* g, uint32_t player);
  * @return Wartość @p true, jeśli można wykonać złoty ruch, a @p false, gdy ruch
  * jest nielegalny lub któryś z parametrów jest niepoprawny.
  */
-bool golden_move_possible(gamma_t* g, uint32_t player, uint32_t x, uint32_t y);
+bool golden_possible_on_field(gamma_t* g, uint32_t player, uint32_t x, uint32_t y);
 
 /** @brief Sprawdza, czy gracz może wykonać złoty ruch.
  * Sprawdza, czy gracz @p player jeszcze nie wykonał w tej rozgrywce złotego

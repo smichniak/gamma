@@ -8,17 +8,27 @@
 #include "utilities.h"
 
 tuple create_tuple(uint32_t x, uint32_t y) {
-    tuple newTuple;
-    newTuple.x = x;
-    newTuple.y = y;
-    return newTuple;
+    tuple new_tuple;
+    new_tuple.x = x;
+    new_tuple.y = y;
+    return new_tuple;
 }
 
 int digits(uint32_t number) {
-    int digitCount = 0;
+    int digit_count = 0;
     do {
-        digitCount++;
+        digit_count++;
         number /= 10;
     } while (number != 0);
-    return digitCount;
+    return digit_count;
+}
+
+
+bool only_digits(char* string) {
+    for (uint32_t i = 0; i < strlen(string); ++i) {
+        if (!isdigit(string[i])) {
+            return false;
+        }
+    }
+    return true;
 }

@@ -28,33 +28,33 @@ stack_node_t* create_stack(uint32_t x, uint32_t y) {
     return node;
 }
 
-inline bool is_stack_empty(stack_node_t* stackPtr) {
-    return !stackPtr;
+inline bool is_stack_empty(stack_node_t* stack_ptr) {
+    return !stack_ptr;
 }
 
-stack_node_t* put_last(stack_node_t* stackPtr, uint32_t x, uint32_t y) {
-    stack_node_t* nodePtr = create_stack(x, y);
-    if (!nodePtr) {
+stack_node_t* put_last(stack_node_t* stack_ptr, uint32_t x, uint32_t y) {
+    stack_node_t* node_ptr = create_stack(x, y);
+    if (!node_ptr) {
         return NULL;
     }
-    nodePtr->next = stackPtr;
-    return nodePtr;
+    node_ptr->next = stack_ptr;
+    return node_ptr;
 }
 
-stack_node_t* remove_last(stack_node_t* stackPtr) {
-    stack_node_t* toReturn = stackPtr->next;
-    free(stackPtr);
-    return toReturn;
+stack_node_t* remove_last(stack_node_t* stack_ptr) {
+    stack_node_t* to_return = stack_ptr->next;
+    free(stack_ptr);
+    return to_return;
 }
 
-inline tuple get_last(stack_node_t* stackPtr) {
-    return create_tuple(stackPtr->x, stackPtr->y);
+inline tuple get_last(stack_node_t* stack_ptr) {
+    return create_tuple(stack_ptr->x, stack_ptr->y);
 }
 
-void remove_stack(stack_node_t* stackPtr) {
-    if (stackPtr) {
-        remove_stack(stackPtr->next);
-        free(stackPtr);
+void remove_stack(stack_node_t* stack_ptr) {
+    if (stack_ptr) {
+        remove_stack(stack_ptr->next);
+        free(stack_ptr);
     }
 }
 

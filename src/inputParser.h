@@ -26,11 +26,11 @@ typedef struct {
 */
 typedef struct {
     char function; ///< Znak oznaczający funkcję, która ma zostać wywołana.
-    argument_t firstArgument; ///< Pierwszy argument polecenia
-    argument_t secondArgument; ///< Drugi argument polecenia
-    argument_t thirdArgument; ///< Trzeci argument polecenia
-    argument_t fourthArgument; ///< Czwarty argument polecenia
-    bool isValid; ///< @p true, jeśli komenda ma format zgody ze specyfikacją, @p false w przeciwnym przypadku
+    argument_t first_argument; ///< Pierwszy argument polecenia
+    argument_t second_argument; ///< Drugi argument polecenia
+    argument_t third_argument; ///< Trzeci argument polecenia
+    argument_t fourth_argument; ///< Czwarty argument polecenia
+    bool is_valid; ///< @p true, jeśli komenda ma format zgody ze specyfikacją, @p false w przeciwnym przypadku
 } command_t;
 
 /** @brief Zwraca komedę zawartą w linii.
@@ -46,10 +46,10 @@ command_t get_command(char* line);
  * Interpretuje komendę i w zależności od funckji, wypisuje jej wynik, przechodzi do trybu interaktywnego
  * lub wypisuje @p ERROR @p line jeśli wyowałnie jest błędne.
  * @param[in] command    – ciąg znaków, który zawiera komendę do przetworzenia,
- * @param[in,out] gPtr   – wskaźnik na wskaźnik na strukturę przechowującą stan gry,
+ * @param[in,out] g_ptr   – wskaźnik na wskaźnik na strukturę przechowującą stan gry,
  * @param[in] line       – numer linii wejścia, z której została wywołana koemnda
  * @return Struktura opisująca komendę do wywołania.
  */
-void execute_command(command_t command, gamma_t** gPtr, unsigned long long line);
+void execute_command(command_t command, gamma_t** g_ptr, unsigned long long line);
 
 #endif /* GAMMA_INPUTPARSER_H */

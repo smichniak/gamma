@@ -35,19 +35,20 @@ void exit_gamma() {
  */
 int main() {
     // Początkowy rozmiar bufora na wejście, bufor na linię będzie dynamicznie zmieniany
-    size_t initialBufferSize = 0;
+    size_t initial_buffer_size = 0;
 
     atexit(exit_gamma);
 
-    unsigned long long lineNum = 1;
+    unsigned long long line_num = 1;
 
-    while (getline(&line, &initialBufferSize, stdin) > 0) {
+    while (getline(&line, &initial_buffer_size, stdin) > 0) {
         command_t command = get_command(line);
-        execute_command(command, &g, lineNum);
-        lineNum++;
+        execute_command(command, &g, line_num);
+        line_num++;
         free(line);
         line = NULL;
     }
+
 
     return 0;
 }
