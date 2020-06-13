@@ -33,9 +33,8 @@ set(SOURCE_FILES
 
 
 # Wskazujemy pliki źródłowe dla testów silnika.
-set(TEST_FILE src/gamma_test.c)
 set(TEST_SOURCE_FILES
-        ${TEST_FILE}
+        src/gamma_test.c
         ${ENGINE_FILES})
 
 # Wskazujemy plik wykonywalny.
